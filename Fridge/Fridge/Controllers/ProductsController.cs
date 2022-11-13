@@ -32,7 +32,13 @@ namespace Fridge.Controllers
             user = _repository.User.FindUserByCondition(u => u.Id == Guid.Parse(guid), trackChanges: false);
         }
 
-        [HttpGet]
+        /// <summary>
+        /// Returns a list of available products.
+        /// </summary>
+        /// <returns>A list of fridges</returns>
+        [HttpGet("fridges/rented")]
+        [ApiConventionMethod(typeof(DefaultApiConventions),
+            nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetProducts()
         {
             var products = await _repository.Product.GetAllProductsAsync(trackChanges: false);
@@ -46,7 +52,13 @@ namespace Fridge.Controllers
             return Ok(products);
         }
 
+        /// <summary>
+        /// Method that adds a picture to product.
+        /// </summary>
+        /// <returns>An added picture</returns>
         [HttpPost("product/picture")]
+        [ApiConventionMethod(typeof(DefaultApiConventions),
+            nameof(DefaultApiConventions.Post))]
         public async Task<IActionResult> AddPicture([FromForm]ProductPictureDto productPicture)
         {
             if (!ModelState.IsValid)

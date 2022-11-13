@@ -26,7 +26,13 @@ namespace Fridge.Controllers
             user = _repository.User.FindUserByCondition(u => u.Id == Guid.Parse(guid), trackChanges: false);
         }
 
+        /// <summary>
+        /// Returns a list of fridges that user rented.
+        /// </summary>
+        /// <returns>A list of fridges</returns>
         [HttpGet("fridges/rented")]
+        [ApiConventionMethod(typeof(DefaultApiConventions),
+            nameof(DefaultApiConventions.Get))]
         public async Task<ActionResult<IEnumerable<Models.Fridge>>> GetUsersFridges()
         {
             var userFridges = _repository.UserFridge.GetUserFridge(user.Id, trackChanges:false);
@@ -44,8 +50,7 @@ namespace Fridge.Controllers
                 Producer = _repository.Producer.GetProducerByIdAsync(fridge.ProducerId, trackChanges: false).Result.Name,
                 Capacity = fridge.Capacity,
                 isRented = fridge.IsRented,
-                CurrentCount = _repository.FridgeProduct
-                        .GetAllProductsInTheFridgeAsync(fridge.Id, trackChanges: false).Result.Select(f => f.Count).Sum(),
+                CurrentCount = _repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridge.Id, trackChanges: false).Result.Select(f => f.Count).Sum(),
             }).ToList();
             
             if (!fridges.Any())
@@ -58,12 +63,18 @@ namespace Fridge.Controllers
             return Ok(fridges);
         }
 
+        /// <summary>
+        /// Method to rent a fridge.
+        /// </summary>
+        /// <returns>Rented fridge</returns>
         [HttpPost("fridge/{fridgeId}/rent")]
+        [ApiConventionMethod(typeof(DefaultApiConventions),
+            nameof(DefaultApiConventions.Post))]
         public async Task<IActionResult> RentFridge(Guid fridgeId)
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for the ProductPicture object");
+                _logger.LogError($"Invalid model state for the Fridge Id {fridgeId} object");
                 return UnprocessableEntity(ModelState);
             }
 
@@ -106,13 +117,19 @@ namespace Fridge.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Method to return a fridge to its owner.
+        /// </summary>
+        /// <param name="fridgeId">Guid of a fridge to delete.</param>
+        /// <returns>Status Code</returns>
         [HttpDelete("fridge/{fridgeId}/return")]
+        [ApiConventionMethod(typeof(DefaultApiConventions),
+            nameof(DefaultApiConventions.Delete))]
         public async Task<IActionResult> Remove(Guid fridgeId)
         {
-            _logger.LogError($"{fridgeId}");
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for the ProductPicture object");
+                _logger.LogError($"Invalid model state for the Fridge Id object {fridgeId}");
                 return UnprocessableEntity(ModelState);
             }
 

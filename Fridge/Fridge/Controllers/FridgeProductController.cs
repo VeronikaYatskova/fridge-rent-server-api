@@ -161,7 +161,13 @@ namespace Fridge.Controllers
             return Created("api/products-in-fridge/product/new", pr);
         }
 
+        /// <summary>
+        /// Method to update a count of product in the fridge.
+        /// </summary>
+        /// <param name="updateDto">Fridge and Product identifiers,count of a product.</param>
         [HttpPut("product/update")]
+        [ApiConventionMethod(typeof(DefaultApiConventions),
+            nameof(DefaultApiConventions.Update))]
         public async Task<IActionResult> UpdateProduct([FromBody] ProductUpdateDto updateDto)
         {
             if (!ModelState.IsValid)
