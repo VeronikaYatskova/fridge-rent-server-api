@@ -1,8 +1,5 @@
-﻿using Fridge.Models.RoleBasedAuthorization;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography;
 
 namespace Fridge.Controllers
 {

@@ -63,7 +63,7 @@ namespace Fridge.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for the ProductPicture object");
+                _logger.LogError("Invalid model state for the ProductPictureDto object");
                 return UnprocessableEntity(ModelState);
             }
 

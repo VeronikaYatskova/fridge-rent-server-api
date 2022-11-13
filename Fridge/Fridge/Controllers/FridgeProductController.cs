@@ -42,12 +42,6 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetProductsByFridgeId(Guid fridgeId)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid model state for the ProductPicture object");
-                return UnprocessableEntity(ModelState);
-            }
-
             if (!IsUsersFridge(fridgeId))
             {
                 _logger.LogInformation($"You don't have a fridge with id {fridgeId} in your rented.");
@@ -115,7 +109,7 @@ namespace Fridge.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError($"Invalid model state for the ProductPicture object");
+                _logger.LogError("Invalid model state for the FridgeProductDto object");
                 return UnprocessableEntity(ModelState);
             }
 
@@ -172,7 +166,7 @@ namespace Fridge.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for the ProductPicture object");
+                _logger.LogError("Invalid model state for the ProductUpdateDto object");
                 return UnprocessableEntity(ModelState);
             }
 
@@ -206,12 +200,6 @@ namespace Fridge.Controllers
             Console.WriteLine($"{fridgeId} {productId}");
             Guid productGuid = Guid.Parse(productId);
             Guid fridgeGuid = Guid.Parse(fridgeId);
-
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid model state for the ProductPicture object");
-                return UnprocessableEntity(ModelState);
-            }
 
             if (!IsUsersFridge(fridgeGuid))
             {

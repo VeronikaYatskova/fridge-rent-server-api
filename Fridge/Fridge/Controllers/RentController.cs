@@ -72,12 +72,6 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Post))]
         public async Task<IActionResult> RentFridge(Guid fridgeId)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError($"Invalid model state for the Fridge Id {fridgeId} object");
-                return UnprocessableEntity(ModelState);
-            }
-
             var fridge = await _repository.Fridge.GetFridgeByIdAsync(fridgeId, trackChanges:false);
 
             if (fridge is null)
@@ -127,12 +121,6 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Delete))]
         public async Task<IActionResult> Remove(Guid fridgeId)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError($"Invalid model state for the Fridge Id object {fridgeId}");
-                return UnprocessableEntity(ModelState);
-            }
-
             var fridge = await _repository.Fridge.GetFridgeByIdAsync(fridgeId, trackChanges: false);
 
             if (fridge is null)

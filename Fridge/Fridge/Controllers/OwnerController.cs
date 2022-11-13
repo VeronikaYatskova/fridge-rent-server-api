@@ -74,12 +74,6 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetRentedFridgeInfo(Guid fridgeId)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid model state for the object");
-                return UnprocessableEntity(ModelState);
-            }
-
             var rentDocument = new RentDocument();
 
             var fr = _repository.UserFridge.GetFridgeById(fridgeId, trackChanges: false).RentDocumentId;
@@ -109,7 +103,7 @@ namespace Fridge.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for the object");
+                _logger.LogError("Invalid model state for the OwnerAddFridgeDto object");
                 return UnprocessableEntity(ModelState);
             }
 
@@ -138,12 +132,6 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Delete))]
         public async Task<IActionResult> DeleteFridge(Guid fridgeId)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid model state for the ProductPicture object");
-                return UnprocessableEntity(ModelState);
-            }
-
             var fridges = await _repository.Fridge.GetFridgeByConditionAsync(f => f.Id == fridgeId && f.OwnerId == _owner.Id, trackChanges:false);
 
             if (fridges is null|| fridges.Count() == 0)
