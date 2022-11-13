@@ -39,7 +39,7 @@ namespace Fridge.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for the ProductPicture object");
+                _logger.LogError("Invalid model state for the UserDto object");
                 return UnprocessableEntity(ModelState);
             }
 
@@ -85,7 +85,7 @@ namespace Fridge.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for the ProductPicture object");
+                _logger.LogError("Invalid model state for the OwnerDto object");
                 return UnprocessableEntity(ModelState);
             }
 
@@ -132,7 +132,7 @@ namespace Fridge.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for the ProductPicture object");
+                _logger.LogError("Invalid model state for the UserLoginDto object");
                 return UnprocessableEntity(ModelState);
             }
 
@@ -172,7 +172,7 @@ namespace Fridge.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for the User object");
+                _logger.LogError("Invalid model state for the UserLoginDto object");
                 return UnprocessableEntity(ModelState);
             }
 
