@@ -1,0 +1,1 @@
+# frige-rent-server-api
