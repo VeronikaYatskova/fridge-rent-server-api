@@ -36,7 +36,7 @@ namespace Fridge.Controllers
         /// Returns a list of available products.
         /// </summary>
         /// <returns>A list of fridges</returns>
-        [HttpGet("fridges/rented")]
+        [HttpGet("all-products")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetProducts()
