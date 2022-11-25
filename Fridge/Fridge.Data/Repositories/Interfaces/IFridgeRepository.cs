@@ -1,4 +1,4 @@
-﻿using Fridge.Models.DTOs;
+﻿using Fridge.Models.DTOs.FridgeDto;
 using System.Linq.Expressions;
 
 namespace Fridge.Data.Repositories.Interfaces
@@ -13,7 +13,7 @@ namespace Fridge.Data.Repositories.Interfaces
 
         Task<IEnumerable<Models.Fridge>?> GetFridgeByConditionAsync(Expression<Func<Models.Fridge, bool>> expression, bool trackChanges);
        
-        Guid AddFridge(FridgeServiceDto data);
+        Guid AddFridge(FridgeServicePartDto data);
 
         void RemoveFridge(Models.Fridge data);
 

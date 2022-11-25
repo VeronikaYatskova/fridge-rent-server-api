@@ -1,5 +1,7 @@
-﻿using Fridge.Models.DTOs;
-using Models.Models.DTOs;
+﻿using Fridge.Models.DTOs.FridgeProductDto;
+using Fridge.Models.DTOs.FridgeProductDto.FridgeProductDto;
+using Fridge.Models.DTOs.FridgeProductDtos;
+using Fridge.Models.DTOs.ProductDtos;
 
 namespace Fridge.Services.Abstracts
 {
@@ -9,7 +11,7 @@ namespace Fridge.Services.Abstracts
 
         Task FillTheFridgeWithProductAsync(Guid productId);
 
-        Task<ProductAddDto> AddProductAsync(FridgeProductDto data);
+        Task<AddProductDto> AddProductAsync(FridgeProductDto data);
 
         Task UpdateProductAsync(ProductUpdateDto productUpdateDto);
 

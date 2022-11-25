@@ -1,7 +1,7 @@
 ﻿using Fridge.Controllers;
 using Fridge.Data.Models;
 using Fridge.Data.Repositories.Interfaces;
-using Fridge.Models.DTOs;
+using Fridge.Models.DTOs.ProductDtos;
 using Fridge.Services.Abstracts;
 
 namespace Fridge.Services

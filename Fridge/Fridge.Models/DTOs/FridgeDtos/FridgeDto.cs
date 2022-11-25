@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Fridge.Models.DTOs
+namespace Fridge.Models.DTOs.FridgeDtos
 {
     public class FridgeDto
     {

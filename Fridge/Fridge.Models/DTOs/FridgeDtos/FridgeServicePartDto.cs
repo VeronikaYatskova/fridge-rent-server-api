@@ -1,6 +1,6 @@
-﻿namespace Fridge.Models.DTOs
+﻿namespace Fridge.Models.DTOs.FridgeDto
 {
-    public class FridgeServiceDto
+    public class FridgeServicePartDto
     {
         public Guid FridgeId { get; set; }
 

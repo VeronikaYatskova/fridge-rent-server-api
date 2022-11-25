@@ -1,8 +1,6 @@
-﻿using Fridge.Data.Models;
-using Fridge.Models.DTOs;
+﻿using Fridge.Models.DTOs.FridgeDto;
+using Fridge.Models.DTOs.FridgeDtos;
 using Fridge.Models.DTOs.OwnerDtos;
-using Microsoft.AspNetCore.Mvc;
-using Models.Models.DTOs;
 
 namespace Fridge.Services.Abstracts
 {
@@ -12,7 +10,7 @@ namespace Fridge.Services.Abstracts
 
         Task<RentDocumentDto> GetRentedFridgeInfo(Guid fridgeId);
 
-        Task<FridgeServiceDto> AddFridge(OwnerAddFridgeDto ownerAddFridgeDto);
+        Task<FridgeServicePartDto> AddFridge(OwnerAddFridgeDto ownerAddFridgeDto);
 
         Task DeleteFridge(Guid fridgeId);
     }

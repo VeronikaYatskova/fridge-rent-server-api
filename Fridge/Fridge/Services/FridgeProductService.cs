@@ -1,9 +1,11 @@
 ﻿using Fridge.Controllers;
 using Fridge.Data.Models;
 using Fridge.Data.Repositories.Interfaces;
-using Fridge.Models.DTOs;
+using Fridge.Models.DTOs.FridgeProductDto;
+using Fridge.Models.DTOs.FridgeProductDto.FridgeProductDto;
+using Fridge.Models.DTOs.FridgeProductDtos;
+using Fridge.Models.DTOs.ProductDtos;
 using Fridge.Services.Abstracts;
-using Models.Models.DTOs;
 
 
 namespace Fridge.Services
@@ -62,7 +64,7 @@ namespace Fridge.Services
             await _repository.SaveAsync();
         }
 
-        public async Task<ProductAddDto> AddProductAsync(FridgeProductDto fridgeProductDto)
+        public async Task<AddProductDto> AddProductAsync(FridgeProductDto fridgeProductDto)
         {
             if (!IsUsersFridge(fridgeProductDto.FridgeId))
             {
@@ -96,7 +98,7 @@ namespace Fridge.Services
             var products = await _repository.Product.GetAllProductsAsync(trackChanges: false);
             var productFullName = products.Where(p => p.Id == newProduct.ProductId).FirstOrDefault();
 
-            var productWithNameAndCount = new ProductAddDto
+            var productWithNameAndCount = new AddProductDto
             {
                 Id = productFullName.Id,
                 Name = productFullName.Name,

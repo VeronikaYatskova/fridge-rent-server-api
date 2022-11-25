@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace Fridge.Models.DTOs
+namespace Fridge.Models.DTOs.ProductDtos
 {
     public class ProductPictureDto
     {

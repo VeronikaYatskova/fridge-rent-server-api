@@ -2,10 +2,10 @@
 using Fridge.Data.Models;
 using Fridge.Data.Models.Abstracts;
 using Fridge.Data.Repositories.Interfaces;
-using Fridge.Models.DTOs;
+using Fridge.Models.DTOs.FridgeDto;
+using Fridge.Models.DTOs.FridgeDtos;
 using Fridge.Models.DTOs.OwnerDtos;
 using Fridge.Services.Abstracts;
-using Models.Models.DTOs;
 
 namespace Fridge.Services
 {
@@ -79,9 +79,9 @@ namespace Fridge.Services
             return rentDocumentDto;
         }
 
-        public async Task<FridgeServiceDto> AddFridge(OwnerAddFridgeDto ownerAddFridgeDto)
+        public async Task<FridgeServicePartDto> AddFridge(OwnerAddFridgeDto ownerAddFridgeDto)
         {
-            var fridge = new FridgeServiceDto
+            var fridge = new FridgeServicePartDto
             {
                 FridgeId = Guid.NewGuid(),
                 Capacity = ownerAddFridgeDto.Capacity,

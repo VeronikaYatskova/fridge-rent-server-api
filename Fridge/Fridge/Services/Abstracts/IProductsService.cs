@@ -1,5 +1,5 @@
 ﻿using Fridge.Data.Models;
-using Fridge.Models.DTOs;
+using Fridge.Models.DTOs.ProductDtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fridge.Services.Abstracts

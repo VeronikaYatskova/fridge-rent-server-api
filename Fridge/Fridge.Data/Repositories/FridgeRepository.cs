@@ -1,6 +1,6 @@
 ﻿using Fridge.Data.Context;
 using Fridge.Data.Repositories.Interfaces;
-using Fridge.Models.DTOs;
+using Fridge.Models.DTOs.FridgeDto;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -29,7 +29,7 @@ namespace Fridge.Data.Repositories
             await FindByCondition(expression, trackChanges)!
             .ToListAsync();
 
-        public Guid AddFridge(FridgeServiceDto data)
+        public Guid AddFridge(FridgeServicePartDto data)
         {
             var newFridge = new Models.Fridge
             {

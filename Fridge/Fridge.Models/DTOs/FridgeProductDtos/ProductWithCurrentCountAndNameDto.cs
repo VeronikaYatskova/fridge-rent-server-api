@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Fridge.Models.DTOs
+namespace Fridge.Models.DTOs.FridgeProductDto
 {
     public class ProductWithCurrentCountAndNameDto
     {
@@ -13,7 +13,7 @@ namespace Fridge.Models.DTOs
         [MaxLength(60, ErrorMessage = "Maximum length for the Name is 60 characters")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage ="Count is a requierd field.")]
+        [Required(ErrorMessage = "Count is a requierd field.")]
         public int Count { get; set; }
     }
 }

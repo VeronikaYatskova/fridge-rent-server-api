@@ -1,9 +1,9 @@
 ﻿using Fridge.Controllers;
 using Fridge.Data.Models;
 using Fridge.Data.Repositories.Interfaces;
-using Fridge.Models.DTOs;
+using Fridge.Models.DTOs.FridgeDtos;
 using Fridge.Services.Abstracts;
-using Microsoft.AspNetCore.Mvc;
+
 
 namespace Fridge.Services
 {

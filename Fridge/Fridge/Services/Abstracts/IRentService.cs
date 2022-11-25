@@ -1,4 +1,5 @@
-﻿using Fridge.Models.DTOs;
+﻿using Fridge.Models.DTOs.FridgeDto;
+using Fridge.Models.DTOs.FridgeDtos;
 
 namespace Fridge.Services.Abstracts
 {

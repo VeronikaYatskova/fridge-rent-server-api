@@ -1,5 +1,7 @@
 ﻿using Fridge.Data.Models;
-using Fridge.Models.DTOs;
+using Fridge.Models.DTOs.FridgeProductDto;
+using Fridge.Models.DTOs.FridgeProductDtos;
+using Fridge.Models.DTOs.ProductDtos;
 using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

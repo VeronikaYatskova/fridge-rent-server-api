@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace Fridge.Models.DTOs
+namespace Fridge.Models.DTOs.ProductDtos
 {
     public class ProductDto
     {
