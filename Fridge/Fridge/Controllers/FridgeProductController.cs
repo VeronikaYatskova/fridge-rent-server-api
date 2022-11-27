@@ -1,12 +1,11 @@
-﻿using AutoMapper;
-using Fridge.Models.DTOs;
-using Fridge.Models.RoleBasedAuthorization;
+﻿using Fridge.Data.Models;
+using Fridge.Models.DTOs.FridgeProductDto;
+using Fridge.Models.DTOs.FridgeProductDtos;
+using Fridge.Models.DTOs.ProductDtos;
+using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Models.Models.DTOs;
-using Models.Models.RoleBasedAuthorization;
-using Repositories.Repository.Interfaces;
+
 
 namespace Fridge.Controllers
 {
@@ -15,21 +14,12 @@ namespace Fridge.Controllers
     [ApiController]
     [Authorize(Roles = UserRoles.Renter)]
     public class FridgeProductController : ControllerBase
-    {
-        private readonly IRepositoryManager _repository;
-        private readonly ILogger<FridgeProductController> _logger;
-        private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly User? _user;
-        
-        public FridgeProductController(IRepositoryManager repository, ILogger<FridgeProductController> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
-        {
-            _repository = repository;
-            _logger = logger;
-            _mapper = mapper;
+    {     
+        private readonly IFridgeProductService fridgeProductService;
 
-            var guid = TokenInfo.GetInfo(httpContextAccessor);
-            _user = _repository.User.FindUserByCondition(u => u.Id == Guid.Parse(guid), trackChanges: false);
+        public FridgeProductController(IFridgeProductService service)
+        {
+            fridgeProductService = service;
         }
 
         /// <summary>
@@ -40,41 +30,22 @@ namespace Fridge.Controllers
         [HttpGet("fridge/{fridgeId}")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Get))]
-        public async Task<IActionResult> GetProductsByFridgeId(Guid fridgeId)
+        public async Task<IActionResult> GetProductsInFridgeByFridgeId(Guid fridgeId)
         {
-            if (!IsUsersFridge(fridgeId))
+            try
             {
-                _logger.LogInformation($"You don't have a fridge with id {fridgeId} in your rented.");
-                return NotFound();
-            }
+                var products = await fridgeProductService.GetProductsByFridgeIdAsync(fridgeId);
 
-            var productsId = await _repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridgeId, trackChanges: false);
-            
-            if (productsId is null)
+                return Ok(products);
+            }
+            catch (ArgumentException)
             {
-                _logger.LogInformation($"Fridge with id {fridgeId} doesn't exist in the database.");
-                return NotFound();
+                return BadRequest();
             }
-
-            var productsArray = productsId.ToArray();
-            var products = new ProductCountDto[productsArray.Length];
-            int i = 0;
-
-            var iterator = productsId.GetEnumerator();
-            while (iterator.MoveNext())
+            catch (Exception)
             {
-                var currentProduct = productsArray[i];
-                var productData = await _repository.Product.GetProductByIdAsync(currentProduct.ProductId, trackChanges: false);
-                
-                products[i++] = new ProductCountDto
-                {
-                    Id = currentProduct.ProductId,
-                    Name = productData.Name,
-                    Count = currentProduct.Count,
-                };
+                return StatusCode(500);
             }
-
-            return Ok(products);
         }
 
         /// <summary>
@@ -86,104 +57,80 @@ namespace Fridge.Controllers
         [HttpPost("product/{productId}/put-in-all-fridges")]
         public async Task<IActionResult> FillTheFridgeWithProduct(Guid productId)
         {
-            var product = await _repository.Product.GetProductByIdAsync(productId, trackChanges:false);
-            if (product is null)
+            try
             {
-                _logger.LogInformation($"Product with id {productId} doesn't exist in the database.");
-                return NotFound();
-            }
+                await fridgeProductService.FillTheFridgeWithProductAsync(productId);
 
-            _repository.FridgeProduct.FillTheFridgeWithProduct(productId, _user!.Id);
-            await _repository.SaveAsync();
-            return Ok();
+                return Ok();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
         /// Add new product to fridge.
         /// </summary>
-        /// <param name="data">Fridge and Product identifiers,count of a product.</param>
+        /// <param name="fridgeProductDto">Fridge and Product identifiers,count of a product.</param>
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [HttpPost("product/new")]
-        public async Task<IActionResult> AddProduct([FromBody] FridgeProductDto data)
+        public async Task<IActionResult> AddProduct([FromBody] FridgeProductDto fridgeProductDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                _logger.LogError("Invalid model state for the FridgeProductDto object");
-                return UnprocessableEntity(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    throw new ArgumentException("Invalid data");
+                }
+
+                var newProduct = await fridgeProductService.AddProductAsync(fridgeProductDto);
+
+                return Created("api/products-in-fridge/product/new", newProduct);
             }
-
-            if (!IsUsersFridge(data.FridgeId))
+            catch (ArgumentException)
             {
-                _logger.LogInformation($"You don't have a fridge with id {data.FridgeId} in your rented.");
-                return NotFound($"You don't have a fridge with id {data.FridgeId} in your rented.");
+                return BadRequest();
             }
-
-            var fridge = await _repository.Fridge.GetFridgeByIdAsync(data.FridgeId, trackChanges: false);
-            if (fridge is null)
+            catch (Exception)
             {
-                _logger.LogInformation($"Fridge with id {data.FridgeId} doesn't exist in the database.");
-                return NotFound();
+                return StatusCode(500);
             }
-
-            var product = await _repository.Product.GetProductByIdAsync(data.ProductId, trackChanges: false);
-            if (product is null)
-            {
-                _logger.LogInformation($"Product with id {data.ProductId} doesn't exist in the database.");
-                return NotFound();
-            }
-
-            if (await GetCountOfProducts(data.FridgeId) + data.Count >= fridge.Capacity)
-            {
-                _logger.LogError($"The fridge {data.FridgeId} is full.");
-                return StatusCode(500, "The fridge is full");
-            }
-
-            var newProduct = await _repository.FridgeProduct.AddProductAsync(data.FridgeId, data.ProductId, data.Count == 0 ? product.DefaultQuantity : data.Count);
-            var products = await _repository.Product.GetAllProductsAsync(trackChanges:false);
-            var productFullName = products.Where(p => p.Id == newProduct.ProductId).FirstOrDefault();
-
-            var pr = new ProductAddDto
-            {
-                Id = productFullName.Id,
-                Name = productFullName.Name,
-                Count = newProduct.Count,
-            };
-            
-            await _repository.SaveAsync();
-
-            return Created("api/products-in-fridge/product/new", pr);
         }
 
         /// <summary>
         /// Method to update a count of product in the fridge.
         /// </summary>
-        /// <param name="updateDto">Fridge and Product identifiers,count of a product.</param>
+        /// <param name="productUpdateDto">Fridge and Product identifiers,count of a product.</param>
         [HttpPut("product/update")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Update))]
-        public async Task<IActionResult> UpdateProduct([FromBody] ProductUpdateDto updateDto)
+        public async Task<IActionResult> UpdateProductAsync([FromBody] ProductUpdateDto productUpdateDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                _logger.LogError("Invalid model state for the ProductUpdateDto object");
-                return UnprocessableEntity(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    throw new ArgumentException("Invalid data");
+                }
+
+                await fridgeProductService.UpdateProductAsync(productUpdateDto);
+
+                return NoContent();
             }
-
-            var productInFridge = _repository.FridgeProduct.GetProductById(updateDto.FridgeId, updateDto.ProductId, trackChanges: false);
-            productInFridge.Count = updateDto.Count;
-
-            if (productInFridge is null)
+            catch (ArgumentException)
             {
-                _logger.LogInformation($"Product with id: {productInFridge} doesn't exist in the database.");
-                return NotFound();
+                return BadRequest();
             }
-
-            _repository.FridgeProduct.UpdateProduct(productInFridge);
-
-            await _repository.SaveAsync();
-
-            return NoContent();
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -197,46 +144,20 @@ namespace Fridge.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> DeleteProductFromFridge(string fridgeId, string productId)
         {
-            Console.WriteLine($"{fridgeId} {productId}");
-            Guid productGuid = Guid.Parse(productId);
-            Guid fridgeGuid = Guid.Parse(fridgeId);
-
-            if (!IsUsersFridge(fridgeGuid))
+            try
             {
-                _logger.LogError($"You don't have a fridge with id {fridgeId} in your rented.");
-                return NotFound();
-            }
+                await fridgeProductService.DeleteProductFromFridgeAsync(fridgeId, productId);
 
-            var fridgeProduct = await _repository.FridgeProduct.GetProductByIdAsync(fridgeGuid, productGuid, trackChanges: false);
-            if (fridgeProduct is null)
+                return Ok();
+            }
+            catch (ArgumentException)
             {
-                _logger.LogError($"Fridge with id {fridgeGuid} doesn't contain product with id {productGuid} in the database.");
-                return NotFound();
+                return BadRequest();
             }
-
-            _repository.FridgeProduct.DeleteProduct(fridgeProduct);
-
-            await _repository.SaveAsync();
-            return Ok();
-        }
-
-        private async Task<int> GetCountOfProducts(Guid fridgeId)
-        {
-            var products = await _repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridgeId, trackChanges:false);
-            int sum = 0;
-
-            foreach (var product in products)
+            catch (Exception)
             {
-                sum += product.Count;
+                return StatusCode(500);
             }
-
-            return sum;
-        }
-
-        private bool IsUsersFridge(Guid fridgeId)
-        {
-            var usersFridges = _repository.UserFridge.GetUserFridgeRow(_user.Id, fridgeId, trackChanges: false);
-            return usersFridges is not null;
         }
     }
 }

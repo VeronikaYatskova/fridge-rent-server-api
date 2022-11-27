@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
-using Fridge.Models;
-using Fridge.Models.DTOs;
-using Fridge.Models.RoleBasedAuthorization;
+using Fridge.Data.Models;
+using Fridge.Models.DTOs.OwnerDtos;
+using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Models.Models.DTOs;
-using Models.Models.RoleBasedAuthorization;
-using Repositories.Repository.Interfaces;
 
 namespace Fridge.Controllers
 {
@@ -17,20 +13,11 @@ namespace Fridge.Controllers
     [Authorize(Roles = UserRoles.Owner)]
     public class OwnerController : ControllerBase
     {
-        private readonly IRepositoryManager _repository;
-        private readonly ILogger<FridgeController> _logger;
-        private readonly IMapper _mapper;
-        private readonly Owner _owner;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IOwnerService ownerService;
 
-        public OwnerController(IRepositoryManager repository, ILogger<FridgeController> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public OwnerController(IOwnerService service)
         {
-            _repository = repository;
-            _logger = logger;
-            _mapper = mapper;
-
-            var guid = TokenInfo.GetInfo(httpContextAccessor);
-            _owner = _repository.Owner.GetOwnerByConditionAsync(u => u.Id == Guid.Parse(guid), trackChanges: false).Result;
+            ownerService = service;
         }
 
         /// <summary>
@@ -43,24 +30,20 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetOwnersFridges()
         {
-            var fridges = await _repository.Fridge.GetFridgeByConditionAsync(f => f.OwnerId == _owner.Id, trackChanges: false);
-
-            if (fridges?.Count() == 0 || fridges is null)
+            try
             {
-                _logger.LogInformation($"Owner with id {_owner.Id} doesn't have any fridges.");
-                return NotFound("Owner doesn't have any fridges.");
-            }
+                var fridgesDto = await ownerService.GetOwnersFridges();
 
-            var fridgesDto = fridges.Select(fridge => new FridgeDto
-                {
-                    Id = fridge.Id,
-                    Model = _repository.Model.GetModelByIdAsync(fridge.ModelId, trackChanges: false).Name,
-                    Owner = _repository.Owner.GetOwnerByIdAsync(fridge.OwnerId, trackChanges: false).Result.Name,
-                    Producer = _repository.Producer.GetProducerByIdAsync(fridge.ProducerId, trackChanges: false).Result.Name,
-                    Capacity = fridge.Capacity,
-                    isRented = fridge.IsRented,
-                });
-            return Ok(fridgesDto);
+                return Ok(fridgesDto);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -74,52 +57,50 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetRentedFridgeInfo(Guid fridgeId)
         {
-            var rentDocument = new RentDocument();
-
-            var fr = _repository.UserFridge.GetFridgeById(fridgeId, trackChanges: false).RentDocumentId;
-            rentDocument = _repository.RentDocument.FindDocumentByCondition(d => d.Id == fr, trackChanges: false);
-
-            var rentDocumentDto = new RentDocumentDto
+            try
             {
-                Id = rentDocument.Id,
-                RenterEmail = _repository.User.FindUserByCondition(u => u.Id == rentDocument.UserId, trackChanges: false).Email,
-                OwnerName = _owner.Name,
-                StartDate = rentDocument.StartDate.ToShortDateString(),
-                EndDate = rentDocument.EndDate.ToShortDateString(),
-                MonthCost = rentDocument.MonthCost,
-            };
+                var rentDocumentDto = await ownerService.GetRentedFridgeInfo(fridgeId);
 
-            return Ok(rentDocumentDto);
+                return Ok(rentDocumentDto);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
         /// Allows to add one more fridge for renting.
         /// </summary>
-        /// <param name="newFridge"></param>
+        /// <param name="ownerAddFridgeDto">Parameters for a new fridge.</param>
         [HttpPost("fridge/add")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
-        public async Task<IActionResult> AddFridge([FromBody] OwnerAddFridgeDto newFridge)
+        public async Task<IActionResult> AddFridge([FromBody] OwnerAddFridgeDto ownerAddFridgeDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                _logger.LogError("Invalid model state for the OwnerAddFridgeDto object");
-                return UnprocessableEntity(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    throw new ArgumentException("Invalid data");
+                }
+
+                var fridge = await ownerService.AddFridge(ownerAddFridgeDto);
+
+                return Created("api/owner/fridge/add", fridge);
             }
-
-            var fridge = new FridgeServiceDto
+            catch (ArgumentException)
             {
-                FridgeId = Guid.NewGuid(),
-                Capacity = newFridge.Capacity,
-                ModelId = newFridge.ModelId,
-                OwnerId = _owner.Id,
-                ProducerId = newFridge.ProducerId,
-            };
-
-            _repository.Fridge.AddFridge(fridge);
-            await _repository.SaveAsync();
-
-            return Created("api/owner/fridge/add", fridge);
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -132,26 +113,20 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Delete))]
         public async Task<IActionResult> DeleteFridge(Guid fridgeId)
         {
-            var fridges = await _repository.Fridge.GetFridgeByConditionAsync(f => f.Id == fridgeId && f.OwnerId == _owner.Id, trackChanges:false);
-
-            if (fridges is null|| fridges.Count() == 0)
+            try
             {
-                _logger.LogInformation($"Owner with id {_owner.Id} doesn't have a fridge with id {fridgeId}");
-                return NotFound($"Owner with id {_owner.Id} doesn't have a fridge with id {fridgeId}");
+                await ownerService.DeleteFridge(fridgeId);
+
+                return Ok();
             }
-
-            var fridge = await _repository.Fridge.GetFridgeByIdAsync(fridges.First().Id, trackChanges:false);
-
-            if (fridge!.IsRented == true)
+            catch (ArgumentException)
             {
-                _logger.LogInformation("Unable to delete a rented fridge.");
-                return BadRequest("Unable to delete a rented fridge.");
+                return BadRequest();
             }
-
-            _repository.Fridge.RemoveFridge(fridge!);
-            await _repository.SaveAsync();
-
-            return Ok();
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
     }
 }

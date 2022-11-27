@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using Fridge.Models.DTOs;
+﻿using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Mvc;
-using Repositories.Repository.Interfaces;
 
 namespace Fridge.Controllers
 {
@@ -10,15 +8,11 @@ namespace Fridge.Controllers
     [ApiController]
     public class FridgeController : ControllerBase
     {
-        private readonly IRepositoryManager _repository;
-        private readonly ILogger<FridgeController> _logger;
-        private readonly IMapper _mapper;
-       
-        public FridgeController(IRepositoryManager repository, ILogger<FridgeController> logger, IMapper mapper)
+        private readonly IFridgeService fridgeService;
+
+        public FridgeController(IFridgeService service)
         {
-            _repository = repository;
-            _logger = logger;
-            _mapper = mapper;
+            fridgeService = service;
         }
 
         /// <summary>
@@ -31,24 +25,19 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetFridges()
         {
-            var fridges = await _repository.Fridge.GetAllFridgesAsync(trackChanges: false);
-            if (fridges is null)
+            try
             {
-                _logger.LogInformation($"Fridges are not fiund in the database.");
+                var fridges = await fridgeService.GetFridges();
+                return Ok(fridges);
+            }
+            catch (ArgumentException)
+            {
                 return NotFound();
             }
-
-            var fridgesDto = fridges.Select(fridge => new FridgeDto
-                {
-                    Id = fridge.Id,
-                    Model = _repository.Model.GetModelByIdAsync(fridge.ModelId, trackChanges: false).Name,
-                    Owner = _repository.Owner.GetOwnerByIdAsync(fridge.OwnerId, trackChanges: false).Result.Name,
-                    Producer = _repository.Producer.GetProducerByIdAsync(fridge.ProducerId, trackChanges: false).Result.Name,
-                    Capacity = fridge.Capacity,
-                    isRented = fridge.IsRented,
-                });
-
-            return Ok(fridgesDto);
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -61,8 +50,15 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetModels()
         {
-            var models = await _repository.Model.GetAllModels(trackChanges: false);
-            return Ok(models);
+            try
+            {
+                var models = await fridgeService.GetModels();
+                return Ok(models);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         /// <summary>
@@ -75,8 +71,15 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetProducers()
         {
-            var producers = await _repository.Producer.GetAllProducers(trackChanges: false);
-            return Ok(producers);
+            try
+            {
+                var producers = await fridgeService.GetProducers();
+                return Ok(producers);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
     }
 }

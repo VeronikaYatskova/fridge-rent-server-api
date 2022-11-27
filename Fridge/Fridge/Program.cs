@@ -1,5 +1,3 @@
-using Fridge.Extensions;
-using Fridge.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +6,21 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
-using Repositories.Repository.Interfaces;
+using Fridge.Data.Repositories.Interfaces;
+using Fridge.Data.Context;
+using Fridge.Services.Abstracts;
+using Fridge.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+
+builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
+builder.Services.AddScoped<IFridgeService, FridgeService>();
+builder.Services.AddScoped<IFridgeProductService, FridgeProductService>();
+builder.Services.AddScoped<IOwnerService, OwnerService>();
+builder.Services.AddScoped<IProductsService, ProductsService>();
+builder.Services.AddScoped<IRentService, RentService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -88,10 +96,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-var resolvedLoggerManager = app.Services.GetRequiredService<ILogger<Program>>();
-app.ConfigureExceptionHandler(resolvedLoggerManager);
-
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
