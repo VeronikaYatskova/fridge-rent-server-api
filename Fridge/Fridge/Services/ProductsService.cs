@@ -48,7 +48,6 @@ namespace Fridge.Services
             string newName = Guid.NewGuid().ToString();
             string fullPath = root + newName + extension;
 
-            Console.WriteLine(root);
             if (productPictureDto.File.Length > 0)
             {
                 if (!Directory.Exists(root))

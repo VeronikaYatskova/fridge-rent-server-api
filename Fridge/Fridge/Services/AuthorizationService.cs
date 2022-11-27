@@ -30,7 +30,7 @@ namespace Fridge.Services
             if (_repository.User.FindByEmail(userDto.Email, trackChanges: false) is not null)
             {
                 _logger.LogInformation($"User with the same email is already in the database.");
-                throw new ArgumentException("User with the same email is already in the database.");
+                throw new ArgumentException("User with the same email has been registered.");
             }
 
             CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -57,7 +57,7 @@ namespace Fridge.Services
             if (_repository.Owner.FindByEmail(ownerDto.Email, trackChanges: false) is not null)
             {
                 _logger.LogInformation($"Owner with the same email is already in the database.");
-                throw new ArgumentException("Owner with the same email is already in the database.");
+                throw new ArgumentException("Owner with the same email has been registered.");
             }
 
             CreatePasswordHash(ownerDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -80,6 +80,17 @@ namespace Fridge.Services
             return token;
         }
 
+        public string LoginUser(LoginDto loginDto)
+        {
+            var user = _repository.User.FindByEmail(loginDto.Email, trackChanges: false);
+
+            VerifyData(user, loginDto);
+
+            string token = CreateToken(user);
+
+            return token;
+        }
+
         public string LoginOwner(LoginDto loginDto)
         {
             var owner = _repository.Owner.FindByEmail(loginDto.Email, trackChanges: false);
@@ -91,22 +102,11 @@ namespace Fridge.Services
             return token;
         }
 
-        public string LoginUser(LoginDto loginDto)
-        {
-            var user = _repository.User.FindByEmail(loginDto.Email, trackChanges: false);
-
-            VerifyData(user, loginDto);
-            
-            string token = CreateToken(user);
-
-            return token;
-        }
-
         private void VerifyData(IUser user, LoginDto loginDto)
         {
             if (user!.Email != loginDto.Email)
             {
-                throw new ArgumentException("Not found.");
+                throw new Exception("Not found.");
             }
 
             if (!VerifyPasswordHash(loginDto.Password, user.PasswordHash!, user.PasswordSalt!))

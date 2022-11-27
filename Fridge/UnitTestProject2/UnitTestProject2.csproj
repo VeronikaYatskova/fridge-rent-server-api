@@ -5,12 +5,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EBA099CD-B6BE-499F-BD81-6A94A002E366}</ProjectGuid>
+    <ProjectGuid>{C2EF3DD5-0166-41B1-A147-8085C9E66087}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fridge.Tests</RootNamespace>
-    <AssemblyName>Fridge.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <RootNamespace>UnitTestProject2</RootNamespace>
+    <AssemblyName>UnitTestProject2</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>

@@ -11,16 +11,11 @@ namespace Fridge.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IConfiguration configuration;
-        private readonly ILogger<AuthController> _logger;
-
         private readonly IAuthorizationService authorizationService;
 
-        public AuthController(IConfiguration configuration, IAuthorizationService service, ILogger<AuthController> logger)
+        public AuthController(IAuthorizationService service)
         {
-            this.configuration = configuration;
             this.authorizationService = service;
-            this._logger = logger;
         }
 
         /// <summary>
@@ -30,17 +25,23 @@ namespace Fridge.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [HttpPost("user/register")]
-        public async Task<ActionResult<string>> RegisterUser([FromBody] UserDto userDto)
+        public async Task<IActionResult> RegisterUser([FromBody] UserDto userDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                _logger.LogError("Invalid model state for the UserDto object");
-                return UnprocessableEntity(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    throw new ArgumentException("Invalid data");
+                }
+
+                var token = await authorizationService.RegisterUser(userDto);
+
+                return Created("api/authorization/user/register", token);
             }
-
-            var token = await authorizationService.RegisterUser(userDto);
-
-            return Created("api/authorization/user/register", token);
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
         /// <summary>
@@ -50,37 +51,27 @@ namespace Fridge.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [HttpPost("owner/register")]
-        public async Task<ActionResult<string>> RegisterOwner([FromBody] OwnerDto ownerDto)
+        public async Task<IActionResult> RegisterOwner([FromBody] OwnerDto ownerDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                _logger.LogError("Invalid model state for the OwnerDto object");
-                return UnprocessableEntity(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    throw new ArgumentException("Invalid data");
+                }
+
+                var token = await authorizationService.RegisterOwner(ownerDto);
+
+                return Created("api/authorization/owner/register", token);
             }
-
-            var token = await authorizationService.RegisterOwner(ownerDto);
-
-            return Created("api/authorization/owner/register", token);
-        }
-
-        /// <summary>
-        /// Login to the system as an owner.
-        /// </summary>
-        /// <param name="loginDto">Email and Password for Logging In.</param>
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Post))]
-        [HttpPost("owner/login")]
-        public ActionResult<string> LoginOwner([FromBody] LoginDto loginDto)
-        {
-            if (!ModelState.IsValid)
+            catch (ArgumentException)
             {
-                _logger.LogError("Invalid model state for the UserLoginDto object");
-                return UnprocessableEntity(ModelState);
+                return BadRequest();
             }
-
-            var token = authorizationService.LoginOwner(loginDto);
-            
-            return Created("api/authorization/owner/login", token);
+            catch (Exception)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>
@@ -90,17 +81,53 @@ namespace Fridge.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [HttpPost("user/login")]
-        public ActionResult<string> LoginUser([FromBody] LoginDto loginDto)
+        public IActionResult LoginUser([FromBody] LoginDto loginDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                _logger.LogError("Invalid model state for the UserLoginDto object");
-                return UnprocessableEntity(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    throw new ArgumentException("Invalid data");
+                }
 
-            var token = authorizationService.LoginUser(loginDto);
-            
-            return Created("api/authorization/user/login", token);
+                var token = authorizationService.LoginUser(loginDto);
+
+                return Created("api/authorization/user/login", token);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Login to the system as an owner.
+        /// </summary>
+        /// <param name="loginDto">Email and Password for Logging In.</param>
+        [ApiConventionMethod(typeof(DefaultApiConventions),
+            nameof(DefaultApiConventions.Post))]
+        [HttpPost("owner/login")]
+        public IActionResult LoginOwner([FromBody] LoginDto loginDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new ArgumentException("Invalid data");
+                }
+
+                var token = authorizationService.LoginOwner(loginDto);
+
+                return Created("api/authorization/owner/login", token);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
     }
 }

@@ -1,4 +1,3 @@
-using Fridge.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -97,10 +96,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-var resolvedLoggerManager = app.Services.GetRequiredService<ILogger<Program>>();
-app.ConfigureExceptionHandler(resolvedLoggerManager);
-
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();

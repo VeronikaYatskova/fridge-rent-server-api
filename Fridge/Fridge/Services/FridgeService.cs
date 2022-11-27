@@ -1,6 +1,5 @@
 ﻿using Fridge.Data.Models;
 using Fridge.Data.Repositories.Interfaces;
-using Fridge.Models.DTOs.FridgeDto;
 using Fridge.Models.DTOs.FridgeDtos;
 using Fridge.Services.Abstracts;
 
@@ -9,21 +8,24 @@ namespace Fridge.Services
     public class FridgeService : IFridgeService
     {
         private readonly IRepositoryManager _repository;
-        private readonly ILogger<AuthorizationService> _logger;
 
-        public FridgeService(IConfiguration configuration, IRepositoryManager repository, ILogger<AuthorizationService> logger)
+        public FridgeService(IRepositoryManager repository)
         {
             _repository = repository;
-            _logger = logger;
         }
 
         public async Task<IEnumerable<FridgeDto>> GetFridges()
         {
-            var fridges = await _repository.Fridge.GetAllFridgesAsync(trackChanges: false);
+            var fridges = await _repository.Fridge.GetAvailableFridgesAsync(trackChanges: false);
+
             if (fridges is null)
             {
-                _logger.LogInformation("Fridges are not found in the database.");
                 throw new ArgumentException("Fridges are not found in the database.");
+            }
+
+            if (!fridges.Any())
+            {
+                return new List<FridgeDto>() { };
             }
 
             var fridgesDto = fridges.Select(fridge => new FridgeDto
@@ -36,31 +38,21 @@ namespace Fridge.Services
                 isRented = fridge.IsRented,
             });
 
-            return fridgesDto;
+            return fridgesDto.ToList();
         }
 
         public async Task<IEnumerable<Model>> GetModels()
         {
             var models = await _repository.Model.GetAllModels(trackChanges: false);
 
-            if (models is null)
-            {
-                throw new ArgumentException("No models...");
-            }
-
-            return models;
+            return models.ToList();
         }
 
         public async Task<IEnumerable<Producer>> GetProducers()
         {
             var producers = await _repository.Producer.GetAllProducers(trackChanges: false);
 
-            if (producers is null)
-            {
-                throw new ArgumentException("No producers...");
-            }
-
-            return producers;
+            return producers.ToList();
         }
     }
 }

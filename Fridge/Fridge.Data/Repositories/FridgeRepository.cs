@@ -12,7 +12,7 @@ namespace Fridge.Data.Repositories
         {
         }
 
-        public async Task<IEnumerable<Models.Fridge>?> GetAllFridgesAsync(bool trackChanges) =>
+        public async Task<IEnumerable<Models.Fridge>?> GetAvailableFridgesAsync(bool trackChanges) =>
             await FindByCondition(f => f.IsRented == false, trackChanges)!
             .OrderBy(f => f.Id)
             .ToListAsync();

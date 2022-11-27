@@ -32,9 +32,20 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetProductsInFridgeByFridgeId(Guid fridgeId)
         {
-            var products = await fridgeProductService.GetProductsByFridgeIdAsync(fridgeId);
+            try
+            {
+                var products = await fridgeProductService.GetProductsByFridgeIdAsync(fridgeId);
 
-            return Ok(products);
+                return Ok(products);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -46,9 +57,20 @@ namespace Fridge.Controllers
         [HttpPost("product/{productId}/put-in-all-fridges")]
         public async Task<IActionResult> FillTheFridgeWithProduct(Guid productId)
         {
-            await fridgeProductService.FillTheFridgeWithProductAsync(productId);
+            try
+            {
+                await fridgeProductService.FillTheFridgeWithProductAsync(productId);
 
-            return Ok();
+                return Ok();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -60,14 +82,25 @@ namespace Fridge.Controllers
         [HttpPost("product/new")]
         public async Task<IActionResult> AddProduct([FromBody] FridgeProductDto fridgeProductDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return UnprocessableEntity(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    throw new ArgumentException("Invalid data");
+                }
+
+                var newProduct = await fridgeProductService.AddProductAsync(fridgeProductDto);
+
+                return Created("api/products-in-fridge/product/new", newProduct);
             }
-
-            var newProduct = await fridgeProductService.AddProductAsync(fridgeProductDto);
-
-            return Created("api/products-in-fridge/product/new", newProduct);
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -79,14 +112,25 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Update))]
         public async Task<IActionResult> UpdateProductAsync([FromBody] ProductUpdateDto productUpdateDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return UnprocessableEntity(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    throw new ArgumentException("Invalid data");
+                }
+
+                await fridgeProductService.UpdateProductAsync(productUpdateDto);
+
+                return NoContent();
             }
-
-            await fridgeProductService.UpdateProductAsync(productUpdateDto);
-
-            return NoContent();
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -100,9 +144,20 @@ namespace Fridge.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> DeleteProductFromFridge(string fridgeId, string productId)
         {
-            await fridgeProductService.DeleteProductFromFridgeAsync(fridgeId, productId);
+            try
+            {
+                await fridgeProductService.DeleteProductFromFridgeAsync(fridgeId, productId);
 
-            return Ok();
+                return Ok();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
     }
 }

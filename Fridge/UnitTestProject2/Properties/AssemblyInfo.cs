@@ -2,18 +2,18 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Fridge.Tests")]
+[assembly: AssemblyTitle("UnitTestProject2")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("HP")]
-[assembly: AssemblyProduct("Fridge.Tests")]
+[assembly: AssemblyProduct("UnitTestProject2")]
 [assembly: AssemblyCopyright("Copyright © HP 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]
 
-[assembly: Guid("eba099cd-b6be-499f-bd81-6a94a002e366")]
+[assembly: Guid("c2ef3dd5-0166-41b1-a147-8085c9e66087")]
 
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]

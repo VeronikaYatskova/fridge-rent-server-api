@@ -30,9 +30,20 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetOwnersFridges()
         {
-            var fridgesDto = await ownerService.GetOwnersFridges();
+            try
+            {
+                var fridgesDto = await ownerService.GetOwnersFridges();
 
-            return Ok(fridgesDto);
+                return Ok(fridgesDto);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -46,9 +57,20 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetRentedFridgeInfo(Guid fridgeId)
         {
-            var rentDocumentDto = await ownerService.GetRentedFridgeInfo(fridgeId);
+            try
+            {
+                var rentDocumentDto = await ownerService.GetRentedFridgeInfo(fridgeId);
 
-            return Ok(rentDocumentDto);
+                return Ok(rentDocumentDto);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -60,14 +82,25 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Post))]
         public async Task<IActionResult> AddFridge([FromBody] OwnerAddFridgeDto ownerAddFridgeDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return UnprocessableEntity(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    throw new ArgumentException("Invalid data");
+                }
 
-            var fridge = await ownerService.AddFridge(ownerAddFridgeDto);
-            
-            return Created("api/owner/fridge/add", fridge);
+                var fridge = await ownerService.AddFridge(ownerAddFridgeDto);
+
+                return Created("api/owner/fridge/add", fridge);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -80,9 +113,20 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Delete))]
         public async Task<IActionResult> DeleteFridge(Guid fridgeId)
         {
-            await ownerService.DeleteFridge(fridgeId);
+            try
+            {
+                await ownerService.DeleteFridge(fridgeId);
 
-            return Ok();
+                return Ok();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
     }
 }

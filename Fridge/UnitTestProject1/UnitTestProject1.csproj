@@ -5,12 +5,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EBA099CD-B6BE-499F-BD81-6A94A002E366}</ProjectGuid>
+    <ProjectGuid>{18BF59BF-18BE-47DD-B8C4-D1881A450FF3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fridge.Tests</RootNamespace>
-    <AssemblyName>Fridge.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <RootNamespace>UnitTestProject1</RootNamespace>
+    <AssemblyName>UnitTestProject1</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
@@ -54,12 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Fridge.Models\Fridge.Models.csproj">
-      <Project>{d56953fd-704d-4d39-9b5d-d57d6f70914d}</Project>
-      <Name>Fridge.Models</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

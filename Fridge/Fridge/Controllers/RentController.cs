@@ -25,11 +25,22 @@ namespace Fridge.Controllers
         [HttpGet("fridges/rented")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Get))]
-        public async Task<ActionResult<IEnumerable<FridgeDto>>> GetUsersFridges()
+        public async Task<IActionResult> GetUsersFridges()
         {
-            var fridges = await rentService.GetUsersFridges();
+            try
+            {
+                var fridges = await rentService.GetUsersFridges();
 
-            return Ok(fridges);
+                return Ok(fridges);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -41,9 +52,20 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Post))]
         public async Task<IActionResult> RentFridge(Guid fridgeId)
         {
-            await rentService.RentFridge(fridgeId);
+            try
+            {
+                await rentService.RentFridge(fridgeId);
 
-            return Ok();
+                return Ok();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -56,9 +78,20 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Delete))]
         public async Task<IActionResult> Remove(Guid fridgeId)
         {
-            await rentService.Remove(fridgeId);
+            try
+            {
+                await rentService.Remove(fridgeId);
 
-            return Ok();
+                return Ok();
+            }
+            catch (ArgumentException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
     }
 }

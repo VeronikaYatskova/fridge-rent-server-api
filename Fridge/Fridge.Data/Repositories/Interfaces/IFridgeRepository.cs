@@ -5,7 +5,7 @@ namespace Fridge.Data.Repositories.Interfaces
 {
     public interface IFridgeRepository
     {
-        Task<IEnumerable<Models.Fridge>?> GetAllFridgesAsync(bool trackChanges);
+        Task<IEnumerable<Models.Fridge>?> GetAvailableFridgesAsync(bool trackChanges);
 
         Task<IEnumerable<Models.Fridge>?> GetFridgesAsync(bool trackChanges);
 

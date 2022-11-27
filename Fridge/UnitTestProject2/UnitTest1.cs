@@ -1,8 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 
-namespace Fridge.Tests
+namespace UnitTestProject2
 {
     [TestClass]
     public class UnitTest1

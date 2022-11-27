@@ -1,6 +1,5 @@
 ﻿using Fridge.Controllers;
 using Fridge.Data.Models;
-using Fridge.Data.Models.Abstracts;
 using Fridge.Data.Repositories.Interfaces;
 using Fridge.Models.DTOs.FridgeDto;
 using Fridge.Models.DTOs.FridgeDtos;

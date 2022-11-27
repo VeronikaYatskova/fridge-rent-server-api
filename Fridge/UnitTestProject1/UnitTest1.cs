@@ -1,8 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 
-namespace Fridge.Tests
+namespace UnitTestProject1
 {
     [TestClass]
     public class UnitTest1
@@ -10,6 +9,7 @@ namespace Fridge.Tests
         [TestMethod]
         public void TestMethod1()
         {
+             
         }
     }
 }

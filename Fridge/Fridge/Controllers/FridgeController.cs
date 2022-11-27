@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Fridge.Services.Abstracts;
+﻿using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fridge.Controllers
@@ -26,8 +25,19 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetFridges()
         {
-            var fridges = await fridgeService.GetFridges();
-            return Ok(fridges);
+            try
+            {
+                var fridges = await fridgeService.GetFridges();
+                return Ok(fridges);
+            }
+            catch (ArgumentException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -40,8 +50,15 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetModels()
         {
-            var models = await fridgeService.GetModels();
-            return Ok(models);
+            try
+            {
+                var models = await fridgeService.GetModels();
+                return Ok(models);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         /// <summary>
@@ -54,8 +71,15 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetProducers()
         {
-            var producers = await fridgeService.GetProducers();
-            return Ok(producers);
+            try
+            {
+                var producers = await fridgeService.GetProducers();
+                return Ok(producers);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
     }
 }

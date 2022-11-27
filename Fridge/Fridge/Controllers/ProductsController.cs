@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Fridge.Data.Models;
+﻿using Fridge.Data.Models;
 using Fridge.Models.DTOs.ProductDtos;
 using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Authorization;
@@ -28,9 +27,20 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetProducts()
         {
-            var products = await productsService.GetProducts();
+            try
+            {
+                var products = await productsService.GetProducts();
 
-            return Ok(products);
+                return Ok(products);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -42,14 +52,22 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Post))]
         public async Task<IActionResult> AddPicture([FromForm]ProductPictureDto productPictureDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return UnprocessableEntity(ModelState);
-            }
 
-            var newPicture = productsService.AddPicture(productPictureDto);
-            
-            return Ok(newPicture);
+                if (!ModelState.IsValid)
+                {
+                    return UnprocessableEntity(ModelState);
+                }
+
+                var newPicture = productsService.AddPicture(productPictureDto);
+
+                return Ok(newPicture);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
     }
 }

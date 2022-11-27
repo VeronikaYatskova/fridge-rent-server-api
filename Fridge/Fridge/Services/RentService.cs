@@ -11,13 +11,11 @@ namespace Fridge.Services
     {
         private readonly ILogger<RentService> _logger;
         private readonly IRepositoryManager _repository;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly User user;
 
         public RentService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<RentService> logger)
         {
             _repository = repository;
-            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
 
             var tokenInfo = new TokenInfo(repository, httpContextAccessor);
