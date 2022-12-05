@@ -19,5 +19,7 @@ namespace Fridge.Data.Models
         [Required(ErrorMessage = "Name is a required field.")]
         [MaxLength(60, ErrorMessage = "Maximum length for the Name is 60 characters")]
         public string Name { get; set; }
+
+        public ICollection<Models.Fridge> Fridges { get; set; }
     }
 }

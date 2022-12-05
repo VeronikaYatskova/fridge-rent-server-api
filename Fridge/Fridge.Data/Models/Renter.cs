@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Fridge.Data.Models
 {
-    public class User : IUser
+    public class Renter : IUser
     {
         [Key]
         [Required(ErrorMessage = "Id field is required.")]

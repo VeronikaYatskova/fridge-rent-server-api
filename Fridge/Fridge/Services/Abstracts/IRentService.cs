@@ -5,7 +5,7 @@ namespace Fridge.Services.Abstracts
 {
     public interface IRentService
     {
-        Task<IEnumerable<FridgeDto>> GetUsersFridges();
+        Task<IEnumerable<FridgeDto>> GetRentersFridges();
 
         Task RentFridge(Guid fridgeId);
 

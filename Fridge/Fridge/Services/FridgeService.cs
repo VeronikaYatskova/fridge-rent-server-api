@@ -3,6 +3,7 @@ using Fridge.Data.Repositories.Interfaces;
 using Fridge.Models.DTOs.FridgeDtos;
 using Fridge.Services.Abstracts;
 
+
 namespace Fridge.Services
 {
     public class FridgeService : IFridgeService

@@ -1,5 +1,4 @@
-﻿using Fridge.Controllers;
-using Fridge.Data.Models;
+﻿using Fridge.Data.Models;
 using Fridge.Data.Repositories.Interfaces;
 using Fridge.Models.DTOs.FridgeProductDto;
 using Fridge.Models.DTOs.FridgeProductDto.FridgeProductDto;
@@ -14,7 +13,7 @@ namespace Fridge.Services
     {
         private readonly ILogger<FridgeProductService> _logger;
         private readonly IRepositoryManager _repository;
-        private readonly User user;
+        private readonly Renter renter;
 
         public FridgeProductService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<FridgeProductService> logger)
         {
@@ -22,7 +21,7 @@ namespace Fridge.Services
             _logger = logger;
 
             var tokenInfo = new TokenInfo(repository, httpContextAccessor);
-            user = tokenInfo.GetUser().Result;
+            renter = tokenInfo.GetUser().Result;
         }
 
         public async Task<IEnumerable<ProductWithCurrentCountAndNameDto>> GetProductsByFridgeIdAsync(Guid fridgeId)
@@ -60,7 +59,7 @@ namespace Fridge.Services
                 throw new ArgumentException("Product is not found...");
             }
 
-            _repository.FridgeProduct.FillTheFridgeWithProduct(productId, user.Id);
+            _repository.FridgeProduct.FillTheFridgeWithProduct(productId, renter.Id);
             await _repository.SaveAsync();
         }
 
@@ -164,7 +163,7 @@ namespace Fridge.Services
 
         private bool IsUsersFridge(Guid fridgeId)
         {
-            var usersFridges = _repository.UserFridge.GetUserFridgeRow(user.Id, fridgeId, trackChanges: false);
+            var usersFridges = _repository.RenterFridge.GetRenterFridgeRow(renter.Id, fridgeId, trackChanges: false);
             return usersFridges is not null;
         }
     }

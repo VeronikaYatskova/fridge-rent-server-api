@@ -4,6 +4,7 @@ using Fridge.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fridge.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20221205144600_Change columns in tables")]
+    partial class Changecolumnsintables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,8 +47,6 @@ namespace Fridge.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ModelId");
 
                     b.ToTable("Fridges");
                 });
@@ -356,17 +356,6 @@ namespace Fridge.Migrations
                     b.ToTable("RenterFridges");
                 });
 
-            modelBuilder.Entity("Fridge.Data.Models.Fridge", b =>
-                {
-                    b.HasOne("Fridge.Data.Models.Model", "Model")
-                        .WithMany("Fridges")
-                        .HasForeignKey("ModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Model");
-                });
-
             modelBuilder.Entity("Fridge.Data.Models.RenterFridge", b =>
                 {
                     b.HasOne("Fridge.Data.Models.RentDocument", "RentDocument")
@@ -376,11 +365,6 @@ namespace Fridge.Migrations
                         .IsRequired();
 
                     b.Navigation("RentDocument");
-                });
-
-            modelBuilder.Entity("Fridge.Data.Models.Model", b =>
-                {
-                    b.Navigation("Fridges");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,5 +1,4 @@
-﻿using Fridge.Controllers;
-using Fridge.Data.Models;
+﻿using Fridge.Data.Models;
 using Fridge.Data.Repositories.Interfaces;
 using Fridge.Models.DTOs.FridgeDtos;
 using Fridge.Services.Abstracts;
@@ -11,7 +10,8 @@ namespace Fridge.Services
     {
         private readonly ILogger<RentService> _logger;
         private readonly IRepositoryManager _repository;
-        private readonly User user;
+
+        private readonly Renter? renter;
 
         public RentService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<RentService> logger)
         {
@@ -19,21 +19,21 @@ namespace Fridge.Services
             _logger = logger;
 
             var tokenInfo = new TokenInfo(repository, httpContextAccessor);
-            user = tokenInfo.GetUser().Result;
+            renter = tokenInfo.GetUser().Result;
         }
 
-        public async Task<IEnumerable<FridgeDto>> GetUsersFridges()
+        public async Task<IEnumerable<FridgeDto>> GetRentersFridges()
         {
-            var userFridges = _repository.UserFridge.GetUserFridge(user.Id, trackChanges: false);
+            var renterFridges = _repository.RenterFridge.GetRenterFridge(renter.Id, trackChanges: false);
 
-            if (!userFridges.Any())
+            if (!renterFridges.Any())
             {
                 _logger.LogInformation("No fridges");
                 throw new ArgumentException("No fridges");
             }
 
             var allFridges = await _repository.Fridge.GetFridgesAsync(trackChanges: false);
-            var fr = allFridges.Join(userFridges,
+            var fr = allFridges.Join(renterFridges,
                                      f => f.Id,
                                      uf => uf.FridgeId,
                                      (f, uf) => f).ToList();
@@ -71,24 +71,24 @@ namespace Fridge.Services
             var rentDocument = new RentDocument
             {
                 Id = Guid.NewGuid(),
-                UserId = user.Id,
+                RenterId = renter.Id,
                 FridgeId = fridgeId,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddMonths(12),
                 MonthCost = 30,
             };
 
-            var userFridge = new UserFridge
+            var renterFridge = new RenterFridge
             {
                 Id = Guid.NewGuid(),
-                UserId = user.Id,
+                RenterId = renter.Id,
                 FridgeId = fridgeId,
                 RentDocumentId = rentDocument.Id,
                 RentDocument = rentDocument,
             };
 
             _repository.RentDocument.AddDocument(rentDocument);
-            _repository.UserFridge.RentFridge(userFridge);
+            _repository.RenterFridge.RentFridge(renterFridge);
 
             await _repository.SaveAsync();
         }
@@ -109,8 +109,8 @@ namespace Fridge.Services
             fridge.IsRented = false;
             _repository.Fridge.UpdateFridge(fridge);
 
-            var userFridge = _repository.UserFridge.GetUserFridgeRow(user.Id, fridgeId, trackChanges: false);
-            _repository.UserFridge.RemoveFridge(userFridge);
+            var renterFridge = _repository.RenterFridge.GetRenterFridgeRow(renter.Id, fridgeId, trackChanges: false);
+            _repository.RenterFridge.RemoveFridge(renterFridge);
 
             await _repository.SaveAsync();
         }

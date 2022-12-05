@@ -1,8 +1,13 @@
 using Fridge.Controllers;
 using Fridge.Data.Models;
 using Fridge.Models.DTOs.FridgeDtos;
+using Fridge.Models.DTOs.FridgeProductDto.FridgeProductDto;
+using Fridge.Models.DTOs.FridgeProductDto;
+using Fridge.Models.DTOs.FridgeProductDtos;
 using Fridge.Tests.Mocks;
 using Microsoft.AspNetCore.Mvc;
+using Fridge.Models.DTOs.FridgeDto;
+using Fridge.Models.DTOs.OwnerDtos;
 
 namespace Fridge.Tests.Tests
 {
@@ -13,9 +18,18 @@ namespace Fridge.Tests.Tests
         {
             // Arrange
 
-            var fakeService = new FridgeFakeService();
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
 
-            var controller = new FridgeController(fakeService.Service);
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
 
             IEnumerable<FridgeDto> actualFridges = new List<FridgeDto>()
             {
@@ -43,7 +57,7 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeService.Mock.Setup(s => s.GetFridges())
+            fakeFridgeService.Mock.Setup(s => s.GetFridges())
                 .Returns(Task.FromResult(actualFridges));
 
             var response = await controller.GetFridges();
@@ -63,15 +77,24 @@ namespace Fridge.Tests.Tests
         {
             // Arrange
 
-            var fakeService = new FridgeFakeService();
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
 
-            var controller = new FridgeController(fakeService.Service);
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
 
             IEnumerable<FridgeDto> actualFridges = new List<FridgeDto>() { };
 
             // Act
 
-            fakeService.Mock.Setup(s => s.GetFridges())
+            fakeFridgeService.Mock.Setup(s => s.GetFridges())
                 .Returns(Task.FromResult(actualFridges));
 
             var response = await controller.GetFridges();
@@ -91,13 +114,22 @@ namespace Fridge.Tests.Tests
         {
             // Arrange
 
-            var fakeService = new FridgeFakeService();
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
 
-            var controller = new FridgeController(fakeService.Service);
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
 
             // Act
 
-            fakeService.Mock.Setup(s => s.GetFridges())
+            fakeFridgeService.Mock.Setup(s => s.GetFridges())
                 .Throws(new ArgumentException());
 
             var response = await controller.GetFridges();
@@ -114,9 +146,18 @@ namespace Fridge.Tests.Tests
         {
             // Arrange
 
-            var fakeService = new FridgeFakeService();
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
 
-            var controller = new FridgeController(fakeService.Service);
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
 
             IEnumerable<Model> actualModels = new List<Model>()
             {
@@ -149,7 +190,7 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeService.Mock.Setup(s => s.GetModels())
+            fakeFridgeService.Mock.Setup(s => s.GetModels())
                 .Returns(Task.FromResult(actualModels));
 
             var response = await controller.GetModels();
@@ -166,9 +207,18 @@ namespace Fridge.Tests.Tests
         {
             // Arrange
 
-            var fakeService = new FridgeFakeService();
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
 
-            var controller = new FridgeController(fakeService.Service);
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
 
             IEnumerable<Producer> actualProducers = new List<Producer>()
             {
@@ -206,7 +256,7 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeService.Mock.Setup(s => s.GetProducers())
+            fakeFridgeService.Mock.Setup(s => s.GetProducers())
                 .Returns(Task.FromResult(actualProducers));
 
             var response = await controller.GetModels();
@@ -216,6 +266,487 @@ namespace Fridge.Tests.Tests
             // Assert
 
             Assert.Equal(200, okResult.StatusCode);
+        }
+
+
+
+        [Fact]
+        public async Task GetProductsInFridgeByFridgeId_ValidId_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
+
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
+
+            IEnumerable<ProductWithCurrentCountAndNameDto> products = new List<ProductWithCurrentCountAndNameDto>()
+            {
+                new ProductWithCurrentCountAndNameDto()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Apple",
+                    Count = 3,
+                },
+                new ProductWithCurrentCountAndNameDto()
+                {
+                    Id= Guid.NewGuid(),
+                    Name = "Cake",
+                    Count = 5,
+                },
+            };
+
+            var fridgeId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f");
+
+            // Act
+
+            fakeFridgeProductService.Mock.Setup(s => s.GetProductsByFridgeIdAsync(fridgeId))
+                .Returns(Task.FromResult(products));
+
+            var response = await controller.GetProductsInFridgeByFridgeId(fridgeId);
+
+            var okRequestResult = response as OkObjectResult;
+
+            // Assert
+
+            Assert.Equal(200, okRequestResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task FillTheFridgeWithProduct_ValidProductId_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
+
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
+
+            var productId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f");
+
+            // Act
+
+            var response = await controller.GetProductsInFridgeByFridgeId(productId);
+
+            var okRequestResult = response as OkObjectResult;
+
+            // Assert
+
+            Assert.Equal(200, okRequestResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddProduct_ValidData_ShouldReturnCreated()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
+
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
+
+            var fridgeProductDto = new FridgeProductDto()
+            {
+                FridgeId = new Guid("385e96d7-37e4-47a1-83eb-1ef70d072c8f"),
+                ProductId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"),
+                Count = 1,
+            };
+
+            var addProductDto = new AddProductDto()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Apple",
+                Count = 1,
+            };
+
+            // Act
+
+            fakeFridgeProductService.Mock.Setup(s => s.AddProductAsync(fridgeProductDto))
+                .Returns(Task.FromResult(addProductDto));
+
+            var response = await controller.AddProduct(fridgeProductDto);
+
+            var okRequestResult = response as CreatedResult;
+
+            // Assert
+
+            Assert.Equal(201, okRequestResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task DeleteProductAsync_ValidData_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
+
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
+
+            var fridgeId = "385e96d7-37e4-47a1-83eb-1ef70d072c8f";
+            var productId = "203e97d9-37e4-47a1-83eb-1ef70d072c6f";
+
+            // Act
+
+            var response = await controller.DeleteProductFromFridge(fridgeId, productId);
+
+            var okResult = response as OkResult;
+
+            // Assert
+
+            Assert.Equal(200, okResult.StatusCode);
+        }
+
+
+        [Fact]
+        public async Task GetOwnersFridgesAsync_HaveFridges_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
+
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
+
+            IEnumerable<FridgeDto> actualFridges = new List<FridgeDto>()
+            {
+                new FridgeDto()
+                {
+                    Id = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"),
+                    Model = "Toshiba GR-RF610WE-PMS",
+                    Owner = "veronika",
+                    Producer = "Toshiba",
+                    Capacity =  20,
+                    CurrentCount =  0,
+                    isRented = false
+                },
+                new FridgeDto()
+                {
+                    Id = new Guid("332ddb8c-57d6-4bbb-a3ea-4d33f5f30fc7"),
+                    Model = "Toshiba GR-RF610WE-PMS",
+                    Owner = "veronika",
+                    Producer = "Toshiba",
+                    Capacity = 20,
+                    CurrentCount = 0,
+                    isRented = false
+                }
+            };
+
+            // Act
+
+            fakeOwnerFakeService.Mock.Setup(s => s.GetOwnersFridges())
+                .Returns(Task.FromResult(actualFridges));
+
+            var response = await controller.GetOwnersFridges();
+
+            var okResult = response as OkObjectResult;
+
+            var fridges = okResult?.Value as List<FridgeDto>;
+
+            // Assert
+
+            Assert.Equal(200, okResult?.StatusCode);
+            Assert.NotEmpty(fridges);
+        }
+
+        [Fact]
+        public async Task GetRentedFridgeInfoAsync_ValidId_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
+
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
+
+            var fridgeId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f");
+
+            // Act
+
+            fakeOwnerFakeService.Mock.Setup(s => s.GetRentedFridgeInfo(fridgeId))
+                .Returns(Task.FromResult(new RentDocumentDto()
+                {
+                    Id = Guid.NewGuid(),
+                    RenterEmail = "veronika@renter.com",
+                    OwnerName = "Sasha",
+                    StartDate = "12.11.2022",
+                    EndDate = "12.12.2022",
+                    MonthCost = 30,
+                }));
+
+            var response = await controller.GetRentedFridgeInfo(fridgeId);
+
+            var okResult = response as OkObjectResult;
+
+            var rentDocument = okResult?.Value as RentDocumentDto;
+
+            // Assert
+
+            Assert.Equal(200, okResult?.StatusCode);
+            Assert.NotNull(rentDocument);
+        }
+
+        [Fact]
+        public async Task AddFridge_ValidData_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
+
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
+
+            var ownerAddFridgeDto = new OwnerAddFridgeDto()
+            {
+                ModelId = Guid.NewGuid(),
+                ProducerId = Guid.NewGuid(),
+                Capacity = 20,
+            };
+
+            var fridgeServicePartDto = new FridgeServicePartDto()
+            {
+                FridgeId = Guid.NewGuid(),
+                ModelId = ownerAddFridgeDto.ModelId,
+                ProducerId = ownerAddFridgeDto.ProducerId,
+                OwnerId = Guid.NewGuid(),
+                Capacity = 20,
+            };
+
+            // Act
+
+            fakeOwnerFakeService.Mock.Setup(s => s.AddFridge(ownerAddFridgeDto))
+                .Returns(Task.FromResult(fridgeServicePartDto));
+
+            var response = await controller.AddFridge(ownerAddFridgeDto);
+
+            var createdResult = response as CreatedResult;
+
+            var newFridge = createdResult?.Value as FridgeServicePartDto;
+
+            // Assert
+
+            Assert.Equal(201, createdResult?.StatusCode);
+            Assert.NotNull(newFridge);
+        }
+
+        [Fact]
+        public async Task DeleteFridge_ValidId_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
+
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
+
+            var fridgeId = Guid.NewGuid();
+            // Act
+
+            var response = await controller.DeleteFridge(fridgeId);
+
+            var okResult = response as OkResult;
+
+            // Assert
+
+            Assert.Equal(200, okResult?.StatusCode);
+        }
+
+
+        [Fact]
+        public async Task GetRentersFridgesAsync_HaveFridges_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
+
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
+
+            IEnumerable<FridgeDto> actualFridges = new List<FridgeDto>()
+            {
+                new FridgeDto()
+                {
+                    Id = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"),
+                    Model = "Toshiba GR-RF610WE-PMS",
+                    Owner = "veronika",
+                    Producer = "Toshiba",
+                    Capacity =  20,
+                    CurrentCount =  0,
+                    isRented = false
+                },
+                new FridgeDto()
+                {
+                    Id = new Guid("332ddb8c-57d6-4bbb-a3ea-4d33f5f30fc7"),
+                    Model = "Toshiba GR-RF610WE-PMS",
+                    Owner = "veronika",
+                    Producer = "Toshiba",
+                    Capacity = 20,
+                    CurrentCount = 0,
+                    isRented = false
+                }
+            };
+
+            // Act
+
+            fakeRentFakeService.Mock.Setup(s => s.GetRentersFridges())
+                .Returns(Task.FromResult(actualFridges));
+
+            var response = await controller.GetRentersFridges();
+
+            var okResult = response as OkObjectResult;
+
+            var fridges = okResult?.Value as List<FridgeDto>;
+
+            // Assert
+
+            Assert.Equal(200, okResult?.StatusCode);
+            Assert.NotEmpty(fridges);
+        }
+
+        [Fact]
+        public async Task RentFridge_ValidData_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
+
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
+
+            var fridgeId = Guid.NewGuid();
+
+            var fridgeServicePartDto = new FridgeServicePartDto()
+            {
+                FridgeId = fridgeId,
+                ModelId = Guid.NewGuid(),
+                ProducerId = Guid.NewGuid(),
+                OwnerId = Guid.NewGuid(),
+                Capacity = 20,
+            };
+
+            // Act
+
+            fakeRentFakeService.Mock.Setup(s => s.RentFridge(fridgeId))
+                .Returns(Task.FromResult(fridgeServicePartDto));
+
+            var response = await controller.RentFridge(fridgeId);
+
+            var createdResult = response as OkResult;
+
+            // Assert
+
+            Assert.Equal(200, createdResult?.StatusCode);
+        }
+
+        [Fact]
+        public async Task RemoveFridge_ValidId_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var fakeFridgeProductService = new FridgeProductFakeService();
+            var fakeOwnerFakeService = new OwnerFakeService();
+            var fakeRentFakeService = new RentFakeServer();
+
+            var controller = new FridgeController
+            (
+                fakeFridgeService.Service,
+                fakeOwnerFakeService.Service,
+                fakeRentFakeService.Service,
+                fakeFridgeProductService.Service
+            );
+
+            var fridgeId = Guid.NewGuid();
+
+            // Act
+
+            var response = await controller.Remove(fridgeId);
+
+            var okResult = response as OkResult;
+
+            // Assert
+
+            Assert.Equal(200, okResult?.StatusCode);
         }
     }
 }

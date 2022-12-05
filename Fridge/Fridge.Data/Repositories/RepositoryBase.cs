@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Fridge.Data.Context;
 using Fridge.Data.Repositories.Interfaces;
 

@@ -3,12 +3,13 @@ using Fridge.Data.Models.Abstracts;
 using Fridge.Data.Repositories.Interfaces;
 using Fridge.Models.DTOs;
 using Fridge.Models.DTOs.OwnerDtos;
-using Fridge.Models.DTOs.UserDtos;
+using Fridge.Models.DTOs.RenterDtos;
 using Fridge.Services.Abstracts;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+
 
 namespace Fridge.Services
 {
@@ -25,28 +26,28 @@ namespace Fridge.Services
             this.configuration = configuration;
         }
 
-        public async Task<string> RegisterUser(UserDto userDto)
+        public async Task<string> RegisterRenter(RenterDto renterDto)
         {
-            if (_repository.User.FindByEmail(userDto.Email, trackChanges: false) is not null)
+            if (_repository.Renter.FindByEmail(renterDto.Email, trackChanges: false) is not null)
             {
-                _logger.LogInformation($"User with the same email is already in the database.");
-                throw new ArgumentException("User with the same email has been registered.");
+                _logger.LogInformation($"Renter with the same email is already in the database.");
+                throw new ArgumentException("Renter with the same email has been registered.");
             }
 
-            CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            CreatePasswordHash(renterDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            var user = new User
+            var renter = new Renter
             {
                 Id = Guid.NewGuid(),
-                Email = userDto.Email,
+                Email = renterDto.Email,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Role = userDto.Role
+                Role = renterDto.Role
             };
 
-            string token = CreateToken(user);
+            string token = CreateToken(renter);
 
-            _repository.User.AddUser(user);
+            _repository.Renter.AddRenter(renter);
             await _repository.SaveAsync();
 
             return token;
@@ -80,13 +81,18 @@ namespace Fridge.Services
             return token;
         }
 
-        public string LoginUser(LoginDto loginDto)
+        public string LoginRenter(LoginDto loginDto)
         {
-            var user = _repository.User.FindByEmail(loginDto.Email, trackChanges: false);
+            var renter = _repository.Renter.FindByEmail(loginDto.Email, trackChanges: false);
 
-            VerifyData(user, loginDto);
+            if (renter is null)
+            {
+                throw new ArgumentException("User is not found");
+            }
 
-            string token = CreateToken(user);
+            VerifyData(renter, loginDto);
+
+            string token = CreateToken(renter);
 
             return token;
         }
@@ -94,6 +100,11 @@ namespace Fridge.Services
         public string LoginOwner(LoginDto loginDto)
         {
             var owner = _repository.Owner.FindByEmail(loginDto.Email, trackChanges: false);
+
+            if (owner is null)
+            {
+                throw new ArgumentException("User is not found");
+            }
 
             VerifyData(owner, loginDto);
 
@@ -106,7 +117,7 @@ namespace Fridge.Services
         {
             if (user!.Email != loginDto.Email)
             {
-                throw new Exception("Not found.");
+                throw new ArgumentException("Not found.");
             }
 
             if (!VerifyPasswordHash(loginDto.Password, user.PasswordHash!, user.PasswordSalt!))

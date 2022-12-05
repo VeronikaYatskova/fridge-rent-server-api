@@ -10,14 +10,13 @@ namespace Fridge.Services
     {
         private readonly ILogger<ProductsService> _logger;
         private readonly IRepositoryManager _repository;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private IWebHostEnvironment Environment;
-        private readonly User user;
+
+        private readonly Renter user;
 
         public ProductsService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<ProductsService> logger, IWebHostEnvironment environment)
         {
             _repository = repository;
-            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
             Environment = environment;
 
@@ -65,7 +64,7 @@ namespace Fridge.Services
             {
                 Id = Guid.NewGuid(),
                 ProductId = productPictureDto.ProductId,
-                UserId = user.Id,
+                RenterId = user.Id,
                 ImageName = productPictureDto.ImageName,
                 ImagePath = fullPath,
             };

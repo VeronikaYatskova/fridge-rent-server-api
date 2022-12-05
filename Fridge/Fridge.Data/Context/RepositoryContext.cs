@@ -15,6 +15,8 @@ namespace Fridge.Data.Context
             modelBuilder.ApplyConfiguration(new ModelConfiguration());
             modelBuilder.ApplyConfiguration(new ProducerConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
+
+            // modelBuilder.Entity<Models.Fridge>().HasOne(f => f.Model).WithMany(f => f.Fridges).HasForeignKey(m => m.ModelId);
         }
 
         public DbSet<Models.Fridge> Fridges { get; set; }
@@ -31,9 +33,9 @@ namespace Fridge.Data.Context
 
         public DbSet<ProductPicture> ProductPictures { get; set; }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<Renter> Renters { get; set; }
 
-        public DbSet<UserFridge> UserFridges { get; set; }
+        public DbSet<RenterFridge> RenterFridges { get; set; }
 
         public DbSet<RentDocument> RentDocuments { get; set; }
     }

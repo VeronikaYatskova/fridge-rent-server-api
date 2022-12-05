@@ -14,8 +14,8 @@ namespace Fridge.Data.Models
         public Guid FridgeId { get; set; }
 
         [Required(ErrorMessage = "UserId is a requird field.")]
-        [ForeignKey(nameof(User))]
-        public Guid UserId { get; set; }
+        [ForeignKey(nameof(Renter))]
+        public Guid RenterId { get; set; }
 
         [Required(ErrorMessage = "StartDate is a requird field.")]
         public DateTime StartDate { get; set; }

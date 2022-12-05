@@ -1,8 +1,9 @@
 ﻿using Fridge.Models.DTOs;
 using Fridge.Models.DTOs.OwnerDtos;
-using Fridge.Models.DTOs.UserDtos;
+using Fridge.Models.DTOs.RenterDtos;
 using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace Fridge.Controllers
 {
@@ -19,13 +20,13 @@ namespace Fridge.Controllers
         }
 
         /// <summary>
-        /// Add new user to the system.
+        /// Add new renter to the system.
         /// </summary>
-        /// <param name="userDto">Email and Password for registration.</param>
+        /// <param name="renterDto">Email and Password for registration.</param>
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
-        [HttpPost("user/register")]
-        public async Task<IActionResult> RegisterUser([FromBody] UserDto userDto)
+        [HttpPost("renter/registration")]
+        public async Task<IActionResult> RegisterRenter([FromBody] RenterDto renterDto)
         {
             try
             {
@@ -34,13 +35,13 @@ namespace Fridge.Controllers
                     throw new ArgumentException("Invalid data");
                 }
 
-                var token = await authorizationService.RegisterUser(userDto);
+                var token = await authorizationService.RegisterRenter(renterDto);
 
-                return Created("api/authorization/user/register", token);
+                return Created("api/authorization/renter/register", token);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
         }
 
@@ -50,7 +51,7 @@ namespace Fridge.Controllers
         /// <param name="ownerDto">Name, Email, Password and Telephone for registration.</param>
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
-        [HttpPost("owner/register")]
+        [HttpPost("owner/registration")]
         public async Task<IActionResult> RegisterOwner([FromBody] OwnerDto ownerDto)
         {
             try
@@ -64,24 +65,24 @@ namespace Fridge.Controllers
 
                 return Created("api/authorization/owner/register", token);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {
-                return NotFound();
+                return StatusCode(500);
             }
         }
 
         /// <summary>
-        /// Login to the system as a user.
+        /// Login to the system as a renter.
         /// </summary>
         /// <param name="loginDto">Email and Password for Logging In.</param>
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
-        [HttpPost("user/login")]
-        public IActionResult LoginUser([FromBody] LoginDto loginDto)
+        [HttpPost("renter/login")]
+        public IActionResult LoginRenter([FromBody] LoginDto loginDto)
         {
             try
             {
@@ -90,17 +91,17 @@ namespace Fridge.Controllers
                     throw new ArgumentException("Invalid data");
                 }
 
-                var token = authorizationService.LoginUser(loginDto);
+                var token = authorizationService.LoginRenter(loginDto);
 
-                return Created("api/authorization/user/login", token);
+                return Created("api/authorization/renter/login", token);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {
-                return NotFound();
+                return StatusCode(500);
             }
         }
 
@@ -124,9 +125,13 @@ namespace Fridge.Controllers
 
                 return Created("api/authorization/owner/login", token);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
             }
         }
     }

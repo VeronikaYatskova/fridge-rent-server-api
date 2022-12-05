@@ -1,18 +1,17 @@
 ﻿using Fridge.Models.DTOs;
 using Fridge.Models.DTOs.OwnerDtos;
-using Fridge.Models.DTOs.UserDtos;
-using Microsoft.AspNetCore.Mvc;
+using Fridge.Models.DTOs.RenterDtos;
 
 namespace Fridge.Services.Abstracts
 {
     public interface IAuthorizationService
     {
-        Task<string> RegisterUser(UserDto request);
+        Task<string> RegisterRenter(RenterDto request);
 
         Task<string> RegisterOwner(OwnerDto request);
 
         string LoginOwner(LoginDto request);
 
-        string LoginUser(LoginDto loginDto);
+        string LoginRenter(LoginDto loginDto);
     }
 }

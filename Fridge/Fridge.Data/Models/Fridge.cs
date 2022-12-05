@@ -25,9 +25,10 @@ namespace Fridge.Data.Models
         /// <summary>
         /// Model identifier.
         /// </summary>
-        [ForeignKey(nameof(Model))]
+        //[ForeignKey(nameof(Model))]
         [Required(ErrorMessage = "ModelId is a required field.")]
         public Guid ModelId { get; set; }
+        public Model Model { get; set; }
 
         /// <summary>
         /// Owner identifier.

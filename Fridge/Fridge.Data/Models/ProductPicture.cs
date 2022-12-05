@@ -14,8 +14,8 @@ namespace Fridge.Data.Models
         public Guid ProductId { get; set; }
 
         [Required(ErrorMessage = "UserId is a required field.")]
-        [ForeignKey(nameof(User))]
-        public Guid UserId { get; set; }
+        [ForeignKey(nameof(Renter))]
+        public Guid RenterId { get; set; }
 
         [Required(ErrorMessage = "ImageName is a required field.")]
         public string ImageName { get; set; }
