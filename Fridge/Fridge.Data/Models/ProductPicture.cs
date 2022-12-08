@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace Fridge.Data.Models
 {
@@ -10,12 +10,12 @@ namespace Fridge.Data.Models
         public Guid Id { get; set; }
 
         [Required(ErrorMessage = "ProductId is a required field.")]
-        [ForeignKey(nameof(Product))]
         public Guid ProductId { get; set; }
+        public Product Product { get; set; }
 
         [Required(ErrorMessage = "UserId is a required field.")]
-        [ForeignKey(nameof(Renter))]
         public Guid RenterId { get; set; }
+        public Renter Renter { get; set; }
 
         [Required(ErrorMessage = "ImageName is a required field.")]
         public string ImageName { get; set; }

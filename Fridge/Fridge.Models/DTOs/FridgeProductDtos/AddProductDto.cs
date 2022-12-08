@@ -1,4 +1,5 @@
 ﻿
+
 namespace Fridge.Models.DTOs.FridgeProductDto.FridgeProductDto
 {
     public class AddProductDto

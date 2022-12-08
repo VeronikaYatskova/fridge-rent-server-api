@@ -4,6 +4,7 @@ using Fridge.Models.DTOs.FridgeDto;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
+
 namespace Fridge.Data.Repositories
 {
     public class FridgeRepository : RepositoryBase<Models.Fridge>, IFridgeRepository
@@ -12,21 +13,21 @@ namespace Fridge.Data.Repositories
         {
         }
 
-        public async Task<IEnumerable<Models.Fridge>?> GetAvailableFridgesAsync(bool trackChanges) =>
-            await FindByCondition(f => f.IsRented == false, trackChanges)!
+        public async Task<IEnumerable<Models.Fridge>?> GetAvailableFridgesAsync() =>
+            await FindByCondition(f => f.RenterId == null)!
             .OrderBy(f => f.Id)
             .ToListAsync();
 
-        public async Task<IEnumerable<Models.Fridge>?> GetFridgesAsync(bool trackChanges) =>
-            await FindAll(trackChanges)!
+        public async Task<IEnumerable<Models.Fridge>?> GetFridgesAsync() =>
+            await FindAll()!
             .ToListAsync();
 
-        public async Task<Models.Fridge?> GetFridgeByIdAsync(Guid id, bool trackChanges) =>
-            await FindByCondition(f => f.Id == id, trackChanges)!
+        public async Task<Models.Fridge?> GetFridgeByIdAsync(Guid id) =>
+            await FindByCondition(f => f.Id == id)!
             .FirstOrDefaultAsync();
 
-        public async Task<IEnumerable<Models.Fridge>?> GetFridgeByConditionAsync(Expression<Func<Models.Fridge, bool>> expression, bool trackChanges) =>
-            await FindByCondition(expression, trackChanges)!
+        public async Task<IEnumerable<Models.Fridge>?> GetFridgeByConditionAsync(Expression<Func<Models.Fridge, bool>> expression) =>
+            await FindByCondition(expression)!
             .ToListAsync();
 
         public Guid AddFridge(FridgeServicePartDto data)
@@ -37,8 +38,9 @@ namespace Fridge.Data.Repositories
                 ModelId = data.ModelId,
                 OwnerId = data.OwnerId,
                 ProducerId = data.ProducerId,
+                RenterId = null,
+                RentDocumentId = null,
                 Capacity = data.Capacity,
-                IsRented = false,
             };
 
             Create(newFridge);

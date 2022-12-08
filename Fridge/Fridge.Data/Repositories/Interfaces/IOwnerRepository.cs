@@ -7,12 +7,10 @@ namespace Fridge.Data.Repositories.Interfaces
     {
         void AddOwner(Owner owner);
 
-        Owner? FindByEmail(string email, bool trackChanges);
+        Owner? FindByEmail(string email);
 
-        void Update(Owner owner);
+        Task<Owner> GetOwnerByIdAsync(Guid id);
 
-        Task<Owner> GetOwnerByIdAsync(Guid id, bool trackChanges);
-
-        Task<Owner> GetOwnerByConditionAsync(Expression<Func<Owner, bool>> condition, bool trackChanges);
+        Task<Owner> GetOwnerByConditionAsync(Expression<Func<Owner, bool>> condition);
     }
 }

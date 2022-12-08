@@ -4,8 +4,7 @@ namespace Fridge.Data.Repositories.Interfaces
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<Product>> GetAllProductsAsync(bool trackChanges); 
-        Task<Product> GetProductByIdAsync(Guid id, bool trackChanges);
-        void UpdateProduct(Product product);
+        Task<IEnumerable<Product>> GetAllProductsAsync(); 
+        Task<Product> GetProductByIdAsync(Guid id);
     }
 }

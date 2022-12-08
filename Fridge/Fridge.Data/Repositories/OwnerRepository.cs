@@ -15,19 +15,16 @@ namespace Fridge.Data.Repositories
         public void AddOwner(Owner owner) =>
             Create(owner);
 
-        public Owner? FindByEmail(string email, bool trackChanges) =>
-            FindByCondition(o => o.Email == email, trackChanges)
+        public Owner? FindByEmail(string email) =>
+            FindByCondition(o => o.Email == email)
             ?.FirstOrDefault();
 
-        void Update(Owner owner) =>
-            Update(owner);
-
-        public async Task<Owner> GetOwnerByIdAsync(Guid id, bool trackChanges) =>
-            await FindByCondition(o => o.Id == id, trackChanges)!
+        public async Task<Owner?> GetOwnerByIdAsync(Guid id) =>
+            await FindByCondition(o => o.Id == id)
             .FirstOrDefaultAsync();
 
-        public async Task<Owner> GetOwnerByConditionAsync(Expression<Func<Owner, bool>> condition, bool trackChanges) =>
-            await FindByCondition(condition, trackChanges)
+        public async Task<Owner?> GetOwnerByConditionAsync(Expression<Func<Owner, bool>> condition) =>
+            await FindByCondition(condition)
             .FirstOrDefaultAsync();
     }
 }

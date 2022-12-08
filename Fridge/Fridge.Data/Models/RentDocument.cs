@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Fridge.Data.Models
 {
@@ -8,14 +7,6 @@ namespace Fridge.Data.Models
         [Required]
         [Key]
         public Guid Id { get; set; }
-
-        [Required(ErrorMessage = "FridgeId is a requird field.")]
-        [ForeignKey(nameof(Models.Fridge))]
-        public Guid FridgeId { get; set; }
-
-        [Required(ErrorMessage = "UserId is a requird field.")]
-        [ForeignKey(nameof(Renter))]
-        public Guid RenterId { get; set; }
 
         [Required(ErrorMessage = "StartDate is a requird field.")]
         public DateTime StartDate { get; set; }
@@ -26,5 +17,14 @@ namespace Fridge.Data.Models
         [Required(ErrorMessage = "MonthCost is a requird field.")]
         [Range(10, 70)]
         public decimal MonthCost { get; set; }
+
+
+        [Required]
+        public Guid RenterId { get; set; }
+        public Renter Renter { get; set; }
+
+        [Required]
+        public Guid FridgeId { get; set; }
+        public Fridge Fridge { get; set; }
     }
 }

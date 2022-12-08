@@ -11,7 +11,6 @@ namespace Fridge.Data.Repositories.Interfaces
         private IFridgeProductRepository _fridgeProductRepository;
         private IPictureRepository _pictureRepository;
         private IRenterRepository _userRepository;
-        private IRenterFridgeRepository _userFridgeRepository;
         private IOwnerRepository _ownerRepository;
         private IRentDocumentRepository _rentDocumentRepository;
         private IModelRepository _modelRepository;
@@ -69,16 +68,6 @@ namespace Fridge.Data.Repositories.Interfaces
                 _userRepository ??= new RenterRepository(_repositoryContext);
 
                 return _userRepository;
-            }
-        }
-
-        public IRenterFridgeRepository RenterFridge
-        {
-            get
-            {
-                _userFridgeRepository ??= new RenterFridgeRepository(_repositoryContext);
-                
-                return _userFridgeRepository;
             }
         }
 

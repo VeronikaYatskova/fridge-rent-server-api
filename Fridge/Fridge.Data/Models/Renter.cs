@@ -18,5 +18,12 @@ namespace Fridge.Data.Models
         public byte[] PasswordSalt { get; set; }
 
         public string Role { get; set; } = UserRoles.Renter;
+
+
+        public ICollection<Fridge> Fridges { get; set; }
+
+        public ICollection<RentDocument> RentDocuments { get; set; }
+
+        public ICollection<ProductPicture> ProductPictures { get; set; } 
     }
 }

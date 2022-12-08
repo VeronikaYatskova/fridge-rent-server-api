@@ -27,5 +27,11 @@ namespace Fridge.Data.Models
         [Required(ErrorMessage = "DefaultQuantity is a required field.")]
         [Range(10, int.MaxValue, ErrorMessage = "DefaultQuantity is required and it can't be less than 10")]
         public int DefaultQuantity { get; set; }
+
+        [NotMapped]
+        public IList<FridgeProduct> ProductsInFridge { get; set; }
+
+        [NotMapped]
+        public ICollection<ProductPicture> ProductPictures { get; set; }
     }
 }

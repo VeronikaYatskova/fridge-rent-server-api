@@ -7,10 +7,10 @@ namespace Fridge.Data.Repositories.Interfaces
     {
         void AddRenter(Renter user);
 
-        Renter FindByEmail(string email, bool trackChanges);
+        Renter? FindByEmail(string email);
 
-        void UpdateRenter(Renter user);
+        Renter? GetRenterById(Guid? renterId);
 
-        Renter FindRenterByCondition(Expression<Func<Renter, bool>> condition, bool trackChanges);
+        Renter? FindRenterByCondition(Expression<Func<Renter, bool>> condition);
     }
 }

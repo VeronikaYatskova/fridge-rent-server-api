@@ -11,21 +11,21 @@ namespace Fridge.Data.Repositories
         {
         }
 
-        public async Task<FridgeProduct> GetProductByIdAsync(Guid fridgeId, Guid productId, bool trackChanges) => 
-            await FindByCondition(f => f.FridgeId == fridgeId && f.ProductId == productId, trackChanges)
+        public async Task<FridgeProduct?> GetProductByIdAsync(Guid fridgeId, Guid productId) => 
+            await FindByCondition(f => f.FridgeId == fridgeId && f.ProductId == productId)
             .FirstOrDefaultAsync();
 
-        public FridgeProduct GetProductById(Guid fridgeId, Guid productId, bool trackChanges) =>
-            FindByCondition(f => f.FridgeId == fridgeId && f.ProductId == productId, trackChanges)
+        public FridgeProduct? GetProductById(Guid fridgeId, Guid productId) =>
+            FindByCondition(f => f.FridgeId == fridgeId && f.ProductId == productId)
             .FirstOrDefault();
 
-        public async Task<IEnumerable<FridgeProduct>> GetAllProductsInTheFridgeAsync(Guid fridgeId, bool trackChanges) =>
-            await FindByCondition(f => f.FridgeId == fridgeId, trackChanges)
+        public async Task<IEnumerable<FridgeProduct>> GetAllProductsInTheFridgeAsync(Guid fridgeId) =>
+            await FindByCondition(f => f.FridgeId == fridgeId)
             .ToListAsync();
 
         public async Task<FridgeProduct> AddProductAsync(Guid fridgeId, Guid productId, int count)
         {
-            var fridgeProduct = await GetProductByIdAsync(fridgeId, productId, trackChanges: false);
+            var fridgeProduct = await GetProductByIdAsync(fridgeId, productId);
             if (fridgeProduct is not null)
             {
                 fridgeProduct.Count += count;

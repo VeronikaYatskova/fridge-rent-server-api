@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Fridge.Data.Context;
-using Fridge.Data.Repositories.Interfaces;
-using System.Linq.Expressions;
 using Fridge.Data.Models;
+
 
 namespace Fridge.Data.Repositories.Interfaces
 {
@@ -12,16 +11,12 @@ namespace Fridge.Data.Repositories.Interfaces
         {
         }
 
-        public Model GetModelByIdAsync(Guid id, bool trackChanges) =>
-             FindByCondition(m => m.Id == id, trackChanges)!
-            .FirstOrDefault();
+        public Model GetModelByIdAsync(Guid id) =>
+             FindByCondition(m => m.Id == id)!
+            .FirstOrDefault()!;
 
-        public async Task<Model> GetProducerByConditionAsync(Expression<Func<Model, bool>> condition, bool trackChanges) =>
-            await FindByCondition(condition, trackChanges)
-            .FirstOrDefaultAsync();
-
-        public async Task<IEnumerable<Model>> GetAllModels(bool trackChanges) =>
-            await FindAll(trackChanges)
+        public async Task<IEnumerable<Model>> GetAllModels() =>
+            await FindAll()!
             .ToListAsync();
     }
 }

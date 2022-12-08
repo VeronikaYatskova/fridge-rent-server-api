@@ -11,16 +11,13 @@ namespace Fridge.Data.Repositories
         {
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync(bool trackChanges) =>
-            await FindAll(trackChanges)
+        public async Task<IEnumerable<Product>> GetAllProductsAsync() =>
+            await FindAll()
             .OrderBy(p => p.Name)
             .ToListAsync();
 
-        public async Task<Product> GetProductByIdAsync(Guid id, bool trackChanges) =>
-            await FindByCondition(p => p.Id == id, trackChanges)
+        public async Task<Product> GetProductByIdAsync(Guid id) =>
+            await FindByCondition(p => p.Id == id)
             .FirstOrDefaultAsync();
-
-        public void UpdateProduct(Product product) =>
-            Update(product);
     }
 }

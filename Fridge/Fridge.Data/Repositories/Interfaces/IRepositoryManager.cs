@@ -7,7 +7,6 @@
         IFridgeProductRepository FridgeProduct { get; }
         IPictureRepository Picture { get; }
         IRenterRepository Renter { get; }
-        IRenterFridgeRepository RenterFridge { get; }
         IOwnerRepository Owner { get; }
         IRentDocumentRepository RentDocument { get; }
         IModelRepository Model { get; }

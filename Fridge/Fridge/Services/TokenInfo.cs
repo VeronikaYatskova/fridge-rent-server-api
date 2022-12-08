@@ -9,6 +9,7 @@ namespace Fridge.Services
     {
         private static IHttpContextAccessor? _httpContextAccessor;
         private readonly IRepositoryManager _repository;
+        private bool isFounded = false;
 
         public TokenInfo(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor)
         {
@@ -21,11 +22,11 @@ namespace Fridge.Services
             var guid = await GetInfo();
             if (guid is not null)
             {
-                var user = _repository.Renter.FindRenterByCondition(u => u.Id == Guid.Parse(guid), trackChanges: false);
+                var user = _repository.Renter.FindRenterByCondition(u => u.Id == Guid.Parse(guid));
 
                 if (user is null)
                 {
-                    throw new ArgumentException("Renter are not found...");
+                    throw new ArgumentException("Renter is not found...");
                 }
 
                 return user;
@@ -39,7 +40,7 @@ namespace Fridge.Services
             var guid = await GetInfo();
             if (guid is not null)
             {
-                var owner = _repository.Owner.GetOwnerByConditionAsync(u => u.Id == Guid.Parse(guid), trackChanges: false).Result;
+                var owner = _repository.Owner.GetOwnerByConditionAsync(u => u.Id == Guid.Parse(guid)).Result;
 
                 if (owner is null)
                 {

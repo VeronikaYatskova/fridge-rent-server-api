@@ -29,7 +29,7 @@ namespace Fridge.Services
 
         public async Task<IEnumerable<Product>> GetProducts()
         {
-            var products = await _repository.Product.GetAllProductsAsync(trackChanges: false);
+            var products = await _repository.Product.GetAllProductsAsync();
 
             if (products is null || !products.Any())
             {

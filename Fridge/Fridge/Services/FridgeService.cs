@@ -9,15 +9,20 @@ namespace Fridge.Services
     public class FridgeService : IFridgeService
     {
         private readonly IRepositoryManager _repository;
+        private readonly ILogger<FridgeService> _logger;
 
-        public FridgeService(IRepositoryManager repository)
+        private readonly TokenInfo tokenInfo;
+        private Owner? _owner;
+
+        public FridgeService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<FridgeService> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<FridgeDto>> GetFridges()
         {
-            var fridges = await _repository.Fridge.GetAvailableFridgesAsync(trackChanges: false);
+            var fridges = await _repository.Fridge.GetAvailableFridgesAsync();
 
             if (fridges is null)
             {
@@ -32,11 +37,10 @@ namespace Fridge.Services
             var fridgesDto = fridges.Select(fridge => new FridgeDto
             {
                 Id = fridge.Id,
-                Model = _repository.Model.GetModelByIdAsync(fridge.ModelId, trackChanges: false).Name,
-                Owner = _repository.Owner.GetOwnerByIdAsync(fridge.OwnerId, trackChanges: false).Result.Name,
-                Producer = _repository.Producer.GetProducerByIdAsync(fridge.ProducerId, trackChanges: false).Result.Name,
+                Model = _repository.Model.GetModelByIdAsync(fridge.ModelId).Name,
+                Owner = _repository.Owner.GetOwnerByIdAsync(fridge.OwnerId).Result.Name,
+                Producer = _repository.Producer.GetProducerByIdAsync(fridge.ProducerId).Result.Name,
                 Capacity = fridge.Capacity,
-                isRented = fridge.IsRented,
             });
 
             return fridgesDto.ToList();
@@ -44,16 +48,18 @@ namespace Fridge.Services
 
         public async Task<IEnumerable<Model>> GetModels()
         {
-            var models = await _repository.Model.GetAllModels(trackChanges: false);
+            var models = await _repository.Model.GetAllModels();
 
             return models.ToList();
         }
 
         public async Task<IEnumerable<Producer>> GetProducers()
         {
-            var producers = await _repository.Producer.GetAllProducers(trackChanges: false);
+            var producers = await _repository.Producer.GetAllProducers();
 
             return producers.ToList();
         }
+
+
     }
 }

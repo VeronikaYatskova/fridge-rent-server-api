@@ -13,16 +13,12 @@ namespace Repositories.Data.Repositories
         {
         }
 
-        public async Task<Producer> GetProducerByConditionAsync(Expression<Func<Producer, bool>> condition, bool trackChanges) =>
-            await FindByCondition(condition, trackChanges)
+        public async Task<Producer> GetProducerByIdAsync(Guid id) =>
+            await FindByCondition(p => p.Id == id)
             .FirstOrDefaultAsync();
 
-        public async Task<Producer> GetProducerByIdAsync(Guid id, bool trackChanges) =>
-            await FindByCondition(p => p.Id == id, trackChanges)!
-            .FirstOrDefaultAsync();
-
-        public async Task<IEnumerable<Producer>> GetAllProducers(bool trackChanges) =>
-            await FindAll(trackChanges)
+        public async Task<IEnumerable<Producer>> GetAllProducers() =>
+            await FindAll()!
             .ToListAsync();
     }
 }

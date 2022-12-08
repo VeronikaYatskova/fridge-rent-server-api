@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+
 namespace Fridge.Data.Models
 {
     public class Fridge
@@ -12,8 +13,6 @@ namespace Fridge.Data.Models
         [Key]
         [Column("FridgeId")]
         public Guid Id { get; set; }
-
-        public bool IsRented { get; set; } = false;
 
         /// <summary>
         /// Count of products the fridge can contain.
@@ -33,15 +32,26 @@ namespace Fridge.Data.Models
         /// <summary>
         /// Owner identifier.
         /// </summary>
-        [ForeignKey(nameof(Owner))]
         [Required(ErrorMessage = "OwnerId is a required field.")]
         public Guid OwnerId { get; set; }
+        public Owner Owner { get; set; }
 
         /// <summary>
         /// Producer identifier.
         /// </summary>
-        [ForeignKey(nameof(Producer))]
         [Required(ErrorMessage = "ProducerId is a required field.")]
         public Guid ProducerId { get; set; }
+        public Producer Producer { get; set; }
+
+
+        public Guid? RenterId { get; set; }
+        public Renter? Renter { get; set; }
+
+
+        public Guid? RentDocumentId { get; set; }
+        public RentDocument? RentDocument { get; set; }
+
+        [NotMapped]
+        public IList<FridgeProduct>? ProductsInFridge { get; set; }
     }
 }

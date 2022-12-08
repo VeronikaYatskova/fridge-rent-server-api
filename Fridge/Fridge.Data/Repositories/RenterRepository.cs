@@ -13,13 +13,13 @@ namespace Fridge.Data.Repositories.Interfaces
         public void AddRenter(Renter user) =>
             Create(user);
 
-        public Renter FindByEmail(string email, bool trackChanges) =>
-            FindByCondition(u => u.Email == email, trackChanges).FirstOrDefault();
+        public Renter? FindByEmail(string email) =>
+            FindByCondition(u => u.Email == email)?.FirstOrDefault();
 
-        public void UpdateRenter(Renter user) =>
-            Update(user);
-
-        public Renter FindRenterByCondition(Expression<Func<Renter, bool>> condition, bool trackChanges) =>
-            FindByCondition(condition, trackChanges).FirstOrDefault();
+        public Renter? GetRenterById(Guid? renterId) =>
+            FindByCondition(r => r.Id == renterId)?.FirstOrDefault();
+        
+        public Renter? FindRenterByCondition(Expression<Func<Renter, bool>> condition) =>
+            FindByCondition(condition)?.FirstOrDefault();
     }
 }

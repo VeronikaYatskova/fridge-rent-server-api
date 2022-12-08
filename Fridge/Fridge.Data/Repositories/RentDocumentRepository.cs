@@ -14,8 +14,11 @@ namespace Fridge.Data.Repositories
         public void AddDocument(RentDocument document) =>
             Create(document);
 
-        public RentDocument FindDocumentByCondition(Expression<Func<RentDocument, bool>> expression, bool trackChanges) =>
-            FindByCondition(expression, trackChanges)
-            .FirstOrDefault();
+        public RentDocument? FindDocumentByCondition(Expression<Func<RentDocument, bool>> expression) =>
+            FindByCondition(expression)
+            ?.FirstOrDefault();
+
+        public void RemoveDocument(RentDocument rentDocument) =>
+            Delete(rentDocument);
     }
 }

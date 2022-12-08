@@ -205,7 +205,7 @@ namespace Fridge.Controllers
         /// Allows to add one more fridge for renting.
         /// </summary>
         /// <param name="ownerAddFridgeDto">Parameters for a new fridge.</param>
-        [HttpPost("renter/fridge")]
+        [HttpPost("owner/fridge")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [Authorize(Roles = UserRoles.Owner)]

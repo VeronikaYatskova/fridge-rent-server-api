@@ -27,5 +27,8 @@ namespace Fridge.Data.Models
         [Required(ErrorMessage = "Country is a required field.")]
         [MaxLength(60, ErrorMessage = "Maximum length for the Country is 60 characters")]
         public string Country { get; set; }
+
+        [NotMapped]
+        public ICollection<Models.Fridge> Fridges { get; set; }
     }
 }

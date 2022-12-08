@@ -37,5 +37,8 @@ namespace Fridge.Data.Models
 
         [NotMapped]
         public string Role { get; } = UserRoles.Owner;
+
+        [NotMapped]
+        public ICollection<Models.Fridge> Fridges { get; set; }
     }
 }

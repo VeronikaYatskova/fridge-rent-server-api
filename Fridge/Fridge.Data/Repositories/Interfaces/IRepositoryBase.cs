@@ -4,9 +4,9 @@ namespace Fridge.Data.Repositories.Interfaces
 {
     public interface IRepositoryBase<T>
     {
-        IQueryable<T>? FindAll(bool trackChanges);
+        IQueryable<T>? FindAll();
 
-        IQueryable<T>? FindByCondition(Expression<Func<T, bool>> expression, bool trackChanges);
+        IQueryable<T>? FindByCondition(Expression<Func<T, bool>> expression);
 
         void Create(T entity);
 

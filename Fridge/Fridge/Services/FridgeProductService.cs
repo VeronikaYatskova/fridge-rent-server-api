@@ -13,26 +13,30 @@ namespace Fridge.Services
     {
         private readonly ILogger<FridgeProductService> _logger;
         private readonly IRepositoryManager _repository;
-        private readonly Renter renter;
+
+        private TokenInfo tokenInfo;
+        private Renter renter;
 
         public FridgeProductService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<FridgeProductService> logger)
         {
             _repository = repository;
             _logger = logger;
 
-            var tokenInfo = new TokenInfo(repository, httpContextAccessor);
-            renter = tokenInfo.GetUser().Result;
+            tokenInfo = new TokenInfo(repository, httpContextAccessor);
         }
 
         public async Task<IEnumerable<ProductWithCurrentCountAndNameDto>> GetProductsByFridgeIdAsync(Guid fridgeId)
         {
-            if (!IsUsersFridge(fridgeId))
+            renter = await tokenInfo.GetUser();
+
+            var isRentersFridge = await IsRentersFridge(fridgeId);
+            if (!isRentersFridge)
             {
                 _logger.LogInformation($"You don't have a fridge with id {fridgeId} in your rented.");
                 throw new ArgumentException("Fridge is not found in your fridges");
             }
 
-            var products = await _repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridgeId, trackChanges: false);
+            var products = await _repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridgeId);
 
             if (products is null)
             {
@@ -42,8 +46,8 @@ namespace Fridge.Services
 
             var productsWithCount = products.Select(p => new ProductWithCurrentCountAndNameDto
             {
-                Id = p.Id,
-                Name = _repository.Product.GetProductByIdAsync(p.ProductId, trackChanges: false).Result.Name,
+                Id = p.ProductId,
+                Name = _repository.Product.GetProductByIdAsync(p.ProductId).Result.Name,
                 Count = p.Count,
             });
 
@@ -52,7 +56,9 @@ namespace Fridge.Services
 
         public async Task FillTheFridgeWithProductAsync(Guid productId)
         {
-            var product = await _repository.Product.GetProductByIdAsync(productId, trackChanges: false);
+            renter = await tokenInfo.GetUser();
+
+            var product = await _repository.Product.GetProductByIdAsync(productId);
             if (product is null)
             {
                 _logger.LogInformation($"Product with id {productId} doesn't exist in the database.");
@@ -65,13 +71,16 @@ namespace Fridge.Services
 
         public async Task<AddProductDto> AddProductAsync(FridgeProductDto fridgeProductDto)
         {
-            if (!IsUsersFridge(fridgeProductDto.FridgeId))
+            renter = await tokenInfo.GetUser();
+
+            var isRentersFridge = await IsRentersFridge(fridgeProductDto.FridgeId);
+            if (!isRentersFridge)
             {
                 _logger.LogInformation($"You don't have a fridge with id {fridgeProductDto.FridgeId} in your rented.");
                 throw new ArgumentException($"You don't have a fridge with id {fridgeProductDto.FridgeId} in your rented.");
             }
 
-            var fridge = await _repository.Fridge.GetFridgeByIdAsync(fridgeProductDto.FridgeId, trackChanges: false);
+            var fridge = await _repository.Fridge.GetFridgeByIdAsync(fridgeProductDto.FridgeId);
 
             if (fridge is null)
             {
@@ -79,7 +88,7 @@ namespace Fridge.Services
                 throw new ArgumentException("Fridge is not found...");
             }
 
-            var product = await _repository.Product.GetProductByIdAsync(fridgeProductDto.ProductId, trackChanges: false);
+            var product = await _repository.Product.GetProductByIdAsync(fridgeProductDto.ProductId);
 
             if (product is null)
             {
@@ -94,7 +103,7 @@ namespace Fridge.Services
             }
 
             var newProduct = await _repository.FridgeProduct.AddProductAsync(fridgeProductDto.FridgeId, fridgeProductDto.ProductId, fridgeProductDto.Count == 0 ? product.DefaultQuantity : fridgeProductDto.Count);
-            var products = await _repository.Product.GetAllProductsAsync(trackChanges: false);
+            var products = await _repository.Product.GetAllProductsAsync();
             var productFullName = products.Where(p => p.Id == newProduct.ProductId).FirstOrDefault();
 
             var productWithNameAndCount = new AddProductDto
@@ -111,7 +120,9 @@ namespace Fridge.Services
 
         public async Task UpdateProductAsync(ProductUpdateDto productUpdateDto)
         {
-            var productInFridge = _repository.FridgeProduct.GetProductById(productUpdateDto.FridgeId, productUpdateDto.ProductId, trackChanges: false);
+            renter = await tokenInfo.GetUser();
+
+            var productInFridge = _repository.FridgeProduct.GetProductById(productUpdateDto.FridgeId, productUpdateDto.ProductId);
             productInFridge.Count = productUpdateDto.Count;
 
             if (productInFridge is null)
@@ -127,16 +138,19 @@ namespace Fridge.Services
 
         public async Task DeleteProductFromFridgeAsync(string fridgeId, string productId)
         {
+            renter = await tokenInfo.GetUser();
+
             var productGuid = Guid.Parse(productId);
             var fridgeGuid = Guid.Parse(fridgeId);
 
-            if (!IsUsersFridge(fridgeGuid))
+            var isRentersFridge = await IsRentersFridge(fridgeGuid);
+            if (!isRentersFridge)
             {
                 _logger.LogError($"You don't have a fridge with id {fridgeId} in your rented.");
                 throw new ArgumentException("Fridge is not found...");
             }
 
-            var fridgeProduct = await _repository.FridgeProduct.GetProductByIdAsync(fridgeGuid, productGuid, trackChanges: false);
+            var fridgeProduct = await _repository.FridgeProduct.GetProductByIdAsync(fridgeGuid, productGuid);
             if (fridgeProduct is null)
             {
                 _logger.LogError($"Fridge with id {fridgeGuid} doesn't contain product with id {productGuid} in the database.");
@@ -150,7 +164,7 @@ namespace Fridge.Services
 
         private async Task<int> GetCountOfProducts(Guid fridgeId)
         {
-            var products = await _repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridgeId, trackChanges: false);
+            var products = await _repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridgeId);
             int sum = 0;
 
             foreach (var product in products)
@@ -161,10 +175,11 @@ namespace Fridge.Services
             return sum;
         }
 
-        private bool IsUsersFridge(Guid fridgeId)
+        private async Task<bool> IsRentersFridge(Guid fridgeId)
         {
-            var usersFridges = _repository.RenterFridge.GetRenterFridgeRow(renter.Id, fridgeId, trackChanges: false);
-            return usersFridges is not null;
+            var fridge = await _repository.Fridge.GetFridgeByIdAsync(fridgeId);
+
+            return fridge.RenterId == renter.Id;
         }
     }
 }

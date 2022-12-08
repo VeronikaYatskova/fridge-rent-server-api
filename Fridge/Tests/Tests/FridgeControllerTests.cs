@@ -41,7 +41,6 @@ namespace Fridge.Tests.Tests
                     Producer = "Toshiba",
                     Capacity =  20,
                     CurrentCount =  0,
-                    isRented = false
                 },
                 new FridgeDto()
                 {
@@ -51,7 +50,6 @@ namespace Fridge.Tests.Tests
                     Producer = "Toshiba",
                     Capacity = 20,
                     CurrentCount = 0,
-                    isRented = false
                 }
             };
 
@@ -458,7 +456,6 @@ namespace Fridge.Tests.Tests
                     Producer = "Toshiba",
                     Capacity =  20,
                     CurrentCount =  0,
-                    isRented = false
                 },
                 new FridgeDto()
                 {
@@ -468,7 +465,6 @@ namespace Fridge.Tests.Tests
                     Producer = "Toshiba",
                     Capacity = 20,
                     CurrentCount = 0,
-                    isRented = false
                 }
             };
 
@@ -644,7 +640,6 @@ namespace Fridge.Tests.Tests
                     Producer = "Toshiba",
                     Capacity =  20,
                     CurrentCount =  0,
-                    isRented = false
                 },
                 new FridgeDto()
                 {
@@ -654,7 +649,6 @@ namespace Fridge.Tests.Tests
                     Producer = "Toshiba",
                     Capacity = 20,
                     CurrentCount = 0,
-                    isRented = false
                 }
             };
 

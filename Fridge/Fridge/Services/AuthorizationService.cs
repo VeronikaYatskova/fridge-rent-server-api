@@ -28,7 +28,7 @@ namespace Fridge.Services
 
         public async Task<string> RegisterRenter(RenterDto renterDto)
         {
-            if (_repository.Renter.FindByEmail(renterDto.Email, trackChanges: false) is not null)
+            if (_repository.Renter.FindByEmail(renterDto.Email) is not null)
             {
                 _logger.LogInformation($"Renter with the same email is already in the database.");
                 throw new ArgumentException("Renter with the same email has been registered.");
@@ -55,7 +55,7 @@ namespace Fridge.Services
 
         public async Task<string> RegisterOwner(OwnerDto ownerDto)
         {
-            if (_repository.Owner.FindByEmail(ownerDto.Email, trackChanges: false) is not null)
+            if (_repository.Owner.FindByEmail(ownerDto.Email) is not null)
             {
                 _logger.LogInformation($"Owner with the same email is already in the database.");
                 throw new ArgumentException("Owner with the same email has been registered.");
@@ -83,7 +83,7 @@ namespace Fridge.Services
 
         public string LoginRenter(LoginDto loginDto)
         {
-            var renter = _repository.Renter.FindByEmail(loginDto.Email, trackChanges: false);
+            var renter = _repository.Renter.FindByEmail(loginDto.Email);
 
             if (renter is null)
             {
@@ -99,7 +99,7 @@ namespace Fridge.Services
 
         public string LoginOwner(LoginDto loginDto)
         {
-            var owner = _repository.Owner.FindByEmail(loginDto.Email, trackChanges: false);
+            var owner = _repository.Owner.FindByEmail(loginDto.Email);
 
             if (owner is null)
             {

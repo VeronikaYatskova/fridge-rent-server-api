@@ -15,10 +15,12 @@ namespace Fridge.Models.DTOs.FridgeDtos
         [Required(ErrorMessage = "Producer is a required field.")]
         public string Producer { get; set; }
 
+        public string? Renter { get; set; }
+
         [Required(ErrorMessage = "Capacity is a required field.")]
         [Range(10, int.MaxValue, ErrorMessage = "Capacity is required and it can't be less than 10")]
         public int Capacity { get; set; }
+
         public int CurrentCount { get; set; } = 0;
-        public bool isRented { get; set; } = false;
     }
 }
