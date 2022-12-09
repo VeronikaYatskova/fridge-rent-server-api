@@ -1,7 +1,5 @@
 ﻿using Fridge.Controllers;
-using Fridge.Models.DTOs;
-using Fridge.Models.DTOs.OwnerDtos;
-using Fridge.Models.DTOs.RenterDtos;
+using Fridge.Models.Requests;
 using Fridge.Tests.Mocks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +16,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new AuthController(fakeService.Service);
 
-            var userDto = new RenterDto()
+            var addRenterModel = new AddRenterModel()
             {
                 Email = "sasha@renter.com",
                 Password = "1",
@@ -28,10 +26,10 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeService.Mock.Setup(s => s.RegisterRenter(userDto))
+            fakeService.Mock.Setup(s => s.RegisterRenter(addRenterModel))
                 .Returns(Task.FromResult(token));
 
-            var response = await controller.RegisterRenter(userDto);
+            var response = await controller.RegisterRenter(addRenterModel);
 
             var createdResult = response as CreatedResult;
 
@@ -48,7 +46,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new AuthController(fakeService.Service);
 
-            var userDto = new RenterDto()
+            var addRenterModel = new AddRenterModel()
             {
                 Email = "sasharenter.com",
                 Password = "",
@@ -56,10 +54,10 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeService.Mock.Setup(s => s.RegisterRenter(userDto))
+            fakeService.Mock.Setup(s => s.RegisterRenter(addRenterModel))
                 .Throws(new ArgumentException("Invalid data"));
 
-            var response = await controller.RegisterRenter(userDto);
+            var response = await controller.RegisterRenter(addRenterModel);
 
             var badRequestResult = response as BadRequestResult;
 
@@ -77,7 +75,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new AuthController(fakeService.Service);
 
-            var userDto = new RenterDto()
+            var addRenterModel = new AddRenterModel()
             {
                 Email = "veronika@renter.com",
                 Password = "1",
@@ -85,10 +83,10 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeService.Mock.Setup(s => s.RegisterRenter(userDto))
+            fakeService.Mock.Setup(s => s.RegisterRenter(addRenterModel))
                 .Throws(new ArgumentException("Renter with the same email has been registered."));
 
-            var response = await controller.RegisterRenter(userDto);
+            var response = await controller.RegisterRenter(addRenterModel);
 
             var badRequestResult = response as BadRequestResult;
 
@@ -106,7 +104,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new AuthController(fakeService.Service);
 
-            var ownerDto = new OwnerDto()
+            var addOwnerModel = new AddOwnerModel()
             {
                 Name = "Sasha",
                 Email = "sasha@owner.com",
@@ -118,10 +116,10 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeService.Mock.Setup(s => s.RegisterOwner(ownerDto))
+            fakeService.Mock.Setup(s => s.RegisterOwner(addOwnerModel))
                 .Returns(Task.FromResult(token));
 
-            var response = await controller.RegisterOwner(ownerDto);
+            var response = await controller.RegisterOwner(addOwnerModel);
 
             var createdResult = response as CreatedResult;
 
@@ -138,7 +136,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new AuthController(fakeService.Service);
 
-            var ownerDto = new OwnerDto()
+            var addOwnerModel = new AddOwnerModel()
             {
                 Name = "Sasha",
                 Email = "sashaowner.com",
@@ -148,10 +146,10 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeService.Mock.Setup(s => s.RegisterOwner(ownerDto))
+            fakeService.Mock.Setup(s => s.RegisterOwner(addOwnerModel))
                 .Throws(new ArgumentException("Invalid data"));
 
-            var response = await controller.RegisterOwner(ownerDto);
+            var response = await controller.RegisterOwner(addOwnerModel);
 
             var badRequestResult = response as BadRequestResult;
 
@@ -168,7 +166,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new AuthController(fakeService.Service);
 
-            var ownerDto = new OwnerDto()
+            var addOwnerModel = new AddOwnerModel()
             {
                 Name = "Sasha",
                 Email = "sasha@owner.com",
@@ -178,10 +176,10 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeService.Mock.Setup(s => s.RegisterOwner(ownerDto))
+            fakeService.Mock.Setup(s => s.RegisterOwner(addOwnerModel))
                 .Throws(new ArgumentException("Owner with the same email has been registered."));
 
-            var response = await controller.RegisterOwner(ownerDto);
+            var response = await controller.RegisterOwner(addOwnerModel);
 
             var badRequestResult = response as BadRequestResult;
 
@@ -198,7 +196,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new AuthController(fakeService.Service);
 
-            var loginDto = new LoginDto()
+            var loginModel = new LoginModel()
             {
                 Email = "veronika@renter",
                 Password = "1",
@@ -208,10 +206,10 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeService.Mock.Setup(s => s.LoginRenter(loginDto))
+            fakeService.Mock.Setup(s => s.LoginRenter(loginModel))
                 .Returns(token);
 
-            var response = controller.LoginRenter(loginDto);
+            var response = controller.LoginRenter(loginModel);
 
             var createdResult = response as CreatedResult;
 
@@ -229,7 +227,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new AuthController(fakeService.Service);
 
-            var loginDto = new LoginDto()
+            var loginModel = new LoginModel()
             {
                 Email = "veronika@owner",
                 Password = "1",
@@ -239,10 +237,10 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeService.Mock.Setup(s => s.LoginOwner(loginDto))
+            fakeService.Mock.Setup(s => s.LoginOwner(loginModel))
                 .Returns(token);
 
-            var response = controller.LoginRenter(loginDto);
+            var response = controller.LoginRenter(loginModel);
 
             var createdResult = response as CreatedResult;
 

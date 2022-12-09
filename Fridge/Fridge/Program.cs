@@ -13,14 +13,14 @@ using Fridge.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 builder.Services.AddScoped<IFridgeService, FridgeService>();
 builder.Services.AddScoped<IFridgeProductService, FridgeProductService>();
-builder.Services.AddScoped<IOwnerService, OwnerService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
-builder.Services.AddScoped<IRentService, RentService>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {

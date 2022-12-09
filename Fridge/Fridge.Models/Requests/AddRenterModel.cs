@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Fridge.Models.DTOs.RenterDtos
+namespace Fridge.Models.Requests
 {
-    public class RenterDto
+    public class AddRenterModel
     {
         [EmailAddress]
         [Required(ErrorMessage = "Email is a required field.")]

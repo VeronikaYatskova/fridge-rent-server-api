@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Fridge.Models.DTOs.ProductDtos
+namespace Fridge.Models.Requests
 {
-    public class ProductUpdateDto
+    public class UpdateProductModel
     {
         public Guid FridgeId { get; set; }
 

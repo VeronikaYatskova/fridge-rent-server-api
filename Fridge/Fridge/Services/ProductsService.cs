@@ -1,53 +1,51 @@
-﻿using Fridge.Controllers;
-using Fridge.Data.Models;
+﻿using Fridge.Data.Models;
 using Fridge.Data.Repositories.Interfaces;
-using Fridge.Models.DTOs.ProductDtos;
+using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
 
 namespace Fridge.Services
 {
     public class ProductsService : IProductsService
     {
-        private readonly ILogger<ProductsService> _logger;
-        private readonly IRepositoryManager _repository;
-        private IWebHostEnvironment Environment;
-
-        private readonly Renter user;
+        private readonly ILogger<ProductsService> logger;
+        private readonly IRepositoryManager repository;
+        private IWebHostEnvironment environment;
+        
+        private TokenInfo tokenInfo;
+        private Renter? renter;
 
         public ProductsService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<ProductsService> logger, IWebHostEnvironment environment)
         {
-            _repository = repository;
-            _logger = logger;
-            Environment = environment;
+            this.repository = repository;
+            this.logger = logger;
+            this.environment = environment;
 
-            if (user is null)
-            {
-                var tokenInfo = new TokenInfo(repository, httpContextAccessor);
-                user = tokenInfo.GetUser().Result;
-            }
+            tokenInfo = new TokenInfo(repository, httpContextAccessor);
         }
 
         public async Task<IEnumerable<Product>> GetProducts()
         {
-            var products = await _repository.Product.GetAllProductsAsync();
+            var products = await repository.Product.GetAllProductsAsync();
 
             if (products is null || !products.Any())
             {
-                _logger.LogInformation("No products.");
+                logger.LogInformation("No products.");
                 throw new ArgumentException("No products.");
             }
 
             return products;
         }
 
-        public async Task<ProductPicture> AddPicture(ProductPictureDto productPictureDto)
+        public async Task<ProductPicture> AddPicture(AddProductPictureModel addProductPictureModel)
         {
-            string root = Environment.WebRootPath + "\\Upload\\";
-            string extension = Path.GetExtension(productPictureDto.File.FileName);
+            renter = tokenInfo.GetUser().Result;
+
+            string root = environment.WebRootPath + "\\Upload\\";
+            string extension = Path.GetExtension(addProductPictureModel.File.FileName);
             string newName = Guid.NewGuid().ToString();
             string fullPath = root + newName + extension;
 
-            if (productPictureDto.File.Length > 0)
+            if (addProductPictureModel.File.Length > 0)
             {
                 if (!Directory.Exists(root))
                 {
@@ -56,21 +54,21 @@ namespace Fridge.Services
 
                 using FileStream fileStream = System.IO.File.Create(fullPath);
 
-                await productPictureDto.File.CopyToAsync(fileStream);
+                await addProductPictureModel.File.CopyToAsync(fileStream);
                 await fileStream.FlushAsync();
             }
 
             var newPicture = new ProductPicture
             {
                 Id = Guid.NewGuid(),
-                ProductId = productPictureDto.ProductId,
-                RenterId = user.Id,
-                ImageName = productPictureDto.ImageName,
+                ProductId = addProductPictureModel.ProductId,
+                RenterId = renter.Id,
+                ImageName = addProductPictureModel.ImageName,
                 ImagePath = fullPath,
             };
 
-            _repository.Picture.AddPicture(newPicture);
-            await _repository.SaveAsync();
+            repository.Picture.AddPicture(newPicture);
+            await repository.SaveAsync();
 
             return newPicture;
         }

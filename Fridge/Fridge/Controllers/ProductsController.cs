@@ -1,5 +1,5 @@
 ﻿using Fridge.Data.Models;
-using Fridge.Models.DTOs.ProductDtos;
+using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -53,7 +53,7 @@ namespace Fridge.Controllers
         [HttpPost("product")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
-        public async Task<IActionResult> AddPicture([FromForm]ProductPictureDto productPictureDto)
+        public async Task<IActionResult> AddPicture([FromForm]AddProductPictureModel productPictureDto)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace Fridge.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Update))]
         [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> UpdateProductAsync([FromBody] ProductUpdateDto productUpdateDto)
+        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductModel productUpdateDto)
         {
             try
             {

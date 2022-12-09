@@ -1,9 +1,7 @@
 ﻿using Fridge.Data.Models;
 using Fridge.Data.Models.Abstracts;
 using Fridge.Data.Repositories.Interfaces;
-using Fridge.Models.DTOs;
-using Fridge.Models.DTOs.OwnerDtos;
-using Fridge.Models.DTOs.RenterDtos;
+using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,22 +13,22 @@ namespace Fridge.Services
 {
     public class AuthorizationService : IAuthorizationService
     {
-        private readonly IRepositoryManager _repository;
-        private readonly ILogger<AuthorizationService> _logger;
+        private readonly IRepositoryManager repository;
+        private readonly ILogger<AuthorizationService> logger;
         private readonly IConfiguration configuration;
 
         public AuthorizationService(IConfiguration configuration, IRepositoryManager repository, ILogger<AuthorizationService> logger)
         {
-            _repository = repository;
-            _logger = logger;
+            this.repository = repository;
+            this.logger = logger;
             this.configuration = configuration;
         }
 
-        public async Task<string> RegisterRenter(RenterDto renterDto)
+        public async Task<string> RegisterRenter(AddRenterModel renterDto)
         {
-            if (_repository.Renter.FindByEmail(renterDto.Email) is not null)
+            if (repository.Renter.FindByEmail(renterDto.Email) is not null)
             {
-                _logger.LogInformation($"Renter with the same email is already in the database.");
+                logger.LogInformation($"Renter with the same email is already in the database.");
                 throw new ArgumentException("Renter with the same email has been registered.");
             }
 
@@ -47,17 +45,17 @@ namespace Fridge.Services
 
             string token = CreateToken(renter);
 
-            _repository.Renter.AddRenter(renter);
-            await _repository.SaveAsync();
+            repository.Renter.AddRenter(renter);
+            await repository.SaveAsync();
 
             return token;
         }
 
-        public async Task<string> RegisterOwner(OwnerDto ownerDto)
+        public async Task<string> RegisterOwner(AddOwnerModel ownerDto)
         {
-            if (_repository.Owner.FindByEmail(ownerDto.Email) is not null)
+            if (repository.Owner.FindByEmail(ownerDto.Email) is not null)
             {
-                _logger.LogInformation($"Owner with the same email is already in the database.");
+                logger.LogInformation($"Owner with the same email is already in the database.");
                 throw new ArgumentException("Owner with the same email has been registered.");
             }
 
@@ -73,17 +71,17 @@ namespace Fridge.Services
                 PasswordSalt = passwordSalt,
             };
 
-            _repository.Owner.AddOwner(owner);
-            await _repository.SaveAsync();
+            repository.Owner.AddOwner(owner);
+            await repository.SaveAsync();
 
             string token = CreateToken(owner);
 
             return token;
         }
 
-        public string LoginRenter(LoginDto loginDto)
+        public string LoginRenter(LoginModel loginDto)
         {
-            var renter = _repository.Renter.FindByEmail(loginDto.Email);
+            var renter = repository.Renter.FindByEmail(loginDto.Email);
 
             if (renter is null)
             {
@@ -97,9 +95,9 @@ namespace Fridge.Services
             return token;
         }
 
-        public string LoginOwner(LoginDto loginDto)
+        public string LoginOwner(LoginModel loginDto)
         {
-            var owner = _repository.Owner.FindByEmail(loginDto.Email);
+            var owner = repository.Owner.FindByEmail(loginDto.Email);
 
             if (owner is null)
             {
@@ -113,7 +111,7 @@ namespace Fridge.Services
             return token;
         }
 
-        private void VerifyData(IUser user, LoginDto loginDto)
+        private void VerifyData(IUser user, LoginModel loginDto)
         {
             if (user!.Email != loginDto.Email)
             {

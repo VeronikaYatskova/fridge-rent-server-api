@@ -1,11 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Fridge.Models.DTOs.OwnerDtos
+namespace Fridge.Models.Requests
 {
-    public class OwnerAddFridgeDto
+    public class AddFridgeModel
     {
+        [Required(ErrorMessage = "FridgeId is a required field.")]
+        public Guid FridgeId { get; set; }
+
         [Required(ErrorMessage = "ModelId is a required field.")]
         public Guid ModelId { get; set; }
+        
+        [Required(ErrorMessage = "OwnerId is a required field.")]
+        public Guid OwnerId { get; set; }
 
         [Required(ErrorMessage = "ProducerId is a required field.")]
         public Guid ProducerId { get; set; }

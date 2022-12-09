@@ -1,6 +1,5 @@
 ﻿using Fridge.Data.Models;
-using Fridge.Models.DTOs.FridgeProductDtos;
-using Fridge.Models.DTOs.OwnerDtos;
+using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,15 +13,11 @@ namespace Fridge.Controllers
     public class FridgeController : ControllerBase
     {
         private readonly IFridgeService fridgeService;
-        private readonly IOwnerService ownerService;
-        private readonly IRentService rentService;
         private readonly IFridgeProductService fridgeProductService;
 
-        public FridgeController(IFridgeService service, IOwnerService ownerService, IRentService rentService, IFridgeProductService fridgeProductService)
+        public FridgeController(IFridgeService service, IFridgeProductService fridgeProductService)
         {
             fridgeService = service;
-            this.rentService = rentService;
-            this.ownerService = ownerService;
             this.fridgeProductService = fridgeProductService;
         }
 
@@ -106,7 +101,7 @@ namespace Fridge.Controllers
         {
             try
             {
-                var fridgesDto = await ownerService.GetOwnersFridges();
+                var fridgesDto = await fridgeService.GetOwnersFridges();
 
                 return Ok(fridgesDto);
             }
@@ -134,7 +129,7 @@ namespace Fridge.Controllers
         {
             try
             {
-                var rentDocumentDto = await ownerService.GetRentedFridgeInfo(fridgeId);
+                var rentDocumentDto = await fridgeService.GetRentedFridgeInfo(fridgeId);
 
                 return Ok(rentDocumentDto);
             }
@@ -160,7 +155,7 @@ namespace Fridge.Controllers
         {
             try
             {
-                var fridges = await rentService.GetRentersFridges();
+                var fridges = await fridgeService.GetRentersFridges();
 
                 return Ok(fridges);
             }
@@ -204,12 +199,12 @@ namespace Fridge.Controllers
         /// <summary>
         /// Allows to add one more fridge for renting.
         /// </summary>
-        /// <param name="ownerAddFridgeDto">Parameters for a new fridge.</param>
+        /// <param name="addFridgeOwnerModel">Parameters for a new fridge.</param>
         [HttpPost("owner/fridge")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [Authorize(Roles = UserRoles.Owner)]
-        public async Task<IActionResult> AddFridge([FromBody] OwnerAddFridgeDto ownerAddFridgeDto)
+        public async Task<IActionResult> AddFridge([FromBody] AddFridgeOwnerModel addFridgeOwnerModel)
         {
             try
             {
@@ -218,9 +213,9 @@ namespace Fridge.Controllers
                     throw new ArgumentException("Invalid data");
                 }
 
-                var fridge = await ownerService.AddFridge(ownerAddFridgeDto);
+                await fridgeService.AddFridge(addFridgeOwnerModel);
 
-                return Created("api/owner/fridge/add", fridge);
+                return Created("api/owner/fridge/add", addFridgeOwnerModel);
             }
             catch (ArgumentException ex)
             {
@@ -261,12 +256,12 @@ namespace Fridge.Controllers
         /// <summary>
         /// Add new product to fridge.
         /// </summary>
-        /// <param name="fridgeProductDto">Fridge and Product identifiers,count of a product.</param>
+        /// <param name="addProductModel">Fridge and Product identifiers,count of a product.</param>
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [HttpPost("renter/fridge/product")]
         [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> AddProduct([FromBody] FridgeProductDto fridgeProductDto)
+        public async Task<IActionResult> AddProduct([FromBody] AddProductModel addProductModel)
         {
             try
             {
@@ -275,9 +270,9 @@ namespace Fridge.Controllers
                     throw new ArgumentException("Invalid data");
                 }
 
-                var newProduct = await fridgeProductService.AddProductAsync(fridgeProductDto);
+                await fridgeProductService.AddProductAsync(addProductModel);
 
-                return Created("api/products-in-fridge/product/new", newProduct);
+                return Created("api/products-in-fridge/product/new", addProductModel);
             }
             catch (ArgumentException ex)
             {
@@ -301,7 +296,7 @@ namespace Fridge.Controllers
         {
             try
             {
-                await rentService.RentFridge(fridgeId);
+                await fridgeService.RentFridge(fridgeId);
 
                 return Ok();
             }
@@ -355,7 +350,7 @@ namespace Fridge.Controllers
         {
             try
             {
-                await ownerService.DeleteFridge(fridgeId);
+                await fridgeService.DeleteFridge(fridgeId);
 
                 return Ok();
             }
@@ -382,7 +377,7 @@ namespace Fridge.Controllers
         {
             try
             {
-                await rentService.Remove(fridgeId);
+                await fridgeService.ReturnFridge(fridgeId);
 
                 return Ok();
             }

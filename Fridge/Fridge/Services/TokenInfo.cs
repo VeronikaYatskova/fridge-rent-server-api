@@ -7,14 +7,13 @@ namespace Fridge.Services
 {
     public class TokenInfo
     {
-        private static IHttpContextAccessor? _httpContextAccessor;
-        private readonly IRepositoryManager _repository;
-        private bool isFounded = false;
+        private static IHttpContextAccessor? httpContextAccessor;
+        private readonly IRepositoryManager repository;
 
-        public TokenInfo(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor)
+        public TokenInfo(IRepositoryManager repository, IHttpContextAccessor contextAccessor)
         {
-            _repository = repository;
-            _httpContextAccessor = httpContextAccessor;
+            this.repository = repository;
+            httpContextAccessor = contextAccessor;
         }
 
         public async Task<Renter?> GetUser()
@@ -22,7 +21,7 @@ namespace Fridge.Services
             var guid = await GetInfo();
             if (guid is not null)
             {
-                var user = _repository.Renter.FindRenterByCondition(u => u.Id == Guid.Parse(guid));
+                var user = repository.Renter.FindRenterByCondition(u => u.Id == Guid.Parse(guid));
 
                 if (user is null)
                 {
@@ -40,7 +39,7 @@ namespace Fridge.Services
             var guid = await GetInfo();
             if (guid is not null)
             {
-                var owner = _repository.Owner.GetOwnerByConditionAsync(u => u.Id == Guid.Parse(guid)).Result;
+                var owner = repository.Owner.GetOwnerByConditionAsync(u => u.Id == Guid.Parse(guid)).Result;
 
                 if (owner is null)
                 {
@@ -62,7 +61,7 @@ namespace Fridge.Services
 
         private async static Task<string?> GetUserGuid()
         {
-            var token = await _httpContextAccessor?.HttpContext?.GetTokenAsync("access_token")!;
+            var token = await httpContextAccessor?.HttpContext?.GetTokenAsync("accesstoken")!;
 
             if (token is not null)
             {

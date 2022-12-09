@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Fridge.Models.DTOs.OwnerDtos
+namespace Fridge.Models.Requests
 {
-    public class OwnerDto
+    public class AddOwnerModel
     {
         /// <summary>
         /// Owner's name.

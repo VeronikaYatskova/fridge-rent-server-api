@@ -1,7 +1,6 @@
-﻿
-namespace Fridge.Models.DTOs.FridgeDtos
+﻿namespace Fridge.Models.Responses
 {
-    public class RentDocumentDto
+    public class RentDocumentModel
     {
         public Guid Id { get; set; }
 

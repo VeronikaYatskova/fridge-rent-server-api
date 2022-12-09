@@ -1,9 +1,9 @@
 ﻿using Fridge.Controllers;
 using Fridge.Data.Models;
-using Fridge.Models.DTOs.FridgeProductDto.FridgeProductDto;
-using Fridge.Models.DTOs.ProductDtos;
+using Fridge.Models.Requests;
 using Fridge.Tests.Mocks;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace Fridge.Tests.Tests
 {
@@ -77,7 +77,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new ProductsController(fakeProductsService.Service, fakeFridgeProductService.Service);
 
-            var productUpdateDto = new ProductUpdateDto()
+            var updateProductModel = new UpdateProductModel()
             {
                 FridgeId = new Guid("385e96d7-37e4-47a1-83eb-1ef70d072c8f"),
                 ProductId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"),
@@ -86,7 +86,7 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            fakeFridgeProductService.Mock.Setup(s => s.UpdateProductAsync(productUpdateDto))
+            fakeFridgeProductService.Mock.Setup(s => s.UpdateProductAsync(updateProductModel))
                 .Returns(Task.FromResult(
                 new 
                 {
@@ -95,7 +95,7 @@ namespace Fridge.Tests.Tests
                     Count = 1,
                 }));
 
-            var response = await controller.UpdateProductAsync(productUpdateDto);
+            var response = await controller.UpdateProductAsync(updateProductModel);
 
             var noContentRequestResult = response as NoContentResult;
 

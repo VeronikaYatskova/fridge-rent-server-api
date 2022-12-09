@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Fridge.Models.DTOs.FridgeProductDtos
+namespace Fridge.Models.Requests
 {
-    public class FridgeProductDto
+    public class AddProductModel
     {
         [Required(ErrorMessage = "FridgeId is a required field.")]
         public Guid FridgeId { get; set; } = Guid.Empty;

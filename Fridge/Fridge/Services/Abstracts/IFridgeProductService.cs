@@ -1,19 +1,17 @@
-﻿using Fridge.Models.DTOs.FridgeProductDto;
-using Fridge.Models.DTOs.FridgeProductDto.FridgeProductDto;
-using Fridge.Models.DTOs.FridgeProductDtos;
-using Fridge.Models.DTOs.ProductDtos;
+﻿using Fridge.Models.Requests;
+using Fridge.Models.Responses;
 
 namespace Fridge.Services.Abstracts
 {
     public interface IFridgeProductService
     {
-        Task<IEnumerable<ProductWithCurrentCountAndNameDto>> GetProductsByFridgeIdAsync(Guid fridgeId);
+        Task<IEnumerable<ProductWithCurrentCountAndNameModel>> GetProductsByFridgeIdAsync(Guid fridgeId);
 
         Task FillTheFridgeWithProductAsync(Guid productId);
 
-        Task<AddProductDto> AddProductAsync(FridgeProductDto data);
+        Task AddProductAsync(AddProductModel addProductModel);
 
-        Task UpdateProductAsync(ProductUpdateDto productUpdateDto);
+        Task UpdateProductAsync(UpdateProductModel updateProductModel);
 
         Task DeleteProductFromFridgeAsync(string fridgeId, string productId);
     }

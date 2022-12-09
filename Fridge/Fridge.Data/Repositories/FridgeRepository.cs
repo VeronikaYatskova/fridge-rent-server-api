@@ -1,6 +1,6 @@
 ﻿using Fridge.Data.Context;
 using Fridge.Data.Repositories.Interfaces;
-using Fridge.Models.DTOs.FridgeDto;
+using Fridge.Models.Requests;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -30,17 +30,17 @@ namespace Fridge.Data.Repositories
             await FindByCondition(expression)!
             .ToListAsync();
 
-        public Guid AddFridge(FridgeServicePartDto data)
+        public Guid AddFridge(AddFridgeModel addFridgeModel)
         {
             var newFridge = new Models.Fridge
             {
-                Id = data.FridgeId,
-                ModelId = data.ModelId,
-                OwnerId = data.OwnerId,
-                ProducerId = data.ProducerId,
+                Id = addFridgeModel.FridgeId,
+                ModelId = addFridgeModel.ModelId,
+                OwnerId = addFridgeModel.OwnerId,
+                ProducerId = addFridgeModel.ProducerId,
                 RenterId = null,
                 RentDocumentId = null,
-                Capacity = data.Capacity,
+                Capacity = addFridgeModel.Capacity,
             };
 
             Create(newFridge);
@@ -51,7 +51,7 @@ namespace Fridge.Data.Repositories
         public void UpdateFridge(Models.Fridge fridge) =>
             Update(fridge);
 
-        public void RemoveFridge(Models.Fridge data) =>
-            Delete(data);
+        public void RemoveFridge(Models.Fridge fridge) =>
+            Delete(fridge);
     }
 }

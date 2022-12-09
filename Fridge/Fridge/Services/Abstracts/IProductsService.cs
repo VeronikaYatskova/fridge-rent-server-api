@@ -1,6 +1,5 @@
 ﻿using Fridge.Data.Models;
-using Fridge.Models.DTOs.ProductDtos;
-using Microsoft.AspNetCore.Mvc;
+using Fridge.Models.Requests;
 
 namespace Fridge.Services.Abstracts
 {
@@ -8,6 +7,6 @@ namespace Fridge.Services.Abstracts
     {
         Task<IEnumerable<Product>> GetProducts();
 
-        Task<ProductPicture> AddPicture(ProductPictureDto productPictureDto);
+        Task<ProductPicture> AddPicture(AddProductPictureModel productPictureDto);
     }
 }

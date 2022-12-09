@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace Fridge.Models.DTOs.ProductDtos
+namespace Fridge.Models.Requests
 {
-    public class ProductPictureDto
+    public class AddProductPictureModel
     {
         [Required(ErrorMessage = "ProductId is a required field.")]
         public Guid ProductId { get; set; }
