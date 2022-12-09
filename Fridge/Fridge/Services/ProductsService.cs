@@ -1,6 +1,8 @@
-﻿using Fridge.Data.Models;
+﻿using AutoMapper;
+using Fridge.Data.Models;
 using Fridge.Data.Repositories.Interfaces;
 using Fridge.Models.Requests;
+using Fridge.Models.Responses;
 using Fridge.Services.Abstracts;
 
 namespace Fridge.Services
@@ -10,20 +12,22 @@ namespace Fridge.Services
         private readonly ILogger<ProductsService> logger;
         private readonly IRepositoryManager repository;
         private IWebHostEnvironment environment;
-        
+        private IMapper mapper;
+
         private TokenInfo tokenInfo;
         private Renter? renter;
 
-        public ProductsService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<ProductsService> logger, IWebHostEnvironment environment)
+        public ProductsService(IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<ProductsService> logger, IWebHostEnvironment environment)
         {
             this.repository = repository;
             this.logger = logger;
             this.environment = environment;
+            this.mapper = mapper;
 
             tokenInfo = new TokenInfo(repository, httpContextAccessor);
         }
 
-        public async Task<IEnumerable<Product>> GetProducts()
+        public async Task<IEnumerable<ProductModel>> GetProducts()
         {
             var products = await repository.Product.GetAllProductsAsync();
 
@@ -33,12 +37,12 @@ namespace Fridge.Services
                 throw new ArgumentException("No products.");
             }
 
-            return products;
+            return mapper.Map<IEnumerable<ProductModel>>(products);
         }
 
-        public async Task<ProductPicture> AddPicture(AddProductPictureModel addProductPictureModel)
+        public async Task AddPicture(AddProductPictureModel addProductPictureModel)
         {
-            renter = tokenInfo.GetUser().Result;
+            renter = await tokenInfo.GetUser();
 
             string root = environment.WebRootPath + "\\Upload\\";
             string extension = Path.GetExtension(addProductPictureModel.File.FileName);
@@ -52,7 +56,7 @@ namespace Fridge.Services
                     Directory.CreateDirectory(root);
                 }
 
-                using FileStream fileStream = System.IO.File.Create(fullPath);
+                using FileStream fileStream = File.Create(fullPath);
 
                 await addProductPictureModel.File.CopyToAsync(fileStream);
                 await fileStream.FlushAsync();
@@ -69,8 +73,6 @@ namespace Fridge.Services
 
             repository.Picture.AddPicture(newPicture);
             await repository.SaveAsync();
-
-            return newPicture;
         }
     }
 }

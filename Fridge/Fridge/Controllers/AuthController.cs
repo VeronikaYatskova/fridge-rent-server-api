@@ -41,6 +41,10 @@ namespace Fridge.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         /// <summary>

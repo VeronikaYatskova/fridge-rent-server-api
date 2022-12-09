@@ -61,7 +61,7 @@ namespace Fridge.Services
 
         private async static Task<string?> GetUserGuid()
         {
-            var token = await httpContextAccessor?.HttpContext?.GetTokenAsync("accesstoken")!;
+            var token = await httpContextAccessor?.HttpContext?.GetTokenAsync("access_token")!;
 
             if (token is not null)
             {

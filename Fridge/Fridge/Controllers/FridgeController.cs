@@ -34,6 +34,7 @@ namespace Fridge.Controllers
             try
             {
                 var fridges = await fridgeService.GetFridges();
+
                 return Ok(fridges);
             }
             catch (ArgumentException ex)
@@ -215,7 +216,7 @@ namespace Fridge.Controllers
 
                 await fridgeService.AddFridge(addFridgeOwnerModel);
 
-                return Created("api/owner/fridge/add", addFridgeOwnerModel);
+                return Created("api/owner/fridge", addFridgeOwnerModel);
             }
             catch (ArgumentException ex)
             {
@@ -272,7 +273,7 @@ namespace Fridge.Controllers
 
                 await fridgeProductService.AddProductAsync(addProductModel);
 
-                return Created("api/products-in-fridge/product/new", addProductModel);
+                return Created("api/renter/fridge/product", addProductModel);
             }
             catch (ArgumentException ex)
             {

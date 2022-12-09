@@ -1,5 +1,4 @@
 using Fridge.Controllers;
-using Fridge.Data.Models;
 using Fridge.Tests.Mocks;
 using Microsoft.AspNetCore.Mvc;
 using Fridge.Models.Responses;
@@ -32,7 +31,6 @@ namespace Fridge.Tests.Tests
                     Owner = "veronika",
                     Producer = "Toshiba",
                     Capacity =  20,
-                    CurrentCount =  0,
                 },
                 new FridgeModel()
                 {
@@ -41,7 +39,6 @@ namespace Fridge.Tests.Tests
                     Owner = "veronika",
                     Producer = "Toshiba",
                     Capacity = 20,
-                    CurrentCount = 0,
                 }
             };
 
@@ -116,7 +113,7 @@ namespace Fridge.Tests.Tests
 
             var response = await controller.GetFridges();
 
-            var notFoundResult = response as NotFoundResult;
+            var notFoundResult = response as NotFoundObjectResult;
 
             // Assert
 
@@ -137,29 +134,29 @@ namespace Fridge.Tests.Tests
                 fakeFridgeProductService.Service
             );
 
-            IEnumerable<Model> actualModels = new List<Model>()
+            IEnumerable<FridgeModelModel> actualModels = new List<FridgeModelModel>()
             {
-                new Model
+                new FridgeModelModel
                 {
                     Id = new Guid("F8A3B786-D4B2-49D7-953B-578729B55A35"),
                     Name = "Indesit ITR 5200 W",
                 },
-                new Model
+                new FridgeModelModel
                 {
                     Id = new Guid("4A645006-5621-4536-9490-E1769FAC2F53"),
                     Name = "LG GA-B379SLUL",
                 },
-                new Model
+                new FridgeModelModel
                 {
                     Id = new Guid("44DC042A-3453-4C17-A4D1-CD8C0AC9378C"),
                     Name = "ATLANT XM-4208-000",
                 },
-                new Model
+                new FridgeModelModel
                 {
                     Id = new Guid("2182354C-D8CC-47BF-844F-4AAFABA1DBFE"),
                     Name = "ATLANT ул 4625-101 NL",
                 },
-                new Model
+                new FridgeModelModel
                 {
                     Id = new Guid("AF96137E-0B17-41B5-A819-A5A23DA0FD97"),
                     Name = "Toshiba GR-RF610WE-PMS",
@@ -194,33 +191,33 @@ namespace Fridge.Tests.Tests
                 fakeFridgeProductService.Service
             );
 
-            IEnumerable<Producer> actualProducers = new List<Producer>()
+            IEnumerable<FridgeProducerModel> actualProducers = new List<FridgeProducerModel>()
             {
-                new Producer
+                new FridgeProducerModel
                 {
                     Id = new Guid("D347DFE3-5CF9-49E8-8137-8880580F203B"),
                     Name = "ATLANT",
                     Country = "Belarus"
                 },
-                new Producer
+                new FridgeProducerModel
                 {
                     Id = new Guid("A8000178-A46B-4122-8758-2931E99C46E9"),
                     Name = "Indesit",
                     Country = "Russia"
                 },
-                new Producer
+                new FridgeProducerModel
                 {
                     Id = new Guid("38886C70-4593-47CE-9CD1-99D9831C2EB4"),
                     Name = "LG",
                     Country = "Russia"
                 },
-                new Producer
+                new FridgeProducerModel
                 {
                     Id = new Guid("0D08C561-361C-497E-BD21-06A7CE7D5516"),
                     Name = "Toshiba",
                     Country = "China"
                 },
-                new Producer
+                new FridgeProducerModel
                 {
                     Id = new Guid("8E652090-8FA2-4271-8E05-7934A0BA77A7"),
                     Name = "BEKO",
@@ -404,25 +401,23 @@ namespace Fridge.Tests.Tests
                 fakeFridgeProductService.Service
             );
 
-            IEnumerable<FridgeModel> actualFridges = new List<FridgeModel>()
+            IEnumerable<OwnerFridgeModel> actualFridges = new List<OwnerFridgeModel>()
             {
-                new FridgeModel()
+                new OwnerFridgeModel
                 {
                     Id = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"),
                     Model = "Toshiba GR-RF610WE-PMS",
                     Owner = "veronika",
                     Producer = "Toshiba",
                     Capacity =  20,
-                    CurrentCount =  0,
                 },
-                new FridgeModel()
+                new OwnerFridgeModel
                 {
                     Id = new Guid("332ddb8c-57d6-4bbb-a3ea-4d33f5f30fc7"),
                     Model = "Toshiba GR-RF610WE-PMS",
                     Owner = "veronika",
                     Producer = "Toshiba",
                     Capacity = 20,
-                    CurrentCount = 0,
                 }
             };
 
@@ -435,7 +430,7 @@ namespace Fridge.Tests.Tests
 
             var okResult = response as OkObjectResult;
 
-            var fridges = okResult?.Value as List<FridgeModel>;
+            var fridges = okResult?.Value as List<OwnerFridgeModel>;
 
             // Assert
 
@@ -523,12 +518,9 @@ namespace Fridge.Tests.Tests
 
             var createdResult = response as CreatedResult;
 
-            var newFridge = createdResult?.Value as AddFridgeModel;
-
             // Assert
 
             Assert.Equal(201, createdResult?.StatusCode);
-            Assert.NotNull(newFridge);
         }
 
         [Fact]
@@ -573,9 +565,9 @@ namespace Fridge.Tests.Tests
                 fakeFridgeProductService.Service
             );
 
-            IEnumerable<FridgeModel> actualFridges = new List<FridgeModel>()
+            IEnumerable<FridgeRenterModel> actualFridges = new List<FridgeRenterModel>()
             {
-                new FridgeModel()
+                new FridgeRenterModel()
                 {
                     Id = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"),
                     Model = "Toshiba GR-RF610WE-PMS",
@@ -584,7 +576,7 @@ namespace Fridge.Tests.Tests
                     Capacity =  20,
                     CurrentCount =  0,
                 },
-                new FridgeModel()
+                new FridgeRenterModel()
                 {
                     Id = new Guid("332ddb8c-57d6-4bbb-a3ea-4d33f5f30fc7"),
                     Model = "Toshiba GR-RF610WE-PMS",
@@ -604,7 +596,7 @@ namespace Fridge.Tests.Tests
 
             var okResult = response as OkObjectResult;
 
-            var fridges = okResult?.Value as List<FridgeModel>;
+            var fridges = okResult?.Value as List<FridgeRenterModel>;
 
             // Assert
 
@@ -628,7 +620,7 @@ namespace Fridge.Tests.Tests
 
             var fridgeId = Guid.NewGuid();
 
-            var fridgeServicePartDto = new AddFridgeModel()
+            var addFridgeModel = new AddFridgeModel()
             {
                 FridgeId = fridgeId,
                 ModelId = Guid.NewGuid(),
@@ -640,7 +632,7 @@ namespace Fridge.Tests.Tests
             // Act
 
             fakeFridgeService.Mock.Setup(s => s.RentFridge(fridgeId))
-                .Returns(Task.FromResult(fridgeServicePartDto));
+                .Returns(Task.FromResult(addFridgeModel));
 
             var response = await controller.RentFridge(fridgeId);
 

@@ -3,6 +3,7 @@ using Fridge.Data.Repositories.Interfaces;
 using Fridge.Services.Abstracts;
 using Fridge.Models.Responses;
 using Fridge.Models.Requests;
+using AutoMapper;
 
 namespace Fridge.Services
 {
@@ -10,16 +11,18 @@ namespace Fridge.Services
     {
         private readonly IRepositoryManager repository;
         private readonly ILogger<FridgeService> logger;
+        private readonly IMapper mapper;
 
         private readonly TokenInfo tokenInfo;
 
         private Owner? owner;
         private Renter? renter;
 
-        public FridgeService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<FridgeService> logger)
+        public FridgeService(IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<FridgeService> logger)
         {
             this.repository = repository;
             this.logger = logger;
+            this.mapper = mapper;
 
             tokenInfo = new TokenInfo(repository, httpContextAccessor);
         }
@@ -50,21 +53,21 @@ namespace Fridge.Services
             return fridgesDto.ToList();
         }
 
-        public async Task<IEnumerable<Model>> GetModels()
+        public async Task<IEnumerable<FridgeModelModel>> GetModels()
         {
             var models = await repository.Model.GetAllModels();
 
-            return models.ToList();
+            return mapper.Map<IEnumerable<FridgeModelModel>>(models);
         }
 
-        public async Task<IEnumerable<Producer>> GetProducers()
+        public async Task<IEnumerable<FridgeProducerModel>> GetProducers()
         {
             var producers = await repository.Producer.GetAllProducers();
 
-            return producers.ToList();
+            return mapper.Map<IEnumerable<FridgeProducerModel>>(producers);
         }
 
-        public async Task<IEnumerable<FridgeModel>> GetOwnersFridges()
+        public async Task<IEnumerable<OwnerFridgeModel>> GetOwnersFridges()
         {
             owner = await tokenInfo.GetOwner();
 
@@ -80,13 +83,13 @@ namespace Fridge.Services
 
             Renter? renter = new Renter();
 
-            var fridgesDto = fridges.Select(fridge => new FridgeModel
+            var fridgesDto = fridges.Select(fridge => new OwnerFridgeModel
             {
                 Id = fridge.Id,
                 Model = repository.Model.GetModelByIdAsync(fridge.ModelId).Name,
                 Owner = repository.Owner.GetOwnerByIdAsync(fridge.OwnerId).Result.Name,
                 Producer = repository.Producer.GetProducerByIdAsync(fridge.ProducerId).Result.Name,
-                Renter = (renter = getRenter(fridge.RenterId)) is null ? null : renter.Email,
+                Renter = (renter = getRenter(fridge.RenterId)) is null ? "No renter" : renter.Email,
                 Capacity = fridge.Capacity,
             });
 
@@ -128,7 +131,7 @@ namespace Fridge.Services
             return rentDocumentDto;
         }
 
-        public async Task<IEnumerable<FridgeModel>> GetRentersFridges()
+        public async Task<IEnumerable<FridgeRenterModel>> GetRentersFridges()
         {
             renter = await tokenInfo.GetUser();
 
@@ -140,15 +143,12 @@ namespace Fridge.Services
                 throw new ArgumentException("No fridges");
             }
 
-            var allFridges = await repository.Fridge.GetFridgesAsync();
-
-            var fridges = allFridges.Select(fridge => new FridgeModel
+            var fridges = renterFridges.Select(fridge => new FridgeRenterModel
             {
                 Id = fridge.Id,
                 Model = repository.Model.GetModelByIdAsync(fridge.ModelId).Name,
                 Owner = repository.Owner.GetOwnerByIdAsync(fridge.OwnerId).Result.Name,
                 Producer = repository.Producer.GetProducerByIdAsync(fridge.ProducerId).Result.Name,
-                Renter = repository.Renter.FindRenterByCondition(r => r.Id == renter.Id).Email,
                 Capacity = fridge.Capacity,
                 CurrentCount = repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridge.Id).Result.Select(f => f.Count).Sum(),
             }).ToList();

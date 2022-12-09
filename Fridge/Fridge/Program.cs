@@ -11,6 +11,7 @@ using Fridge.Data.Context;
 using Fridge.Services.Abstracts;
 using Fridge.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAutoMapper(typeof(Program));

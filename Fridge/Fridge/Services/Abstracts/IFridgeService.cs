@@ -8,15 +8,15 @@ namespace Fridge.Services.Abstracts
     {
         Task<IEnumerable<FridgeModel>> GetFridges();
 
-        Task<IEnumerable<Model>> GetModels();
+        Task<IEnumerable<FridgeModelModel>> GetModels();
 
-        Task<IEnumerable<Producer>> GetProducers();
+        Task<IEnumerable<FridgeProducerModel>> GetProducers();
 
-        Task<IEnumerable<FridgeModel>> GetOwnersFridges();
+        Task<IEnumerable<OwnerFridgeModel>> GetOwnersFridges();
 
         Task<RentDocumentModel> GetRentedFridgeInfo(Guid fridgeId);
 
-        Task<IEnumerable<FridgeModel>> GetRentersFridges();
+        Task<IEnumerable<FridgeRenterModel>> GetRentersFridges();
 
         Task AddFridge(AddFridgeOwnerModel addFridgeOwnerModel);
 

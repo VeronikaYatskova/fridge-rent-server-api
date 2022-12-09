@@ -62,9 +62,9 @@ namespace Fridge.Controllers
                     return UnprocessableEntity(ModelState);
                 }
 
-                var newPicture = productsService.AddPicture(productPictureDto);
+                productsService.AddPicture(productPictureDto);
 
-                return Ok(newPicture);
+                return Created("api/product", productPictureDto.ImageName);
             }
             catch (Exception)
             {

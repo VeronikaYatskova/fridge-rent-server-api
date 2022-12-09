@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Fridge.Data.Models;
+using Fridge.Models.Responses;
 
 namespace Fridge.Utils.Mappings
 {
@@ -6,7 +8,9 @@ namespace Fridge.Utils.Mappings
     {
         public MapperProfile()
         {
-            // CreateMap<Data.Models.Fridge, OwnerFridge>();
+            CreateMap<Model, FridgeModelModel>();
+            CreateMap<Producer, FridgeProducerModel>();
+            CreateMap<Product, ProductModel>();
         }
     }
 }

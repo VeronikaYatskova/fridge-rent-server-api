@@ -43,15 +43,18 @@ namespace Fridge.Data.Models
         public Guid ProducerId { get; set; }
         public Producer Producer { get; set; }
 
-
+        /// <summary>
+        /// Renter identifier.
+        /// </summary>
         public Guid? RenterId { get; set; }
         public Renter? Renter { get; set; }
 
-
+        /// <summary>
+        /// Rent Document identifier.
+        /// </summary>
         public Guid? RentDocumentId { get; set; }
         public RentDocument? RentDocument { get; set; }
 
-        [NotMapped]
         public IList<FridgeProduct>? ProductsInFridge { get; set; }
     }
 }

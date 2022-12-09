@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
 
 namespace Fridge.Models.Responses
 {
-    public class FridgeModel
+    public class FridgeRenterModel
     {
         public Guid Id { get; set; }
 
@@ -13,5 +13,7 @@ namespace Fridge.Models.Responses
         public string Producer { get; set; }
 
         public int Capacity { get; set; }
+
+        public int CurrentCount { get; set; } = 0;
     }
 }

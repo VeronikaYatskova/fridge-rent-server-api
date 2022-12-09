@@ -59,7 +59,7 @@ namespace Fridge.Tests.Tests
 
             var response = await controller.RegisterRenter(addRenterModel);
 
-            var badRequestResult = response as BadRequestResult;
+            var badRequestResult = response as BadRequestObjectResult;
 
             // Assert
 
@@ -88,7 +88,7 @@ namespace Fridge.Tests.Tests
 
             var response = await controller.RegisterRenter(addRenterModel);
 
-            var badRequestResult = response as BadRequestResult;
+            var badRequestResult = response as BadRequestObjectResult;
 
             // Assert
 
@@ -151,7 +151,7 @@ namespace Fridge.Tests.Tests
 
             var response = await controller.RegisterOwner(addOwnerModel);
 
-            var badRequestResult = response as BadRequestResult;
+            var badRequestResult = response as BadRequestObjectResult;
 
             // Assert
             Assert.Equal(400, badRequestResult.StatusCode);
@@ -181,7 +181,7 @@ namespace Fridge.Tests.Tests
 
             var response = await controller.RegisterOwner(addOwnerModel);
 
-            var badRequestResult = response as BadRequestResult;
+            var badRequestResult = response as BadRequestObjectResult;
 
             // Assert
             Assert.Equal(400, badRequestResult.StatusCode);

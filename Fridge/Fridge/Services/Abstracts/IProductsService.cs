@@ -1,12 +1,13 @@
 ﻿using Fridge.Data.Models;
 using Fridge.Models.Requests;
+using Fridge.Models.Responses;
 
 namespace Fridge.Services.Abstracts
 {
     public interface IProductsService
     {
-        Task<IEnumerable<Product>> GetProducts();
+        Task<IEnumerable<ProductModel>> GetProducts();
 
-        Task<ProductPicture> AddPicture(AddProductPictureModel productPictureDto);
+        Task AddPicture(AddProductPictureModel productPictureDto);
     }
 }
