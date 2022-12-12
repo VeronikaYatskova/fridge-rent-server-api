@@ -9,6 +9,7 @@ namespace Fridge.Data.Models
         /// Producer identifier.
         /// </summary>
         [Key]
+        [Required(ErrorMessage = "Id is a required field.")]
         [Column("ProducerId")]
         public Guid Id { get; set; }
 
@@ -28,7 +29,6 @@ namespace Fridge.Data.Models
         [MaxLength(60, ErrorMessage = "Maximum length for the Country is 60 characters")]
         public string Country { get; set; }
 
-        [NotMapped]
         public ICollection<Models.Fridge> Fridges { get; set; }
     }
 }

@@ -19,7 +19,6 @@ namespace Fridge.Data.Models
         /// Fridge identifier.
         /// </summary>
         [Required]
-        [ForeignKey(nameof(Fridge))]
         public Guid FridgeId { get; set; }
         public Fridge Fridge { get; set; }
 
@@ -27,7 +26,6 @@ namespace Fridge.Data.Models
         /// Product identifier.
         /// </summary>
         [Required]
-        [ForeignKey(nameof(Product))]
         public Guid ProductId { get; set; }
         public Product Product { get; set; }
     }

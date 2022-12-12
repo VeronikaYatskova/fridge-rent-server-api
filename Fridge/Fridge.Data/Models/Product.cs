@@ -8,7 +8,7 @@ namespace Fridge.Data.Models
         /// <summary>
         /// Product identifier.
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "Id is a required field.")]
         [Key]
         [Column("ProductId")]
         public Guid Id { get; set; }

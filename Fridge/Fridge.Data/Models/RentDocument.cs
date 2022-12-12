@@ -4,8 +4,8 @@ namespace Fridge.Data.Models
 {
     public class RentDocument
     {
-        [Required]
         [Key]
+        [Required]
         public Guid Id { get; set; }
 
         [Required(ErrorMessage = "StartDate is a requird field.")]

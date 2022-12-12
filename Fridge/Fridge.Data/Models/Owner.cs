@@ -11,7 +11,7 @@ namespace Fridge.Data.Models
         /// </summary>
         [Key] 
         [Column("OwnerId")]
-        [Required]
+        [Required(ErrorMessage = "Id is a required field.")]
         public Guid Id { get; set; }
 
         /// <summary>
@@ -35,10 +35,8 @@ namespace Fridge.Data.Models
         [MaxLength(60, ErrorMessage = "Maximum length for the Phone is 60 characters")]
         public string Phone { get; set; }
 
-        [NotMapped]
         public string Role { get; } = UserRoles.Owner;
 
-        [NotMapped]
         public ICollection<Models.Fridge> Fridges { get; set; }
     }
 }

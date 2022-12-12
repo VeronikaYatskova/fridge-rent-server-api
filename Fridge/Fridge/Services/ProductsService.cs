@@ -5,6 +5,7 @@ using Fridge.Models.Requests;
 using Fridge.Models.Responses;
 using Fridge.Services.Abstracts;
 
+
 namespace Fridge.Services
 {
     public class ProductsService : IProductsService
@@ -40,7 +41,7 @@ namespace Fridge.Services
             return mapper.Map<IEnumerable<ProductModel>>(products);
         }
 
-        public async Task AddPicture(AddProductPictureModel addProductPictureModel)
+        public async Task AddPictureAsync(AddProductPictureModel addProductPictureModel)
         {
             renter = await tokenInfo.GetUser();
 

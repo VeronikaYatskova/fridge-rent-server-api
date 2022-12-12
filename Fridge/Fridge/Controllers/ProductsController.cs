@@ -62,7 +62,7 @@ namespace Fridge.Controllers
                     return UnprocessableEntity(ModelState);
                 }
 
-                productsService.AddPicture(productPictureDto);
+                await productsService.AddPictureAsync(productPictureDto);
 
                 return Created("api/product", productPictureDto.ImageName);
             }

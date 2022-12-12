@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Fridge.Models.Responses;
 using Fridge.Models.Requests;
 
+
 namespace Fridge.Tests.Tests
 {
     public class FridgeControllerTests
@@ -84,11 +85,11 @@ namespace Fridge.Tests.Tests
 
             var okResult = response as OkObjectResult;
 
-            var fridges = okResult.Value as List<FridgeModel>;
+            var fridges = okResult?.Value as List<FridgeModel>;
 
             // Assert
 
-            Assert.Equal(200, okResult.StatusCode);
+            Assert.Equal(200, okResult?.StatusCode);
             Assert.Empty(fridges);
         }
 
@@ -174,7 +175,7 @@ namespace Fridge.Tests.Tests
 
             // Assert
 
-            Assert.Equal(200, okResult.StatusCode);
+            Assert.Equal(200, okResult?.StatusCode);
         }
 
         [Fact]
@@ -236,7 +237,7 @@ namespace Fridge.Tests.Tests
 
             // Assert
 
-            Assert.Equal(200, okResult.StatusCode);
+            Assert.Equal(200, okResult?.StatusCode);
         }
 
 
@@ -284,7 +285,7 @@ namespace Fridge.Tests.Tests
 
             // Assert
 
-            Assert.Equal(200, okRequestResult.StatusCode);
+            Assert.Equal(200, okRequestResult?.StatusCode);
         }
 
         [Fact]
@@ -311,7 +312,7 @@ namespace Fridge.Tests.Tests
 
             // Assert
 
-            Assert.Equal(200, okRequestResult.StatusCode);
+            Assert.Equal(200, okRequestResult?.StatusCode);
         }
 
         [Fact]
@@ -353,7 +354,7 @@ namespace Fridge.Tests.Tests
 
             // Assert
 
-            Assert.Equal(201, okRequestResult.StatusCode);
+            Assert.Equal(201, okRequestResult?.StatusCode);
         }
 
         [Fact]
@@ -372,8 +373,8 @@ namespace Fridge.Tests.Tests
                 fakeFridgeProductService.Service
             );
 
-            var fridgeId = "385e96d7-37e4-47a1-83eb-1ef70d072c8f";
-            var productId = "203e97d9-37e4-47a1-83eb-1ef70d072c6f";
+            var fridgeId = new Guid("385e96d7-37e4-47a1-83eb-1ef70d072c8f");
+            var productId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f");
 
             // Act
 
@@ -383,7 +384,7 @@ namespace Fridge.Tests.Tests
 
             // Assert
 
-            Assert.Equal(200, okResult.StatusCode);
+            Assert.Equal(200, okResult?.StatusCode);
         }
 
 

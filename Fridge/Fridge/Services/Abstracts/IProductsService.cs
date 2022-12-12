@@ -8,6 +8,6 @@ namespace Fridge.Services.Abstracts
     {
         Task<IEnumerable<ProductModel>> GetProducts();
 
-        Task AddPicture(AddProductPictureModel productPictureDto);
+        Task AddPictureAsync(AddProductPictureModel productPictureDto);
     }
 }

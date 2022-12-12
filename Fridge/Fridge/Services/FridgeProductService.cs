@@ -132,24 +132,21 @@ namespace Fridge.Services
             await repository.SaveAsync();
         }
 
-        public async Task DeleteProductFromFridgeAsync(string fridgeId, string productId)
+        public async Task DeleteProductFromFridgeAsync(Guid fridgeId, Guid productId)
         {
             renter = await tokenInfo.GetUser();
 
-            var productGuid = Guid.Parse(productId);
-            var fridgeGuid = Guid.Parse(fridgeId);
-
-            var isRentersFridge = await IsRentersFridge(fridgeGuid);
+            var isRentersFridge = await IsRentersFridge(fridgeId);
             if (!isRentersFridge)
             {
                 logger.LogError($"You don't have a fridge with id {fridgeId} in your rented.");
                 throw new ArgumentException("Fridge is not found...");
             }
 
-            var fridgeProduct = await repository.FridgeProduct.GetProductByIdAsync(fridgeGuid, productGuid);
+            var fridgeProduct = await repository.FridgeProduct.GetProductByIdAsync(fridgeId, productId);
             if (fridgeProduct is null)
             {
-                logger.LogError($"Fridge with id {fridgeGuid} doesn't contain product with id {productGuid} in the database.");
+                logger.LogError($"Fridge with id {fridgeId} doesn't contain product with id {productId} in the database.");
                 throw new ArgumentException("Product in the fridge is not found...");
             }
 

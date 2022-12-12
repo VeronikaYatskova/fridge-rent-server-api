@@ -13,6 +13,6 @@ namespace Fridge.Services.Abstracts
 
         Task UpdateProductAsync(UpdateProductModel updateProductModel);
 
-        Task DeleteProductFromFridgeAsync(string fridgeId, string productId);
+        Task DeleteProductFromFridgeAsync(Guid fridgeId, Guid productId);
     }
 }

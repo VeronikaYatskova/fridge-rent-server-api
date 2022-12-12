@@ -211,7 +211,7 @@ namespace Fridge.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    throw new ArgumentException("Invalid data");
+                    return UnprocessableEntity(ModelState);
                 }
 
                 await fridgeService.AddFridge(addFridgeOwnerModel);
@@ -268,7 +268,7 @@ namespace Fridge.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    throw new ArgumentException("Invalid data");
+                    return UnprocessableEntity(ModelState);
                 }
 
                 await fridgeProductService.AddProductAsync(addProductModel);
@@ -320,7 +320,7 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Delete))]
         [HttpDelete("renter/fridge/{fridgeId}/product/{productId}")]
         [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> DeleteProductFromFridge(string fridgeId, string productId)
+        public async Task<IActionResult> DeleteProductFromFridge(Guid fridgeId, Guid productId)
         {
             try
             {

@@ -30,7 +30,7 @@ namespace Fridge.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    throw new ArgumentException("Invalid data");
+                    return UnprocessableEntity(ModelState);
                 }
 
                 var token = await authorizationService.RegisterRenter(addRenterModel);
@@ -60,7 +60,7 @@ namespace Fridge.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    throw new ArgumentException("Invalid data");
+                    return UnprocessableEntity(ModelState);
                 }
 
                 var token = await authorizationService.RegisterOwner(addOwnerModel);
@@ -90,7 +90,7 @@ namespace Fridge.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    throw new ArgumentException("Invalid data");
+                    return UnprocessableEntity(ModelState);
                 }
 
                 var token = authorizationService.LoginRenter(loginModel);
@@ -120,7 +120,7 @@ namespace Fridge.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    throw new ArgumentException("Invalid data");
+                    return UnprocessableEntity(ModelState);
                 }
 
                 var token = authorizationService.LoginOwner(loginModel);

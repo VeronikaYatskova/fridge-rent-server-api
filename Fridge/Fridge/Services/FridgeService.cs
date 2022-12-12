@@ -5,6 +5,7 @@ using Fridge.Models.Responses;
 using Fridge.Models.Requests;
 using AutoMapper;
 
+
 namespace Fridge.Services
 {
     public class FridgeService : IFridgeService
