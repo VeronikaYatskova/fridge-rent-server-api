@@ -37,6 +37,6 @@ namespace Fridge.Data.Models
 
         public string Role { get; } = UserRoles.Owner;
 
-        public ICollection<Models.Fridge> Fridges { get; set; }
+        public virtual ICollection<Models.Fridge> Fridges { get; set; }
     }
 }

@@ -8,8 +8,6 @@ namespace Fridge.Data.Repositories.Interfaces
     {
         Task<IEnumerable<Models.Fridge>?> GetAvailableFridgesAsync();
 
-        Task<IEnumerable<Models.Fridge>?> GetFridgesAsync();
-
         Task<Models.Fridge?> GetFridgeByIdAsync(Guid id);
 
         Task<IEnumerable<Models.Fridge>?> GetFridgeByConditionAsync(Expression<Func<Models.Fridge, bool>> expression);

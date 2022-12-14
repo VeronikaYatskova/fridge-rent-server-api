@@ -20,6 +20,6 @@ namespace Fridge.Data.Models
         [MaxLength(60, ErrorMessage = "Maximum length for the Name is 60 characters")]
         public string Name { get; set; }
 
-        public ICollection<Models.Fridge> Fridges { get; set; }
+        public virtual ICollection<Models.Fridge> Fridges { get; set; }
     }
 }

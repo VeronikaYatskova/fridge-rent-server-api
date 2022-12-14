@@ -29,7 +29,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 
 builder.Services.AddDbContext<RepositoryContext>(opts =>
-    opts.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection"), b => b.MigrationsAssembly("Fridge")));
+    opts.UseLazyLoadingProxies()
+    .UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection"), b => b.MigrationsAssembly("Fridge")));
 
 builder.Services.AddLogging();
 

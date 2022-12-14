@@ -16,9 +16,6 @@ namespace Fridge.Data.Repositories.Interfaces
         public Renter? FindByEmail(string email) =>
             FindByCondition(u => u.Email == email)?.FirstOrDefault();
 
-        public Renter? GetRenterById(Guid? renterId) =>
-            FindByCondition(r => r.Id == renterId)?.FirstOrDefault();
-        
         public Renter? FindRenterByCondition(Expression<Func<Renter, bool>> condition) =>
             FindByCondition(condition)?.FirstOrDefault();
     }

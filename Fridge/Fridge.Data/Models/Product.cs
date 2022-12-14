@@ -28,8 +28,8 @@ namespace Fridge.Data.Models
         [Range(10, int.MaxValue, ErrorMessage = "DefaultQuantity is required and it can't be less than 10")]
         public int DefaultQuantity { get; set; }
 
-        public IList<FridgeProduct> ProductsInFridge { get; set; }
+        public virtual IList<FridgeProduct> ProductsInFridge { get; set; }
 
-        public ICollection<ProductPicture> ProductPictures { get; set; }
+        public virtual ICollection<ProductPicture> ProductPictures { get; set; }
     }
 }

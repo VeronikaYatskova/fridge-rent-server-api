@@ -45,9 +45,9 @@ namespace Fridge.Services
             var fridgesDto = fridges.Select(fridge => new FridgeModel
             {
                 Id = fridge.Id,
-                Model = repository.Model.GetModelByIdAsync(fridge.ModelId).Name,
-                Owner = repository.Owner.GetOwnerByIdAsync(fridge.OwnerId).Result.Name,
-                Producer = repository.Producer.GetProducerByIdAsync(fridge.ProducerId).Result.Name,
+                Model = fridge.Model.Name,
+                Owner = fridge.Owner.Name,
+                Producer = fridge.Producer.Name,
                 Capacity = fridge.Capacity,
             });
 
@@ -72,7 +72,7 @@ namespace Fridge.Services
         {
             owner = await tokenInfo.GetOwner();
 
-            var fridges = await repository.Fridge.GetFridgeByConditionAsync(f => f.OwnerId == owner.Id);
+            var fridges = owner?.Fridges;
 
             if (fridges?.Count() == 0 || fridges is null)
             {
@@ -80,17 +80,13 @@ namespace Fridge.Services
                 throw new ArgumentException("Owner doesn't have any fridges.");
             }
 
-            Func<Guid?, Renter?> getRenter = repository.Renter.GetRenterById;
-
-            Renter? renter = new Renter();
-
             var fridgesDto = fridges.Select(fridge => new OwnerFridgeModel
             {
                 Id = fridge.Id,
-                Model = repository.Model.GetModelByIdAsync(fridge.ModelId).Name,
-                Owner = repository.Owner.GetOwnerByIdAsync(fridge.OwnerId).Result.Name,
-                Producer = repository.Producer.GetProducerByIdAsync(fridge.ProducerId).Result.Name,
-                Renter = (renter = getRenter(fridge.RenterId)) is null ? "No renter" : renter.Email,
+                Model = fridge.Model.Name,
+                Owner = fridge.Owner.Name,
+                Producer = fridge.Producer.Name,
+                Renter = fridge.Renter is null ? "No renter" : fridge.Renter.Email,
                 Capacity = fridge.Capacity,
             });
 
@@ -100,8 +96,6 @@ namespace Fridge.Services
         public async Task<RentDocumentModel> GetRentedFridgeInfo(Guid fridgeId)
         {
             owner = await tokenInfo.GetOwner();
-
-            var rentDocument = new RentDocument();
 
             var fridge = await repository.Fridge.GetFridgeByIdAsync(fridgeId);
 
@@ -115,14 +109,12 @@ namespace Fridge.Services
                 throw new ArgumentException("The fridge is not rented...");
             }
 
-            var rentedFridgeRentDocumentId = fridge.RentDocumentId;
-
-            rentDocument = repository.RentDocument.FindDocumentByCondition(d => d.Id == rentedFridgeRentDocumentId);
+            var rentDocument = fridge.RentDocument;
 
             var rentDocumentDto = new RentDocumentModel
             {
-                Id = rentDocument.Id,
-                RenterEmail = repository.Renter.FindRenterByCondition(u => u.Id == rentDocument.RenterId).Email,
+                Id = (Guid)fridge.RentDocumentId!,
+                RenterEmail = fridge.Renter.Email,
                 OwnerName = owner!.Name,
                 StartDate = rentDocument.StartDate.ToShortDateString(),
                 EndDate = rentDocument.EndDate.ToShortDateString(),
@@ -136,7 +128,7 @@ namespace Fridge.Services
         {
             renter = await tokenInfo.GetUser();
 
-            var renterFridges = await repository.Fridge.GetFridgeByConditionAsync(f => f.RenterId == renter.Id);
+            var renterFridges = renter?.Fridges;
 
             if (!renterFridges.Any())
             {
@@ -147,11 +139,13 @@ namespace Fridge.Services
             var fridges = renterFridges.Select(fridge => new FridgeRenterModel
             {
                 Id = fridge.Id,
-                Model = repository.Model.GetModelByIdAsync(fridge.ModelId).Name,
-                Owner = repository.Owner.GetOwnerByIdAsync(fridge.OwnerId).Result.Name,
-                Producer = repository.Producer.GetProducerByIdAsync(fridge.ProducerId).Result.Name,
+                Model = fridge.Model.Name,
+                Owner = fridge.Owner.Name,
+                Producer = fridge.Producer.Name,
                 Capacity = fridge.Capacity,
-                CurrentCount = repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridge.Id).Result.Select(f => f.Count).Sum(),
+                CurrentCount = repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridge.Id).Result
+                                                       .Select(f => f.Count)
+                                                       .Sum(),
             }).ToList();
 
             await repository.SaveAsync();
@@ -212,7 +206,7 @@ namespace Fridge.Services
         {
             owner = await tokenInfo.GetOwner();
 
-            var fridges = await repository.Fridge.GetFridgeByConditionAsync(f => f.Id == fridgeId && f.OwnerId == owner.Id);
+            var fridges = owner?.Fridges;
 
             if (fridges is null || fridges.Count() == 0)
             {
@@ -247,11 +241,12 @@ namespace Fridge.Services
             var productsInFridge = await repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridgeId);
             productsInFridge.ToList().ForEach(product => repository.FridgeProduct.DeleteProduct(product));
 
-            var document = repository.RentDocument.FindDocumentByCondition(d => d.Id == fridge.RentDocumentId);
-            repository.RentDocument.RemoveDocument(document);
+            repository.RentDocument.RemoveDocument(fridge.RentDocument);
 
-            fridge.RentDocumentId = null;
+            //fridge.RentDocumentId = null;
+            //fridge.RentDocument = null;
             fridge.RenterId = null;
+            fridge.Renter = null;
 
             repository.Fridge.UpdateFridge(fridge);
 

@@ -27,34 +27,34 @@ namespace Fridge.Data.Models
         //[ForeignKey(nameof(Model))]
         [Required(ErrorMessage = "ModelId is a required field.")]
         public Guid ModelId { get; set; }
-        public Model Model { get; set; }
+        public virtual Model Model { get; set; }
 
         /// <summary>
         /// Owner identifier.
         /// </summary>
         [Required(ErrorMessage = "OwnerId is a required field.")]
         public Guid OwnerId { get; set; }
-        public Owner Owner { get; set; }
+        public virtual Owner Owner { get; set; }
 
         /// <summary>
         /// Producer identifier.
         /// </summary>
         [Required(ErrorMessage = "ProducerId is a required field.")]
         public Guid ProducerId { get; set; }
-        public Producer Producer { get; set; }
+        public virtual Producer Producer { get; set; }
 
         /// <summary>
         /// Renter identifier.
         /// </summary>
         public Guid? RenterId { get; set; }
-        public Renter? Renter { get; set; }
+        public virtual Renter? Renter { get; set; }
 
         /// <summary>
         /// Rent Document identifier.
         /// </summary>
         public Guid? RentDocumentId { get; set; }
-        public RentDocument? RentDocument { get; set; }
+        public virtual RentDocument? RentDocument { get; set; }
 
-        public IList<FridgeProduct>? ProductsInFridge { get; set; }
+        public virtual IList<FridgeProduct>? ProductsInFridge { get; set; }
     }
 }

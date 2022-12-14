@@ -9,8 +9,6 @@ namespace Fridge.Data.Repositories.Interfaces
 
         Owner? FindByEmail(string email);
 
-        Task<Owner> GetOwnerByIdAsync(Guid id);
-
         Task<Owner> GetOwnerByConditionAsync(Expression<Func<Owner, bool>> condition);
     }
 }

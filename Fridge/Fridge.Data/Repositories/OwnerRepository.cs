@@ -19,10 +19,6 @@ namespace Fridge.Data.Repositories
             FindByCondition(o => o.Email == email)
             ?.FirstOrDefault();
 
-        public async Task<Owner?> GetOwnerByIdAsync(Guid id) =>
-            await FindByCondition(o => o.Id == id)
-            .FirstOrDefaultAsync();
-
         public async Task<Owner?> GetOwnerByConditionAsync(Expression<Func<Owner, bool>> condition) =>
             await FindByCondition(condition)
             .FirstOrDefaultAsync();

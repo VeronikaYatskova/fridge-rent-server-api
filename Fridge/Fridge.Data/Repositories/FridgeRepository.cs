@@ -18,10 +18,6 @@ namespace Fridge.Data.Repositories
             .OrderBy(f => f.Id)
             .ToListAsync();
 
-        public async Task<IEnumerable<Models.Fridge>?> GetFridgesAsync() =>
-            await FindAll()!
-            .ToListAsync();
-
         public async Task<Models.Fridge?> GetFridgeByIdAsync(Guid id) =>
             await FindByCondition(f => f.Id == id)!
             .FirstOrDefaultAsync();

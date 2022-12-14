@@ -20,13 +20,13 @@ namespace Fridge.Data.Models
         /// </summary>
         [Required]
         public Guid FridgeId { get; set; }
-        public Fridge Fridge { get; set; }
+        public virtual Fridge Fridge { get; set; }
 
         /// <summary>
         /// Product identifier.
         /// </summary>
         [Required]
         public Guid ProductId { get; set; }
-        public Product Product { get; set; }
+        public virtual Product Product { get; set; }
     }
 }

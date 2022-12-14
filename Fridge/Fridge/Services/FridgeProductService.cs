@@ -27,8 +27,7 @@ namespace Fridge.Services
         {
             renter = await tokenInfo.GetUser();
 
-            var isRentersFridge = await IsRentersFridge(fridgeId);
-            if (!isRentersFridge)
+            if (IsRentersFridge(fridgeId))
             {
                 logger.LogInformation($"You don't have a fridge with id {fridgeId} in your rented.");
                 throw new ArgumentException("Fridge is not found in your fridges");
@@ -45,7 +44,7 @@ namespace Fridge.Services
             var productsWithCount = products.Select(p => new ProductWithCurrentCountAndNameModel
             {
                 Id = p.ProductId,
-                Name = repository.Product.GetProductByIdAsync(p.ProductId).Result.Name,
+                Name = p.Product.Name,
                 Count = p.Count,
             });
 
@@ -71,7 +70,7 @@ namespace Fridge.Services
         {
             renter = await tokenInfo.GetUser();
 
-            var isRentersFridge = await IsRentersFridge(addProductModel.FridgeId);
+            var isRentersFridge = IsRentersFridge(addProductModel.FridgeId);
             if (!isRentersFridge)
             {
                 logger.LogInformation($"You don't have a fridge with id {addProductModel.FridgeId} in your rented.");
@@ -136,8 +135,7 @@ namespace Fridge.Services
         {
             renter = await tokenInfo.GetUser();
 
-            var isRentersFridge = await IsRentersFridge(fridgeId);
-            if (!isRentersFridge)
+            if (!IsRentersFridge(fridgeId))
             {
                 logger.LogError($"You don't have a fridge with id {fridgeId} in your rented.");
                 throw new ArgumentException("Fridge is not found...");
@@ -158,21 +156,12 @@ namespace Fridge.Services
         private async Task<int> GetCountOfProducts(Guid fridgeId)
         {
             var products = await repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridgeId);
-            int sum = 0;
-
-            foreach (var product in products)
-            {
-                sum += product.Count;
-            }
-
+            var sum = products.Select(f => f.Count).Sum();
+            
             return sum;
         }
 
-        private async Task<bool> IsRentersFridge(Guid fridgeId)
-        {
-            var fridge = await repository.Fridge.GetFridgeByIdAsync(fridgeId);
-
-            return fridge.RenterId == renter.Id;
-        }
+        private bool IsRentersFridge(Guid fridgeId) => 
+            renter?.Fridges.FirstOrDefault(f => f.Id == fridgeId) is not null;
     }
 }

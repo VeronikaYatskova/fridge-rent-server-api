@@ -29,6 +29,6 @@ namespace Fridge.Data.Models
         [MaxLength(60, ErrorMessage = "Maximum length for the Country is 60 characters")]
         public string Country { get; set; }
 
-        public ICollection<Models.Fridge> Fridges { get; set; }
+        public virtual ICollection<Models.Fridge> Fridges { get; set; }
     }
 }

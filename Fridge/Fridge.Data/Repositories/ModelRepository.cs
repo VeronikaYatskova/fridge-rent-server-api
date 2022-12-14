@@ -11,10 +11,6 @@ namespace Fridge.Data.Repositories.Interfaces
         {
         }
 
-        public Model GetModelByIdAsync(Guid id) =>
-             FindByCondition(m => m.Id == id)!
-            .FirstOrDefault()!;
-
         public async Task<IEnumerable<Model>> GetAllModels() =>
             await FindAll()!
             .ToListAsync();

@@ -21,10 +21,10 @@ namespace Fridge.Data.Models
 
         [Required]
         public Guid RenterId { get; set; }
-        public Renter Renter { get; set; }
+        public virtual Renter Renter { get; set; }
 
         [Required]
         public Guid FridgeId { get; set; }
-        public Fridge Fridge { get; set; }
+        public virtual Fridge Fridge { get; set; }
     }
 }

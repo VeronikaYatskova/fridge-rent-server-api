@@ -9,8 +9,6 @@ namespace Fridge.Data.Repositories.Interfaces
 
         Renter? FindByEmail(string email);
 
-        Renter? GetRenterById(Guid? renterId);
-
         Renter? FindRenterByCondition(Expression<Func<Renter, bool>> condition);
     }
 }
