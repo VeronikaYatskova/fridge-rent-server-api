@@ -34,8 +34,7 @@ namespace Fridge.Data.Models
         /// </summary>
         [Required(ErrorMessage = "OwnerId is a required field.")]
         public Guid OwnerId { get; set; }
-        public virtual Owner Owner { get; set; }
-
+        
         /// <summary>
         /// Producer identifier.
         /// </summary>
@@ -43,18 +42,13 @@ namespace Fridge.Data.Models
         public Guid ProducerId { get; set; }
         public virtual Producer Producer { get; set; }
 
-        /// <summary>
-        /// Renter identifier.
-        /// </summary>
+        // <summary>
+        // Renter identifier.
+        // </summary>
         public Guid? RenterId { get; set; }
-        public virtual Renter? Renter { get; set; }
+        public virtual User? Renter { get; set; }
 
-        /// <summary>
-        /// Rent Document identifier.
-        /// </summary>
-        public Guid? RentDocumentId { get; set; }
-        public virtual RentDocument? RentDocument { get; set; }
-
+        
         public virtual IList<FridgeProduct>? ProductsInFridge { get; set; }
     }
 }

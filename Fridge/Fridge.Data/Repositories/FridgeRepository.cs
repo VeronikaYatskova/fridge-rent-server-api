@@ -35,7 +35,6 @@ namespace Fridge.Data.Repositories
                 OwnerId = addFridgeModel.OwnerId,
                 ProducerId = addFridgeModel.ProducerId,
                 RenterId = null,
-                RentDocumentId = null,
                 Capacity = addFridgeModel.Capacity,
             };
 

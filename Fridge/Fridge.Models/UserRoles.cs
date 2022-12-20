@@ -1,5 +1,5 @@
 ﻿
-namespace Fridge.Data.Models
+namespace Fridge.Models
 {
     public static class UserRoles
     {

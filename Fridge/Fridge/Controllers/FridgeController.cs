@@ -1,4 +1,4 @@
-﻿using Fridge.Data.Models;
+﻿using Fridge.Models;
 using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Authorization;
@@ -105,34 +105,6 @@ namespace Fridge.Controllers
                 var fridgesDto = await fridgeService.GetOwnersFridges();
 
                 return Ok(fridgesDto);
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
-        /// <summary>
-        /// Returns info about the user who rented a fridge identifier, rent start and finish date, fridge identifier.
-        /// </summary>
-        /// <param name="fridgeId">Fridge to see the info about.</param>
-        /// <returns>Returns info about the user who rented a fridge identifier, rent start and finish date, fridge identifier.</returns>
-        /// <respose code ="200">Returns an info about the user who rented a fridge.</respose>
-        [HttpGet("owner/fridge/{fridgeId}/rent-info")]
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Get))]
-        [Authorize(Roles = UserRoles.Owner)]
-        public async Task<IActionResult> GetRentedFridgeInfo(Guid fridgeId)
-        {
-            try
-            {
-                var rentDocumentDto = await fridgeService.GetRentedFridgeInfo(fridgeId);
-
-                return Ok(rentDocumentDto);
             }
             catch (ArgumentException ex)
             {
@@ -273,7 +245,7 @@ namespace Fridge.Controllers
 
                 await fridgeProductService.AddProductAsync(addProductModel);
 
-                return Created("api/renter/fridge/product", addProductModel);
+                return Ok();
             }
             catch (ArgumentException ex)
             {

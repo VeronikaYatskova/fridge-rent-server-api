@@ -5,29 +5,27 @@ namespace Fridge.Data.Repositories.Interfaces
 {
     public class RepositoryManager : IRepositoryManager
     {
-        private RepositoryContext _repositoryContext;
-        private IFridgeRepository _fridgeRepository;
-        private IProductRepository _productRepository;
-        private IFridgeProductRepository _fridgeProductRepository;
-        private IPictureRepository _pictureRepository;
-        private IRenterRepository _userRepository;
-        private IOwnerRepository _ownerRepository;
-        private IRentDocumentRepository _rentDocumentRepository;
-        private IModelRepository _modelRepository;
-        private IProducerRepository _producerRepository;
+        private RepositoryContext repositoryContext;
+        private IFridgeRepository fridgeRepository;
+        private IProductRepository productRepository;
+        private IFridgeProductRepository fridgeProductRepository;
+        private IPictureRepository pictureRepository;
+        private IUserRepository userRepository;
+        private IModelRepository modelRepository;
+        private IProducerRepository producerRepository;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
-            _repositoryContext = repositoryContext;
+            this.repositoryContext = repositoryContext;
         }
 
         public IFridgeRepository Fridge
         {
             get
             {
-                _fridgeRepository ??= new FridgeRepository(_repositoryContext);
+                fridgeRepository ??= new FridgeRepository(repositoryContext);
                 
-                return _fridgeRepository; 
+                return fridgeRepository; 
             }
         }
 
@@ -35,9 +33,9 @@ namespace Fridge.Data.Repositories.Interfaces
         {
             get
             {
-                _productRepository ??= new ProductRepository(_repositoryContext);
+                productRepository ??= new ProductRepository(repositoryContext);
 
-                return _productRepository;
+                return productRepository;
             }
         }
 
@@ -45,9 +43,9 @@ namespace Fridge.Data.Repositories.Interfaces
         {
             get
             {
-                _fridgeProductRepository ??= new FridgeProductRepository(_repositoryContext);
+                fridgeProductRepository ??= new FridgeProductRepository(repositoryContext);
 
-                return _fridgeProductRepository;
+                return fridgeProductRepository;
             }
         }
 
@@ -55,39 +53,19 @@ namespace Fridge.Data.Repositories.Interfaces
         {
             get
             {
-                _pictureRepository ??= new PictureRepository(_repositoryContext);
+                pictureRepository ??= new PictureRepository(repositoryContext);
 
-                return _pictureRepository;
+                return pictureRepository;
             }
         }
 
-        public IRenterRepository Renter
+        public IUserRepository User
         {
             get
             {
-                _userRepository ??= new RenterRepository(_repositoryContext);
+                userRepository ??= new UserRepository(repositoryContext);
 
-                return _userRepository;
-            }
-        }
-
-        public IOwnerRepository Owner
-        {
-            get
-            {
-                _ownerRepository ??= new OwnerRepository(_repositoryContext);
-
-                return _ownerRepository;
-            }
-        }
-
-        public IRentDocumentRepository RentDocument
-        {
-            get
-            {
-                _rentDocumentRepository ??= new RentDocumentRepository(_repositoryContext);
-
-                return _rentDocumentRepository;
+                return userRepository;
             }
         }
 
@@ -95,9 +73,9 @@ namespace Fridge.Data.Repositories.Interfaces
         {
             get
             {
-                _modelRepository ??= new ModelRepository(_repositoryContext);
+                modelRepository ??= new ModelRepository(repositoryContext);
 
-                return _modelRepository;
+                return modelRepository;
             }
         }
 
@@ -105,12 +83,12 @@ namespace Fridge.Data.Repositories.Interfaces
         { 
             get
             {
-                _producerRepository ??= new ProducerRepository(_repositoryContext);
+                producerRepository ??= new ProducerRepository(repositoryContext);
 
-                return _producerRepository;
+                return producerRepository;
             } 
         }
 
-        public Task SaveAsync() => _repositoryContext.SaveChangesAsync();
+        public Task SaveAsync() => repositoryContext.SaveChangesAsync();
     }
 }

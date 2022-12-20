@@ -16,7 +16,7 @@ namespace Fridge.Services
         private IMapper mapper;
 
         private TokenInfo tokenInfo;
-        private Renter? renter;
+        private User? renter;
 
         public ProductsService(IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<ProductsService> logger, IWebHostEnvironment environment)
         {

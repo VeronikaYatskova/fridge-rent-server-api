@@ -41,17 +41,12 @@ namespace Fridge.Migrations
                     b.Property<Guid>("ProducerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RentDocumentId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("RenterId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ModelId");
-
-                    b.HasIndex("OwnerId");
 
                     b.HasIndex("ProducerId");
 
@@ -123,38 +118,6 @@ namespace Fridge.Migrations
                             Id = new Guid("af96137e-0b17-41b5-a819-a5a23da0fd97"),
                             Name = "Toshiba GR-RF610WE-PMS"
                         });
-                });
-
-            modelBuilder.Entity("Fridge.Data.Models.Owner", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("OwnerId");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
-                    b.Property<byte[]>("PasswordHash")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Owners");
                 });
 
             modelBuilder.Entity("Fridge.Data.Models.Producer", b =>
@@ -295,38 +258,7 @@ namespace Fridge.Migrations
                     b.ToTable("ProductPictures");
                 });
 
-            modelBuilder.Entity("Fridge.Data.Models.RentDocument", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("FridgeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("MonthCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("RenterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FridgeId")
-                        .IsUnique();
-
-                    b.HasIndex("RenterId");
-
-                    b.ToTable("RentDocuments");
-                });
-
-            modelBuilder.Entity("Fridge.Data.Models.Renter", b =>
+            modelBuilder.Entity("Fridge.Data.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -350,7 +282,7 @@ namespace Fridge.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Renters");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Fridge.Data.Models.Fridge", b =>
@@ -361,25 +293,17 @@ namespace Fridge.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Fridge.Data.Models.Owner", "Owner")
-                        .WithMany("Fridges")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Fridge.Data.Models.Producer", "Producer")
                         .WithMany("Fridges")
                         .HasForeignKey("ProducerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Fridge.Data.Models.Renter", "Renter")
+                    b.HasOne("Fridge.Data.Models.User", "Renter")
                         .WithMany("Fridges")
                         .HasForeignKey("RenterId");
 
                     b.Navigation("Model");
-
-                    b.Navigation("Owner");
 
                     b.Navigation("Producer");
 
@@ -389,13 +313,13 @@ namespace Fridge.Migrations
             modelBuilder.Entity("Fridge.Data.Models.FridgeProduct", b =>
                 {
                     b.HasOne("Fridge.Data.Models.Fridge", "Fridge")
-                        .WithMany()
+                        .WithMany("ProductsInFridge")
                         .HasForeignKey("FridgeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Fridge.Data.Models.Product", "Product")
-                        .WithMany()
+                        .WithMany("ProductsInFridge")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -413,7 +337,7 @@ namespace Fridge.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Fridge.Data.Models.Renter", "Renter")
+                    b.HasOne("Fridge.Data.Models.User", "Renter")
                         .WithMany("ProductPictures")
                         .HasForeignKey("RenterId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -424,36 +348,12 @@ namespace Fridge.Migrations
                     b.Navigation("Renter");
                 });
 
-            modelBuilder.Entity("Fridge.Data.Models.RentDocument", b =>
-                {
-                    b.HasOne("Fridge.Data.Models.Fridge", "Fridge")
-                        .WithOne("RentDocument")
-                        .HasForeignKey("Fridge.Data.Models.RentDocument", "FridgeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Fridge.Data.Models.Renter", "Renter")
-                        .WithMany("RentDocuments")
-                        .HasForeignKey("RenterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Fridge");
-
-                    b.Navigation("Renter");
-                });
-
             modelBuilder.Entity("Fridge.Data.Models.Fridge", b =>
                 {
-                    b.Navigation("RentDocument");
+                    b.Navigation("ProductsInFridge");
                 });
 
             modelBuilder.Entity("Fridge.Data.Models.Model", b =>
-                {
-                    b.Navigation("Fridges");
-                });
-
-            modelBuilder.Entity("Fridge.Data.Models.Owner", b =>
                 {
                     b.Navigation("Fridges");
                 });
@@ -466,15 +366,15 @@ namespace Fridge.Migrations
             modelBuilder.Entity("Fridge.Data.Models.Product", b =>
                 {
                     b.Navigation("ProductPictures");
+
+                    b.Navigation("ProductsInFridge");
                 });
 
-            modelBuilder.Entity("Fridge.Data.Models.Renter", b =>
+            modelBuilder.Entity("Fridge.Data.Models.User", b =>
                 {
                     b.Navigation("Fridges");
 
                     b.Navigation("ProductPictures");
-
-                    b.Navigation("RentDocuments");
                 });
 #pragma warning restore 612, 618
         }

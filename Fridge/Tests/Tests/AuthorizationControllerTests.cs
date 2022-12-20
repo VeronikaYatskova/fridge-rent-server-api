@@ -16,7 +16,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new AuthController(fakeService.Service);
 
-            var addRenterModel = new AddRenterModel()
+            var addRenterModel = new AddUserModel()
             {
                 Email = "sasha@renter.com",
                 Password = "1",
@@ -46,7 +46,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new AuthController(fakeService.Service);
 
-            var addRenterModel = new AddRenterModel()
+            var addRenterModel = new AddUserModel()
             {
                 Email = "sasharenter.com",
                 Password = "",
@@ -75,7 +75,7 @@ namespace Fridge.Tests.Tests
 
             var controller = new AuthController(fakeService.Service);
 
-            var addRenterModel = new AddRenterModel()
+            var addRenterModel = new AddUserModel()
             {
                 Email = "veronika@renter.com",
                 Password = "1",

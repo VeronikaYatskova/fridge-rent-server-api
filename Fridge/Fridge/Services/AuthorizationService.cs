@@ -1,5 +1,4 @@
 ﻿using Fridge.Data.Models;
-using Fridge.Data.Models.Abstracts;
 using Fridge.Data.Repositories.Interfaces;
 using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
@@ -24,107 +23,63 @@ namespace Fridge.Services
             this.configuration = configuration;
         }
 
-        public async Task<string> RegisterRenter(AddRenterModel renterDto)
+        public async Task<string> RegisterUser(AddUserModel addUserModel, string role)
         {
-            if (repository.Renter.FindByEmail(renterDto.Email) is not null)
+            if (repository.User.FindBy(u => u.Email == addUserModel.Email && u.Role == role) is not null)
             {
-                logger.LogInformation($"Renter with the same email is already in the database.");
-                throw new ArgumentException("Renter with the same email has been registered.");
+                logger.LogInformation($"{role} with the same email is already in the database.");
+                throw new ArgumentException($"{role} with the same email has been registered.");
             }
 
-            CreatePasswordHash(renterDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            CreatePasswordHash(addUserModel.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            var renter = new Renter
+            var renter = new User
             {
                 Id = Guid.NewGuid(),
-                Email = renterDto.Email,
+                Email = addUserModel.Email,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Role = renterDto.Role
+                Role = role
             };
 
             string token = CreateToken(renter);
 
-            repository.Renter.AddRenter(renter);
+            repository.User.AddRenter(renter);
             await repository.SaveAsync();
 
             return token;
         }
 
-        public async Task<string> RegisterOwner(AddOwnerModel ownerDto)
+        public string LoginUser(LoginModel loginModel, string role)
         {
-            if (repository.Owner.FindByEmail(ownerDto.Email) is not null)
-            {
-                logger.LogInformation($"Owner with the same email is already in the database.");
-                throw new ArgumentException("Owner with the same email has been registered.");
-            }
-
-            CreatePasswordHash(ownerDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
-
-            var owner = new Owner
-            {
-                Id = Guid.NewGuid(),
-                Name = ownerDto.Name,
-                Email = ownerDto.Email,
-                Phone = ownerDto.Phone,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-            };
-
-            repository.Owner.AddOwner(owner);
-            await repository.SaveAsync();
-
-            string token = CreateToken(owner);
-
-            return token;
-        }
-
-        public string LoginRenter(LoginModel loginDto)
-        {
-            var renter = repository.Renter.FindByEmail(loginDto.Email);
+            var renter = repository.User.FindBy(u => u.Email == loginModel.Email && u.Role == role);
 
             if (renter is null)
             {
-                throw new ArgumentException("User is not found");
+                throw new ArgumentException($"{role} is not found");
             }
 
-            VerifyData(renter, loginDto);
+            VerifyData(renter, loginModel);
 
             string token = CreateToken(renter);
 
             return token;
         }
 
-        public string LoginOwner(LoginModel loginDto)
+        private void VerifyData(User user, LoginModel loginModel)
         {
-            var owner = repository.Owner.FindByEmail(loginDto.Email);
-
-            if (owner is null)
-            {
-                throw new ArgumentException("User is not found");
-            }
-
-            VerifyData(owner, loginDto);
-
-            string token = CreateToken(owner);
-
-            return token;
-        }
-
-        private void VerifyData(IUser user, LoginModel loginDto)
-        {
-            if (user!.Email != loginDto.Email)
+            if (user!.Email != loginModel.Email)
             {
                 throw new ArgumentException("Not found.");
             }
 
-            if (!VerifyPasswordHash(loginDto.Password, user.PasswordHash!, user.PasswordSalt!))
+            if (!VerifyPasswordHash(loginModel.Password, user.PasswordHash!, user.PasswordSalt!))
             {
                 throw new ArgumentException("Wrong password");
             }
         }
 
-        private string CreateToken(IUser user)
+        private string CreateToken(User user)
         {
             var userId = user.Id;
             var claims = new[]

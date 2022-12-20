@@ -1,9 +1,9 @@
-﻿using Fridge.Data.Models.Abstracts;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+
 
 namespace Fridge.Data.Models
 {
-    public class Renter : IUser
+    public class User
     {
         [Key]
         [Required(ErrorMessage = "Id field is required.")]
@@ -17,12 +17,10 @@ namespace Fridge.Data.Models
 
         public byte[] PasswordSalt { get; set; }
 
-        public string Role { get; set; } = UserRoles.Renter;
+        public string Role { get; set; }
 
 
         public virtual ICollection<Fridge> Fridges { get; set; }
-
-        public virtual ICollection<RentDocument> RentDocuments { get; set; }
 
         public virtual ICollection<ProductPicture> ProductPictures { get; set; } 
     }

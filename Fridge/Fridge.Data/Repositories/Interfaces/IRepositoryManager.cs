@@ -6,9 +6,7 @@
         IProductRepository Product { get; }
         IFridgeProductRepository FridgeProduct { get; }
         IPictureRepository Picture { get; }
-        IRenterRepository Renter { get; }
-        IOwnerRepository Owner { get; }
-        IRentDocumentRepository RentDocument { get; }
+        IUserRepository User { get; }
         IModelRepository Model { get; }
         IProducerRepository Producer { get; }
         Task SaveAsync();

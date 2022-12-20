@@ -1,4 +1,5 @@
 ﻿using Fridge.Data.Models;
+using Fridge.Models;
 using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Authorization;

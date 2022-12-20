@@ -440,47 +440,6 @@ namespace Fridge.Tests.Tests
         }
 
         [Fact]
-        public async Task GetRentedFridgeInfoAsync_ValidId_ShouldReturnOk()
-        {
-            // Arrange
-
-            var fakeFridgeService = new FridgeFakeService();
-            var fakeFridgeProductService = new FridgeProductFakeService();
-            
-            var controller = new FridgeController
-            (
-                fakeFridgeService.Service,
-                fakeFridgeProductService.Service
-            );
-
-            var fridgeId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f");
-
-            // Act
-
-            fakeFridgeService.Mock.Setup(s => s.GetRentedFridgeInfo(fridgeId))
-                .Returns(Task.FromResult(new RentDocumentModel()
-                {
-                    Id = Guid.NewGuid(),
-                    RenterEmail = "veronika@renter.com",
-                    OwnerName = "Sasha",
-                    StartDate = "12.11.2022",
-                    EndDate = "12.12.2022",
-                    MonthCost = 30,
-                }));
-
-            var response = await controller.GetRentedFridgeInfo(fridgeId);
-
-            var okResult = response as OkObjectResult;
-
-            var rentDocument = okResult?.Value as RentDocumentModel;
-
-            // Assert
-
-            Assert.Equal(200, okResult?.StatusCode);
-            Assert.NotNull(rentDocument);
-        }
-
-        [Fact]
         public async Task AddFridge_ValidData_ShouldReturnOk()
         {
             // Arrange

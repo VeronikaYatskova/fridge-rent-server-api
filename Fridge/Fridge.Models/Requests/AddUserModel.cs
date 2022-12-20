@@ -2,7 +2,7 @@
 
 namespace Fridge.Models.Requests
 {
-    public class AddRenterModel
+    public class AddUserModel
     {
         [EmailAddress]
         [Required(ErrorMessage = "Email is a required field.")]
@@ -10,7 +10,5 @@ namespace Fridge.Models.Requests
 
         [Required(ErrorMessage = "Password is a required field.")]
         public string Password { get; set; } = string.Empty;
-
-        public string Role { get; } = "Renter";
     }
 }

@@ -13,7 +13,7 @@ namespace Fridge.Services
         private readonly IRepositoryManager repository;
 
         private TokenInfo tokenInfo;
-        private Renter? renter;
+        private User? renter;
 
         public FridgeProductService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<FridgeProductService> logger)
         {
@@ -27,7 +27,7 @@ namespace Fridge.Services
         {
             renter = await tokenInfo.GetUser();
 
-            if (IsRentersFridge(fridgeId))
+            if (!IsRentersFridge(fridgeId))
             {
                 logger.LogInformation($"You don't have a fridge with id {fridgeId} in your rented.");
                 throw new ArgumentException("Fridge is not found in your fridges");

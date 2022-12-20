@@ -1,4 +1,5 @@
-﻿using Fridge.Models.Requests;
+﻿using Fridge.Models;
+using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +25,7 @@ namespace Fridge.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [HttpPost("renter/registration")]
-        public async Task<IActionResult> RegisterRenter([FromBody] AddRenterModel addRenterModel)
+        public async Task<IActionResult> RegisterRenter([FromBody] AddUserModel addUserModel)
         {
             try
             {
@@ -33,7 +34,7 @@ namespace Fridge.Controllers
                     return UnprocessableEntity(ModelState);
                 }
 
-                var token = await authorizationService.RegisterRenter(addRenterModel);
+                var token = await authorizationService.RegisterUser(addUserModel, UserRoles.Renter);
 
                 return Created("api/authorization/renter/register", token);
             }
@@ -54,7 +55,7 @@ namespace Fridge.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [HttpPost("owner/registration")]
-        public async Task<IActionResult> RegisterOwner([FromBody] AddOwnerModel addOwnerModel)
+        public async Task<IActionResult> RegisterOwner([FromBody] AddUserModel addUserModel)
         {
             try
             {
@@ -63,7 +64,7 @@ namespace Fridge.Controllers
                     return UnprocessableEntity(ModelState);
                 }
 
-                var token = await authorizationService.RegisterOwner(addOwnerModel);
+                var token = await authorizationService.RegisterUser(addUserModel, UserRoles.Owner);
 
                 return Created("api/authorization/owner/register", token);
             }
@@ -93,7 +94,7 @@ namespace Fridge.Controllers
                     return UnprocessableEntity(ModelState);
                 }
 
-                var token = authorizationService.LoginRenter(loginModel);
+                var token = authorizationService.LoginUser(loginModel, UserRoles.Renter);
 
                 return Created("api/authorization/renter/login", token);
             }
@@ -123,7 +124,7 @@ namespace Fridge.Controllers
                     return UnprocessableEntity(ModelState);
                 }
 
-                var token = authorizationService.LoginOwner(loginModel);
+                var token = authorizationService.LoginUser(loginModel, UserRoles.Owner);
 
                 return Created("api/authorization/owner/login", token);
             }

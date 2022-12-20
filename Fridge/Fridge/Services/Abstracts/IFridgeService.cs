@@ -14,8 +14,6 @@ namespace Fridge.Services.Abstracts
 
         Task<IEnumerable<OwnerFridgeModel>> GetOwnersFridges();
 
-        Task<RentDocumentModel> GetRentedFridgeInfo(Guid fridgeId);
-
         Task<IEnumerable<FridgeRenterModel>> GetRentersFridges();
 
         Task AddFridge(AddFridgeOwnerModel addFridgeOwnerModel);

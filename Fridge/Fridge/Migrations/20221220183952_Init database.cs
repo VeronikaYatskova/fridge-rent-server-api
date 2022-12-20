@@ -22,22 +22,6 @@ namespace Fridge.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Owners",
-                columns: table => new
-                {
-                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    Phone = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Owners", x => x.OwnerId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Producer",
                 columns: table => new
                 {
@@ -64,7 +48,7 @@ namespace Fridge.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Renters",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -75,7 +59,7 @@ namespace Fridge.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Renters", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -83,13 +67,11 @@ namespace Fridge.Migrations
                 columns: table => new
                 {
                     FridgeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IsRented = table.Column<bool>(type: "bit", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
                     ModelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProducerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RenterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    RentDocumentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    RenterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -101,21 +83,15 @@ namespace Fridge.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Fridges_Owners_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "Owners",
-                        principalColumn: "OwnerId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Fridges_Producer_ProducerId",
                         column: x => x.ProducerId,
                         principalTable: "Producer",
                         principalColumn: "ProducerId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Fridges_Renters_RenterId",
+                        name: "FK_Fridges_Users_RenterId",
                         column: x => x.RenterId,
-                        principalTable: "Renters",
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -139,9 +115,9 @@ namespace Fridge.Migrations
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProductPictures_Renters_RenterId",
+                        name: "FK_ProductPictures_Users_RenterId",
                         column: x => x.RenterId,
-                        principalTable: "Renters",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -169,34 +145,6 @@ namespace Fridge.Migrations
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "ProductId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RentDocuments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MonthCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    RenterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FridgeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RentDocuments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RentDocuments_Fridges_Id",
-                        column: x => x.Id,
-                        principalTable: "Fridges",
-                        principalColumn: "FridgeId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RentDocuments_Renters_RenterId",
-                        column: x => x.RenterId,
-                        principalTable: "Renters",
-                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -247,11 +195,6 @@ namespace Fridge.Migrations
                 column: "ModelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Fridges_OwnerId",
-                table: "Fridges",
-                column: "OwnerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Fridges_ProducerId",
                 table: "Fridges",
                 column: "ProducerId");
@@ -270,11 +213,6 @@ namespace Fridge.Migrations
                 name: "IX_ProductPictures_RenterId",
                 table: "ProductPictures",
                 column: "RenterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RentDocuments_RenterId",
-                table: "RentDocuments",
-                column: "RenterId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -286,25 +224,19 @@ namespace Fridge.Migrations
                 name: "ProductPictures");
 
             migrationBuilder.DropTable(
-                name: "RentDocuments");
+                name: "Fridges");
 
             migrationBuilder.DropTable(
                 name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Fridges");
-
-            migrationBuilder.DropTable(
                 name: "Models");
-
-            migrationBuilder.DropTable(
-                name: "Owners");
 
             migrationBuilder.DropTable(
                 name: "Producer");
 
             migrationBuilder.DropTable(
-                name: "Renters");
+                name: "Users");
         }
     }
 }

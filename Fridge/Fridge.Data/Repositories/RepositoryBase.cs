@@ -17,7 +17,7 @@ namespace Fridge.Data.Repositories
 
         public IQueryable<T>? FindAll() => RepositoryContext.Set<T>();
      
-        public IQueryable<T>? FindByCondition(Expression<Func<T, bool>> expression) =>
+        public IQueryable<T>? FindByCondition(Expression<Func<T, bool>> expression) => 
             RepositoryContext.Set<T>().Where(expression);
 
         public void Create(T entity) => RepositoryContext.Set<T>().Add(entity);

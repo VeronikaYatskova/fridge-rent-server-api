@@ -3,6 +3,7 @@ using Fridge.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using System.IdentityModel.Tokens.Jwt;
 
+
 namespace Fridge.Services
 {
     public class TokenInfo
@@ -16,16 +17,16 @@ namespace Fridge.Services
             httpContextAccessor = contextAccessor;
         }
 
-        public async Task<Renter?> GetUser()
+        public async Task<User?> GetUser()
         {
             var guid = await GetInfo();
             if (guid is not null)
             {
-                var user = repository.Renter.FindRenterByCondition(u => u.Id == Guid.Parse(guid));
+                var user = repository.User.FindBy(u => u.Id == Guid.Parse(guid));
 
                 if (user is null)
                 {
-                    throw new ArgumentException("Renter is not found...");
+                    throw new ArgumentException("User is not found...");
                 }
 
                 return user;
@@ -34,23 +35,23 @@ namespace Fridge.Services
             return null;
         }
 
-        public async Task<Owner?> GetOwner()
-        {
-            var guid = await GetInfo();
-            if (guid is not null)
-            {
-                var owner = repository.Owner.GetOwnerByConditionAsync(u => u.Id == Guid.Parse(guid)).Result;
+        //public async Task<Owner?> GetOwner()
+        //{
+        //    var guid = await GetInfo();
+        //    if (guid is not null)
+        //    {
+        //        var owner = repository.Owner.GetOwnerByConditionAsync(u => u.Id == Guid.Parse(guid)).Result;
 
-                if (owner is null)
-                {
-                    throw new ArgumentException("Owner is not found...");
-                }
+        //        if (owner is null)
+        //        {
+        //            throw new ArgumentException("Owner is not found...");
+        //        }
 
-                return owner;
-            }
+        //        return owner;
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         private async static Task<string?> GetInfo()
         {
