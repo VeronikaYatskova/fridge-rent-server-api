@@ -12,9 +12,7 @@ namespace Fridge.Services.Abstracts
 
         Task<IEnumerable<FridgeProducerModel>> GetProducers();
 
-        Task<IEnumerable<OwnerFridgeModel>> GetOwnersFridges();
-
-        Task<IEnumerable<FridgeRenterModel>> GetRentersFridges();
+        Task<IEnumerable<IUserFridgeModel>> GetUserFridges();
 
         Task AddFridge(AddFridgeOwnerModel addFridgeOwnerModel);
 

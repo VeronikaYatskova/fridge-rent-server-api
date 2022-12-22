@@ -4,6 +4,7 @@ using Fridge.Services.Abstracts;
 using Fridge.Models.Responses;
 using Fridge.Models.Requests;
 using AutoMapper;
+using Fridge.Models;
 
 
 namespace Fridge.Services
@@ -30,21 +31,16 @@ namespace Fridge.Services
         {
             var fridges = await repository.Fridge.GetAvailableFridgesAsync();
 
-            if (fridges is null)
+            if (!fridges.Any() || fridges is null)
             {
-                throw new ArgumentException("Fridges are not found in the database.");
-            }
-
-            if (!fridges.Any())
-            {
-                return new List<FridgeModel>() { };
+                throw new ArgumentException("Fridges are not found.");
             }
 
             var fridgesDto = fridges.Select(fridge => new FridgeModel
             {
                 Id = fridge.Id,
                 Model = fridge.Model.Name,
-                Owner = "  ",
+                Owner = fridge.Owner.Email,
                 Producer = fridge.Producer.Name,
                 Capacity = fridge.Capacity,
             });
@@ -66,56 +62,13 @@ namespace Fridge.Services
             return mapper.Map<IEnumerable<FridgeProducerModel>>(producers);
         }
 
-        public async Task<IEnumerable<OwnerFridgeModel>> GetOwnersFridges()
+        public async Task<IEnumerable<IUserFridgeModel>> GetUserFridges()
         {
             user = await tokenInfo.GetUser();
 
-            var fridges = user?.Fridges;
-
-            if (fridges?.Count() == 0 || fridges is null)
-            {
-                logger.LogInformation($"Owner with id {user!.Id} doesn't have any fridges.");
-                throw new ArgumentException("Owner doesn't have any fridges.");
-            }
-
-            var fridgesDto = fridges.Select(fridge => new OwnerFridgeModel
-            {
-                Id = fridge.Id,
-                Model = fridge.Model.Name,
-                Owner = "   ",
-                Producer = fridge.Producer.Name,
-                Renter = fridge.Renter is null ? "No user" : fridge.Renter.Email,
-                Capacity = fridge.Capacity,
-            });
-
-            return fridgesDto;
-        }
-
-        public async Task<IEnumerable<FridgeRenterModel>> GetRentersFridges()
-        {
-            user = await tokenInfo.GetUser();
-
-            var renterFridges = user?.Fridges;
-
-            if (!renterFridges.Any())
-            {
-                logger.LogInformation("No fridges");
-                throw new ArgumentException("No fridges");
-            }
-
-            var fridges = renterFridges.Select(fridge => new FridgeRenterModel
-            {
-                Id = fridge.Id,
-                Model = fridge.Model.Name,
-                Owner = "  ",
-                Producer = fridge.Producer.Name,
-                Capacity = fridge.Capacity,
-                CurrentCount = repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridge.Id).Result
-                                                       .Select(f => f.Count)
-                                                       .Sum(),
-            }).ToList();
-
-            await repository.SaveAsync();
+            var fridges = user.Role == UserRoles.Renter
+                ? await GetRentersFridges()
+                : await GetOwnersFridges();
 
             return fridges;
         }
@@ -160,7 +113,7 @@ namespace Fridge.Services
         {
             user = await tokenInfo.GetUser();
 
-            var fridges = user?.Fridges;
+            var fridges = user?.OwnerFridges;
 
             if (fridges is null || fridges.Count() == 0)
             {
@@ -201,6 +154,60 @@ namespace Fridge.Services
             repository.Fridge.UpdateFridge(fridge);
 
             await repository.SaveAsync();
+        }
+
+        private async Task<IEnumerable<IUserFridgeModel>> GetOwnersFridges()
+        {
+            user = await tokenInfo.GetUser();
+
+            var fridges = user?.OwnerFridges;
+
+            if (fridges?.Count() == 0 || fridges is null)
+            {
+                logger.LogInformation($"Owner with id {user!.Id} doesn't have any fridges.");
+                throw new ArgumentException("Owner doesn't have any fridges.");
+            }
+
+            var fridgesDto = fridges.Select(fridge => new OwnerFridgeModel
+            {
+                Id = fridge.Id,
+                Model = fridge.Model.Name,
+                Owner = fridge.Owner.Email,
+                Producer = fridge.Producer.Name,
+                Renter = fridge.Renter is null ? "No renter" : fridge.Renter.Email,
+                Capacity = fridge.Capacity,
+            });
+
+            return fridgesDto;
+        }
+
+        private async Task<IEnumerable<FridgeRenterModel>> GetRentersFridges()
+        {
+            user = await tokenInfo.GetUser();
+
+            var renterFridges = user?.RenterFridges;
+
+            if (!renterFridges.Any())
+            {
+                logger.LogInformation("No fridges");
+                throw new ArgumentException("No fridges");
+            }
+
+            var fridges = renterFridges.Select(fridge => new FridgeRenterModel
+            {
+                Id = fridge.Id,
+                Model = fridge.Model.Name,
+                Owner = fridge.Owner.Email,
+                Producer = fridge.Producer.Name,
+                Capacity = fridge.Capacity,
+                CurrentCount = repository.FridgeProduct.GetAllProductsInTheFridgeAsync(fridge.Id).Result
+                                                       .Select(f => f.Count)
+                                                       .Sum(),
+            }).ToList();
+
+            await repository.SaveAsync();
+
+            return fridges;
         }
     }
 }

@@ -162,6 +162,6 @@ namespace Fridge.Services
         }
 
         private bool IsRentersFridge(Guid fridgeId) => 
-            renter?.Fridges.FirstOrDefault(f => f.Id == fridgeId) is not null;
+            renter?.RenterFridges.FirstOrDefault(f => f.Id == fridgeId) is not null;
     }
 }

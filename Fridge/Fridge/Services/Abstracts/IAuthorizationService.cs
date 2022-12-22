@@ -6,6 +6,6 @@ namespace Fridge.Services.Abstracts
     {
         Task<string> RegisterUser(AddUserModel addUserModel, string role);
 
-        string LoginUser(LoginModel loginModel, string role);
+        string LoginUser(LoginModel loginModel);
     }
 }

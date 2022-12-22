@@ -1,8 +1,6 @@
-﻿
-
-namespace Fridge.Models.Responses
+﻿namespace Fridge.Models.Responses
 {
-    public class FridgeRenterModel : IUserFridgeModel
+    public interface IUserFridgeModel
     {
         public Guid Id { get; set; }
 
@@ -13,7 +11,5 @@ namespace Fridge.Models.Responses
         public string Producer { get; set; }
 
         public int Capacity { get; set; }
-
-        public int CurrentCount { get; set; } = 0;
     }
 }

@@ -18,8 +18,9 @@ namespace Fridge.Data.Context
 
             modelBuilder.Entity<Models.Fridge>().HasOne(f => f.Model).WithMany(m => m.Fridges).HasForeignKey(f => f.ModelId);
             modelBuilder.Entity<Models.Fridge>().HasOne(f => f.Producer).WithMany(p => p.Fridges).HasForeignKey(f => f.ProducerId);
-            modelBuilder.Entity<Models.Fridge>().HasOne(f => f.Renter).WithMany(r => r.Fridges).HasForeignKey(f => f.RenterId);
-            
+            modelBuilder.Entity<Models.Fridge>().HasOne(f => f.Renter).WithMany(r => r.RenterFridges).HasForeignKey(f => f.RenterId);
+            modelBuilder.Entity<Models.Fridge>().HasOne(f => f.Owner).WithMany(r => r.OwnerFridges).HasForeignKey(f => f.OwnerId);
+
             modelBuilder.Entity<FridgeProduct>().HasKey(fp => new { fp.FridgeId, fp.ProductId });
             
             modelBuilder.Entity<ProductPicture>().HasOne(pp => pp.Renter).WithMany(r => r.ProductPictures).HasForeignKey(pp => pp.RenterId);

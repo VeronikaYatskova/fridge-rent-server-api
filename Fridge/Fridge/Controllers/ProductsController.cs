@@ -14,19 +14,17 @@ namespace Fridge.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductsService productsService;
-        private readonly IFridgeProductService fridgeProductService;
 
-        public ProductsController(IProductsService service, IFridgeProductService fridgeProductService)
+        public ProductsController(IProductsService service)
         {
             productsService = service;
-            this.fridgeProductService = fridgeProductService;
         }
 
         /// <summary>
         /// Returns a list of available products.
         /// </summary>
         /// <returns>A list of fridges</returns>
-        [HttpGet]
+        [HttpGet("available")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetProducts()
@@ -51,7 +49,7 @@ namespace Fridge.Controllers
         /// Method that adds a picture to product.
         /// </summary>
         /// <returns>An added picture</returns>
-        [HttpPost("product")]
+        [HttpPost]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         public async Task<IActionResult> AddPicture([FromForm]AddProductPictureModel productPictureDto)
@@ -65,38 +63,7 @@ namespace Fridge.Controllers
 
                 await productsService.AddPictureAsync(productPictureDto);
 
-                return Created("api/product", productPictureDto.ImageName);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
-        /// <summary>
-        /// Method to update a count of product in the fridge.
-        /// </summary>
-        /// <param name="productUpdateDto">Fridge and Product identifiers,count of a product.</param>
-        [HttpPut("product")]
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Update))]
-        [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductModel productUpdateDto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    throw new ArgumentException("Invalid data");
-                }
-
-                await fridgeProductService.UpdateProductAsync(productUpdateDto);
-
-                return NoContent();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
+                return Created("api", productPictureDto.ImageName);
             }
             catch (Exception)
             {

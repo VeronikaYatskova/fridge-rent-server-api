@@ -10,5 +10,8 @@ namespace Fridge.Models.Requests
 
         [Required(ErrorMessage = "Password is a required field.")]
         public string Password { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "IsRenter is a required field.")]
+        public bool IsOwner { get; set; }
     }
 }

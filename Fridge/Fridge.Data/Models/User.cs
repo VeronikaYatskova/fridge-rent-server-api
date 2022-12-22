@@ -20,7 +20,8 @@ namespace Fridge.Data.Models
         public string Role { get; set; }
 
 
-        public virtual ICollection<Fridge> Fridges { get; set; }
+        public virtual ICollection<Fridge> RenterFridges { get; set; }
+        public virtual ICollection<Fridge> OwnerFridges { get; set; }
 
         public virtual ICollection<ProductPicture> ProductPictures { get; set; } 
     }

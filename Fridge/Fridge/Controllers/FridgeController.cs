@@ -8,17 +8,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace Fridge.Controllers
 {
     [Produces("application/json")]
-    [Route("api")]
+    [Route("api/fridges")]
     [ApiController]
     public class FridgeController : ControllerBase
     {
         private readonly IFridgeService fridgeService;
-        private readonly IFridgeProductService fridgeProductService;
 
-        public FridgeController(IFridgeService service, IFridgeProductService fridgeProductService)
+        public FridgeController(IFridgeService service)
         {
             fridgeService = service;
-            this.fridgeProductService = fridgeProductService;
         }
 
         /// <summary>
@@ -26,7 +24,7 @@ namespace Fridge.Controllers
         /// </summary>
         /// <returns>A list of available fridges.</returns>
         /// <response code="200">Returns a list of available fridges.</response>
-        [HttpGet("fridges")]
+        [HttpGet("available")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetFridges()
@@ -94,70 +92,17 @@ namespace Fridge.Controllers
         /// </summary>
         /// <returns>A list of fridges that the owner has.</returns>
         /// <response code="200">Returns a list of fridges that the owner has.</response>
-        [HttpGet("owner/fridges")]
+        [HttpGet()]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Get))]
-        [Authorize(Roles = UserRoles.Owner)]
-        public async Task<IActionResult> GetOwnersFridges()
+        [Authorize(Roles = $"{UserRoles.Owner}, {UserRoles.Renter}")]
+        public async Task<IActionResult> GetUserFridges()
         {
             try
             {
-                var fridgesDto = await fridgeService.GetOwnersFridges();
+                var fridgesDto = await fridgeService.GetUserFridges();
 
                 return Ok(fridgesDto);
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
-        /// <summary>
-        /// Returns a list of fridges that user rented.
-        /// </summary>
-        /// <returns>A list of fridges</returns>
-        [HttpGet("renter/fridges")]
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Get))]
-        [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> GetRentersFridges()
-        {
-            try
-            {
-                var fridges = await fridgeService.GetRentersFridges();
-
-                return Ok(fridges);
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
-        /// <summary>
-        /// Returns a list of products in the fridge.
-        /// </summary>
-        /// <param name="fridgeId">Fridge to get a products from.</param>
-        /// <returns>A list of products in the fridge</returns>
-        [HttpGet("renter/fridge/{fridgeId}/products")]
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Get))]
-        [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> GetProductsInFridgeByFridgeId(Guid fridgeId)
-        {
-            try
-            {
-                var products = await fridgeProductService.GetProductsByFridgeIdAsync(fridgeId);
-
-                return Ok(products);
             }
             catch (ArgumentException ex)
             {
@@ -173,7 +118,7 @@ namespace Fridge.Controllers
         /// Allows to add one more fridge for renting.
         /// </summary>
         /// <param name="addFridgeOwnerModel">Parameters for a new fridge.</param>
-        [HttpPost("owner/fridge")]
+        [HttpPost()]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [Authorize(Roles = UserRoles.Owner)]
@@ -188,7 +133,7 @@ namespace Fridge.Controllers
 
                 await fridgeService.AddFridge(addFridgeOwnerModel);
 
-                return Created("api/owner/fridge", addFridgeOwnerModel);
+                return Created("api/owner/fridge", "Fridge is added.");
             }
             catch (ArgumentException ex)
             {
@@ -199,69 +144,12 @@ namespace Fridge.Controllers
                 return StatusCode(500);
             }
         }
-
-        /// <summary>
-        /// Fill fridges that does not have a specified product with that product.
-        /// </summary>
-        /// <param name="productId">Specified product.</param>
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Post))]
-        [HttpPost("renter/fridges/product/{productId}")]
-        [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> FillTheFridgeWithProduct(Guid productId)
-        {
-            try
-            {
-                await fridgeProductService.FillTheFridgeWithProductAsync(productId);
-
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
-        /// <summary>
-        /// Add new product to fridge.
-        /// </summary>
-        /// <param name="addProductModel">Fridge and Product identifiers,count of a product.</param>
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Post))]
-        [HttpPost("renter/fridge/product")]
-        [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> AddProduct([FromBody] AddProductModel addProductModel)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return UnprocessableEntity(ModelState);
-                }
-
-                await fridgeProductService.AddProductAsync(addProductModel);
-
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
+   
         /// <summary>
         /// Method to rent a fridge.
         /// </summary>
         /// <returns>Rented fridge</returns>
-        [HttpPost("renter/fridge/{fridgeId}")]
+        [HttpPut("{fridgeId}/rent")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [Authorize(Roles = UserRoles.Renter)]
@@ -284,38 +172,11 @@ namespace Fridge.Controllers
         }
 
         /// <summary>
-        /// Remove a specified product from fridge.
-        /// </summary>
-        /// <param name="fridgeId">Fridge identifier.</param>
-        /// <param name="productId">Product identifier.</param>
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Delete))]
-        [HttpDelete("renter/fridge/{fridgeId}/product/{productId}")]
-        [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> DeleteProductFromFridge(Guid fridgeId, Guid productId)
-        {
-            try
-            {
-                await fridgeProductService.DeleteProductFromFridgeAsync(fridgeId, productId);
-
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
-        /// <summary>
         /// Allows to delete a fridge.
         /// </summary>
         /// <param name="fridgeId"></param>
         /// <returns></returns>
-        [HttpDelete("owner/fridge/{fridgeId}")]
+        [HttpDelete("{fridgeId}")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Delete))]
         [Authorize(Roles = UserRoles.Owner)]
@@ -342,7 +203,7 @@ namespace Fridge.Controllers
         /// </summary>
         /// <param name="fridgeId">Guid of a fridge to delete.</param>
         /// <returns>Status Code</returns>
-        [HttpDelete("renter/fridge/{fridgeId}")]
+        [HttpPut("{fridgeId}/free")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Delete))]
         [Authorize(Roles = UserRoles.Renter)]

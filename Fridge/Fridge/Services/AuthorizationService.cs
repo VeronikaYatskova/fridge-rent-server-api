@@ -50,18 +50,18 @@ namespace Fridge.Services
             return token;
         }
 
-        public string LoginUser(LoginModel loginModel, string role)
+        public string LoginUser(LoginModel loginModel)
         {
-            var renter = repository.User.FindBy(u => u.Email == loginModel.Email && u.Role == role);
+            var user = repository.User.FindBy(u => u.Email == loginModel.Email);
 
-            if (renter is null)
+            if (user is null)
             {
-                throw new ArgumentException($"{role} is not found");
+                throw new ArgumentException($"User is not found");
             }
 
-            VerifyData(renter, loginModel);
+            VerifyData(user, loginModel);
 
-            string token = CreateToken(renter);
+            string token = CreateToken(user);
 
             return token;
         }

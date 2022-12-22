@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Fridge.Controllers
 {
     [Produces("application/json")]
-    [Route("api/authorization")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -18,44 +18,44 @@ namespace Fridge.Controllers
             this.authorizationService = service;
         }
 
-        /// <summary>
-        /// Add new renter to the system.
-        /// </summary>
-        /// <param name="addRenterModel">Email and Password for registration.</param>
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Post))]
-        [HttpPost("renter/registration")]
-        public async Task<IActionResult> RegisterRenter([FromBody] AddUserModel addUserModel)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return UnprocessableEntity(ModelState);
-                }
+        ///// <summary>
+        ///// Add new renter to the system.
+        ///// </summary>
+        ///// <param name="addRenterModel">Email and Password for registration.</param>
+        //[ApiConventionMethod(typeof(DefaultApiConventions),
+        //    nameof(DefaultApiConventions.Post))]
+        //[HttpPost("renter/sign-up")]
+        //public async Task<IActionResult> RegisterRenter([FromBody] AddUserModel addUserModel)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return UnprocessableEntity(ModelState);
+        //        }
 
-                var token = await authorizationService.RegisterUser(addUserModel, UserRoles.Renter);
+        //        var token = await authorizationService.RegisterUser(addUserModel, UserRoles.Renter);
 
-                return Created("api/authorization/renter/register", token);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
+        //        return Created("api/authorization/renter/register", token);
+        //    }
+        //    catch (ArgumentException ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(500);
+        //    }
+        //}
 
         /// <summary>
         /// Add new owner to the system.
         /// </summary>
-        /// <param name="addOwnerModel">Name, Email, Password and Telephone for registration.</param>
+        /// <param name="addUserModel">Name, Email, Password and Telephone for registration.</param>
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
-        [HttpPost("owner/registration")]
-        public async Task<IActionResult> RegisterOwner([FromBody] AddUserModel addUserModel)
+        [HttpPost("sign-up")]
+        public async Task<IActionResult> RegisterUser([FromBody] AddUserModel addUserModel)
         {
             try
             {
@@ -64,7 +64,9 @@ namespace Fridge.Controllers
                     return UnprocessableEntity(ModelState);
                 }
 
-                var token = await authorizationService.RegisterUser(addUserModel, UserRoles.Owner);
+                var userRole = addUserModel.IsOwner ? UserRoles.Owner : UserRoles.Renter;
+
+                var token = await authorizationService.RegisterUser(addUserModel, userRole);
 
                 return Created("api/authorization/owner/register", token);
             }
@@ -78,35 +80,35 @@ namespace Fridge.Controllers
             }
         }
 
-        /// <summary>
-        /// Login to the system as a renter.
-        /// </summary>
-        /// <param name="loginModel">Email and Password for Logging In.</param>
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Post))]
-        [HttpPost("renter/login")]
-        public IActionResult LoginRenter([FromBody] LoginModel loginModel)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return UnprocessableEntity(ModelState);
-                }
+        ///// <summary>
+        ///// Login to the system as a renter.
+        ///// </summary>
+        ///// <param name="loginModel">Email and Password for Logging In.</param>
+        //[ApiConventionMethod(typeof(DefaultApiConventions),
+        //    nameof(DefaultApiConventions.Post))]
+        //[HttpPost("sign-in")]
+        //public IActionResult LoginRenter([FromBody] LoginModel loginModel)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return UnprocessableEntity(ModelState);
+        //        }
 
-                var token = authorizationService.LoginUser(loginModel, UserRoles.Renter);
+        //        var token = authorizationService.LoginUser(loginModel, UserRoles.Renter);
 
-                return Created("api/authorization/renter/login", token);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
+        //        return Created("api/authorization/renter/login", token);
+        //    }
+        //    catch (ArgumentException ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(500);
+        //    }
+        //}
 
         /// <summary>
         /// Login to the system as an owner.
@@ -114,8 +116,8 @@ namespace Fridge.Controllers
         /// <param name="loginModel">Email and Password for Logging In.</param>
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
-        [HttpPost("owner/login")]
-        public IActionResult LoginOwner([FromBody] LoginModel loginModel)
+        [HttpPost("sign-in")]
+        public IActionResult LoginUser([FromBody] LoginModel loginModel)
         {
             try
             {
@@ -124,9 +126,9 @@ namespace Fridge.Controllers
                     return UnprocessableEntity(ModelState);
                 }
 
-                var token = authorizationService.LoginUser(loginModel, UserRoles.Owner);
+                var token = authorizationService.LoginUser(loginModel);
 
-                return Created("api/authorization/owner/login", token);
+                return Created("api/auth/owner/sign-in", token);
             }
             catch (ArgumentException ex)
             {

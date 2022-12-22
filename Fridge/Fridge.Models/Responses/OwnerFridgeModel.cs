@@ -2,7 +2,7 @@
 
 namespace Fridge.Models.Responses
 {
-    public class OwnerFridgeModel
+    public class OwnerFridgeModel : IUserFridgeModel
     {
         public Guid Id { get; set; }
 

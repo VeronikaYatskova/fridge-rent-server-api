@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Fridge.Models.Responses;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 
@@ -34,7 +35,8 @@ namespace Fridge.Data.Models
         /// </summary>
         [Required(ErrorMessage = "OwnerId is a required field.")]
         public Guid OwnerId { get; set; }
-        
+        public virtual User Owner { get; set; } 
+
         /// <summary>
         /// Producer identifier.
         /// </summary>
