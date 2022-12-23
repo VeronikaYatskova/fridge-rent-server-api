@@ -4,6 +4,7 @@ using Fridge.Models.Requests;
 using Fridge.Tests.Mocks;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace Fridge.Tests.Tests
 {
     public class AuthorizationControllerTests
@@ -11,13 +12,11 @@ namespace Fridge.Tests.Tests
         [Fact]
         public async Task RegisterRenterAsync_ValidData_ShouldReturnCreated()
         {
-            // Arrange
-
             var fakeService = new AuthorizationFakeService();
 
             var controller = new AuthController(fakeService.Service);
 
-            var addRenterModel = new AddUserModel()
+            var addUserModel = new AddUserModel()
             {
                 Email = "sasha@renter.com",
                 Password = "1",
@@ -25,87 +24,82 @@ namespace Fridge.Tests.Tests
 
             var token = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ2ZXJvbmlrYUByZW50ZXIuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUmVudGVyIiwiZXhwIjoxNjY4MTAxNDcxfQ.2CEqWrcJYYWBUixjxBEKx42L8jkceKU6230sFYWkutUjnoM_0X_8uSLniSXb-fxZYYutEn_x0x_XUdZixTVuuQ";
 
-            // Act
-
-            fakeService.Mock.Setup(s => s.RegisterUser(addRenterModel, UserRoles.Renter))
+            fakeService.Mock.Setup(s => s.RegisterUser(addUserModel, UserRoles.Renter))
                 .Returns(Task.FromResult(token));
 
-            var response = await controller.RegisterUser(addRenterModel);
+            var response = await controller.RegisterUser(addUserModel);
 
             var createdResult = response as CreatedResult;
 
-            // Assert
+            Assert.NotNull(createdResult);
+            Assert.IsType<CreatedResult>(createdResult);
             Assert.Equal(201, createdResult.StatusCode);
+
+            var actualToken = createdResult.Value;
+
+            Assert.NotNull(actualToken);
+            Assert.Equal(token, actualToken);
         }
 
         [Fact]
-        public async Task RegisterRenterAsync_InvalidData_ShouldReturnBadRequestResult()
+        public async Task RegisterRenterAsync_InvalidData_ShouldReturnUnprocessableEntityResult()
         {
-            // Arrange
-
             var fakeService = new AuthorizationFakeService();
 
             var controller = new AuthController(fakeService.Service);
 
-            var addRenterModel = new AddUserModel()
+            var addUserModel = new AddUserModel()
             {
                 Email = "sasharenter.com",
                 Password = "",
+                IsOwner = false,
             };
 
-            // Act
+            var response = await controller.RegisterUser(addUserModel);
 
-            fakeService.Mock.Setup(s => s.RegisterUser(addRenterModel, UserRoles.Renter))
-                .Throws(new ArgumentException("Invalid data"));
+            Assert.NotNull(response);
 
-            var response = await controller.RegisterUser(addRenterModel);
+            var unprocessableEntityObjectResult = response as UnprocessableEntityObjectResult;
 
-            var badRequestResult = response as BadRequestObjectResult;
-
-            // Assert
-
-            Assert.Equal(400, badRequestResult.StatusCode);
+            Assert.NotNull(unprocessableEntityObjectResult);
+            Assert.Equal(422, unprocessableEntityObjectResult?.StatusCode);
         }
 
         [Fact]
         public async Task RegisterRenterAsync_RenterExists_ShouldReturnBadRequestResult()
         {
-            // Arrange
-
             var fakeService = new AuthorizationFakeService();
 
             var controller = new AuthController(fakeService.Service);
 
-            var addRenterModel = new AddUserModel()
+            var addUserModel = new AddUserModel()
             {
                 Email = "veronika@renter.com",
                 Password = "1",
             };
 
-            // Act
-
-            fakeService.Mock.Setup(s => s.RegisterUser(addRenterModel, UserRoles.Renter))
+            fakeService.Mock.Setup(s => s.RegisterUser(addUserModel, UserRoles.Renter))
                 .Throws(new ArgumentException("Renter with the same email has been registered."));
 
-            var response = await controller.RegisterUser(addRenterModel);
+            var response = await controller.RegisterUser(addUserModel);
+
+            Assert.NotNull(response);
 
             var badRequestResult = response as BadRequestObjectResult;
 
-            // Assert
-
-            Assert.Equal(400, badRequestResult.StatusCode);
+            Assert.NotNull(badRequestResult);
+            Assert.IsType<BadRequestObjectResult>(badRequestResult);
+            Assert.Equal(400, badRequestResult?.StatusCode);
         }
 
         [Fact]
         public async Task RegisterOwnerAsync_ValidData_ShouldReturnCreated()
         {
-            // Arrange
-
             var fakeService = new AuthorizationFakeService();
 
             var controller = new AuthController(fakeService.Service);
 
-            var addOwnerModel = new AddUserModel()
+            var addUserModel = new AddUserModel()
             {
                 Email = "sasha@owner.com",
                 Password = "1",
@@ -113,80 +107,50 @@ namespace Fridge.Tests.Tests
 
             var token = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ2ZXJvbmlrYUByZW50ZXIuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUmVudGVyIiwiZXhwIjoxNjY4MTAxNDcxfQ.2CEqWrcJYYWBUixjxBEKx42L8jkceKU6230sFYWkutUjnoM_0X_8uSLniSXb-fxZYYutEn_x0x_XUdZixTVuuQ";
 
-            // Act
-
-            fakeService.Mock.Setup(s => s.RegisterUser(addOwnerModel, UserRoles.Owner))
+            fakeService.Mock.Setup(s => s.RegisterUser(addUserModel, UserRoles.Owner))
                 .Returns(Task.FromResult(token));
 
-            var response = await controller.RegisterUser(addOwnerModel);
+            var response = await controller.RegisterUser(addUserModel);
+
+            Assert.NotNull(response);
 
             var createdResult = response as CreatedResult;
 
-            // Assert
-            Assert.Equal(201, createdResult.StatusCode);
-        }
-
-        [Fact]
-        public async Task RegisterOwnerAsync_InvalidData_ShouldReturnBadRequestResult()
-        {
-            // Arrange
-
-            var fakeService = new AuthorizationFakeService();
-
-            var controller = new AuthController(fakeService.Service);
-
-            var addOwnerModel = new AddUserModel()
-            {
-                Email = "sashaowner.com",
-                Password = "",
-            };
-
-            // Act
-
-            fakeService.Mock.Setup(s => s.RegisterUser(addOwnerModel, UserRoles.Owner))
-                .Throws(new ArgumentException("Invalid data"));
-
-            var response = await controller.RegisterUser(addOwnerModel);
-
-            var badRequestResult = response as BadRequestObjectResult;
-
-            // Assert
-            Assert.Equal(400, badRequestResult.StatusCode);
+            Assert.NotNull(createdResult);
+            Assert.IsType<CreatedResult>(createdResult);
+            Assert.Equal(201, createdResult?.StatusCode);
         }
 
         [Fact]
         public async Task RegisterOwnerAsync_OwnerExists_ShouldReturnBadRequestResult()
         {
-            // Arrange
-
             var fakeService = new AuthorizationFakeService();
-
             var controller = new AuthController(fakeService.Service);
 
             var addOwnerModel = new AddUserModel()
             {
                 Email = "sasha@owner.com",
                 Password = "1",
+                IsOwner= true,
             };
-
-            // Act
 
             fakeService.Mock.Setup(s => s.RegisterUser(addOwnerModel, UserRoles.Owner))
                 .Throws(new ArgumentException("Owner with the same email has been registered."));
 
             var response = await controller.RegisterUser(addOwnerModel);
 
+            Assert.NotNull(response);
+
             var badRequestResult = response as BadRequestObjectResult;
 
-            // Assert
+            Assert.NotNull(badRequestResult);
+            Assert.IsType<BadRequestObjectResult>(badRequestResult);
             Assert.Equal(400, badRequestResult.StatusCode);
         }
 
         [Fact]
         public void LoginRenter_ValidData_ShouldReturnCreated()
         {
-            // Arrange
-
             var fakeService = new AuthorizationFakeService();
 
             var controller = new AuthController(fakeService.Service);
@@ -199,25 +163,27 @@ namespace Fridge.Tests.Tests
 
             var token = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ2ZXJvbmlrYUByZW50ZXIuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUmVudGVyIiwiZXhwIjoxNjY4MTAxNDcxfQ.2CEqWrcJYYWBUixjxBEKx42L8jkceKU6230sFYWkutUjnoM_0X_8uSLniSXb-fxZYYutEn_x0x_XUdZixTVuuQ";
 
-            // Act
-
             fakeService.Mock.Setup(s => s.LoginUser(loginModel))
                 .Returns(token);
 
             var response = controller.LoginUser(loginModel);
 
+            Assert.NotNull(response);
+
             var createdResult = response as CreatedResult;
 
-            // Assert
-
+            Assert.NotNull(createdResult);
+            Assert.IsType<CreatedResult>(createdResult);
             Assert.Equal(201, createdResult.StatusCode);
+
+            var actualToken = createdResult.Value;
+
+            Assert.Equal(actualToken, token);
         }
 
         [Fact]
         public void LoginOwner_ValidData_ShouldReturnCreated()
         {
-            // Arrange
-
             var fakeService = new AuthorizationFakeService();
 
             var controller = new AuthController(fakeService.Service);
@@ -230,18 +196,23 @@ namespace Fridge.Tests.Tests
 
             var token = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ2ZXJvbmlrYUByZW50ZXIuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUmVudGVyIiwiZXhwIjoxNjY4MTAxNDcxfQ.2CEqWrcJYYWBUixjxBEKx42L8jkceKU6230sFYWkutUjnoM_0X_8uSLniSXb-fxZYYutEn_x0x_XUdZixTVuuQ";
 
-            // Act
-
             fakeService.Mock.Setup(s => s.LoginUser(loginModel))
                 .Returns(token);
 
             var response = controller.LoginUser(loginModel);
 
+            Assert.NotNull(response);
+
             var createdResult = response as CreatedResult;
 
-            // Assert
-
+            Assert.NotNull(createdResult);
+            Assert.IsType<CreatedResult>(createdResult);
             Assert.Equal(201, createdResult.StatusCode);
+
+            var actualToken = createdResult.Value;
+
+            Assert.NotNull(actualToken);
+            Assert.Equal(token, actualToken);
         }
     }
 }

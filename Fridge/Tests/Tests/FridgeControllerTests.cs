@@ -12,16 +12,10 @@ namespace Fridge.Tests.Tests
         [Fact]
         public async Task GetFridgesAsync_HaveFridges_ShouldReturnOk()
         {
-            // Arrange
-
             var fakeFridgeService = new FridgeFakeService();
+            var controller = new FridgeController(fakeFridgeService.Service);
             
-            var controller = new FridgeController
-            (
-                fakeFridgeService.Service
-            );
-
-            IEnumerable<FridgeModel> actualFridges = new List<FridgeModel>()
+            IEnumerable<FridgeModel> expectedFridges = new List<FridgeModel>()
             {
                 new FridgeModel()
                 {
@@ -41,54 +35,48 @@ namespace Fridge.Tests.Tests
                 }
             };
 
-            // Act
-
             fakeFridgeService.Mock.Setup(s => s.GetFridges())
-                .Returns(Task.FromResult(actualFridges));
+                .Returns(Task.FromResult(expectedFridges));
 
             var response = await controller.GetFridges();
 
+            Assert.NotNull(response);
+            
             var okResult = response as OkObjectResult;
+
+            Assert.IsType<OkObjectResult>(okResult);
+            Assert.Equal(200, okResult?.StatusCode);
 
             var fridges = okResult?.Value as List<FridgeModel>;
 
-            // Assert
-
-            Assert.Equal(200, okResult?.StatusCode);
+            Assert.IsType<List<FridgeModel>>(fridges);
             Assert.NotEmpty(fridges);
+            Assert.Equal(new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"), fridges[0].Id);
+            Assert.Equal("Toshiba GR-RF610WE-PMS", fridges[0].Model);
+            Assert.Equal("veronika", fridges[0].Owner);
+            Assert.Equal("Toshiba", fridges[0].Producer);
+            Assert.Equal(20, fridges[0].Capacity);
         }
 
         [Fact]
-        public async Task GetFridgesAsync_NoFridges_ShouldReturnOk()
+        public async Task GetFridgesAsync_NoFridges_ShouldNotFoundResult()
         {
             // Arrange
 
             var fakeFridgeService = new FridgeFakeService();
-
-            
-            var controller = new FridgeController
-            (
-                fakeFridgeService.Service
-
-            );
-
-            IEnumerable<FridgeModel> actualFridges = new List<FridgeModel>() { };
+            var controller = new FridgeController(fakeFridgeService.Service);
 
             // Act
 
             fakeFridgeService.Mock.Setup(s => s.GetFridges())
-                .Returns(Task.FromResult(actualFridges));
+                .Throws(new ArgumentException("Fridges are not found."));
 
             var response = await controller.GetFridges();
 
-            var okResult = response as OkObjectResult;
-
-            var fridges = okResult?.Value as List<FridgeModel>;
-
             // Assert
 
-            Assert.Equal(200, okResult?.StatusCode);
-            Assert.Empty(fridges);
+            Assert.NotNull(response);
+            Assert.IsType<NotFoundObjectResult>(response);
         }
 
         [Fact]
@@ -97,39 +85,26 @@ namespace Fridge.Tests.Tests
             // Arrange
 
             var fakeFridgeService = new FridgeFakeService();
-
-            var controller = new FridgeController
-            (
-                fakeFridgeService.Service
-            );
+            var controller = new FridgeController(fakeFridgeService.Service);
 
             // Act
 
             fakeFridgeService.Mock.Setup(s => s.GetFridges())
-                .Throws(new ArgumentException());
+                .Throws(new ArgumentException("Fridges are not found."));
 
             var response = await controller.GetFridges();
 
-            var notFoundResult = response as NotFoundObjectResult;
-
             // Assert
 
-            Assert.Equal(404, notFoundResult?.StatusCode);
+            Assert.NotNull(response);
+            Assert.IsType<NotFoundObjectResult>(response);
         }
 
         [Fact]
         public async Task GetModelsAsync_HaveModels_ShouldReturnOk()
         {
-            // Arrange
-
             var fakeFridgeService = new FridgeFakeService();
-
-            
-            var controller = new FridgeController
-            (
-                fakeFridgeService.Service
-
-            );
+            var controller = new FridgeController(fakeFridgeService.Service);
 
             IEnumerable<FridgeModelModel> actualModels = new List<FridgeModelModel>()
             {
@@ -160,35 +135,33 @@ namespace Fridge.Tests.Tests
                 }
             };
 
-            // Act
-
             fakeFridgeService.Mock.Setup(s => s.GetModels())
                 .Returns(Task.FromResult(actualModels));
 
             var response = await controller.GetModels();
 
+            Assert.NotNull(response);
+
             var okResult = response as OkObjectResult;
 
-            // Assert
-
+            Assert.NotNull(okResult);
+            Assert.IsType<OkObjectResult>(okResult);
             Assert.Equal(200, okResult?.StatusCode);
+
+            var models = okResult.Value as List<FridgeModelModel>;
+
+            Assert.IsType<List<FridgeModelModel>>(models);
+            Assert.NotNull(models);
+            Assert.NotEmpty(models);
         }
 
         [Fact]
         public async Task GetProducersAsync_HaveProducers_ShouldReturnOk()
         {
-            // Arrange
-
             var fakeFridgeService = new FridgeFakeService();
-
+            var controller = new FridgeController(fakeFridgeService.Service);
             
-            var controller = new FridgeController
-            (
-                fakeFridgeService.Service
-
-            );
-
-            IEnumerable<FridgeProducerModel> actualProducers = new List<FridgeProducerModel>()
+            IEnumerable<FridgeProducerModel> expectedProducers = new List<FridgeProducerModel>()
             {
                 new FridgeProducerModel
                 {
@@ -222,358 +195,26 @@ namespace Fridge.Tests.Tests
                 }
             };
 
-            // Act
-
             fakeFridgeService.Mock.Setup(s => s.GetProducers())
-                .Returns(Task.FromResult(actualProducers));
+                .Returns(Task.FromResult(expectedProducers));
 
             var response = await controller.GetModels();
 
+            Assert.NotNull(response);
+            Assert.IsType<OkObjectResult>(response);
+
             var okResult = response as OkObjectResult;
-
-            // Assert
-
+            
+            Assert.NotNull(okResult);
             Assert.Equal(200, okResult?.StatusCode);
         }
-
-
-
-        //[Fact]
-        //public async Task GetProductsInFridgeByFridgeId_ValidId_ShouldReturnOk()
-        //{
-        //    // Arrange
-
-        //    var fakeFridgeService = new FridgeFakeService();
-
-            
-        //    var controller = new FridgeController
-        //    (
-        //        fakeFridgeService.Service
-
-        //    );
-
-        //    IEnumerable<ProductWithCurrentCountAndNameModel> products = new List<ProductWithCurrentCountAndNameModel>()
-        //    {
-        //        new ProductWithCurrentCountAndNameModel()
-        //        {
-        //            Id = Guid.NewGuid(),
-        //            Name = "Apple",
-        //            Count = 3,
-        //        },
-        //        new ProductWithCurrentCountAndNameModel()
-        //        {
-        //            Id= Guid.NewGuid(),
-        //            Name = "Cake",
-        //            Count = 5,
-        //        },
-        //    };
-
-        //    var fridgeId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f");
-
-        //    // Act
-
-        //    fakeFridgeProductService.Mock.Setup(s => s.GetProductsByFridgeIdAsync(fridgeId))
-        //        .Returns(Task.FromResult(products));
-
-        //    var response = await controller.GetProductsInFridgeByFridgeId(fridgeId);
-
-        //    var okRequestResult = response as OkObjectResult;
-
-        //    // Assert
-
-        //    Assert.Equal(200, okRequestResult?.StatusCode);
-        //}
-
-        //[Fact]
-        //public async Task FillTheFridgeWithProduct_ValidProductId_ShouldReturnOk()
-        //{
-        //    // Arrange
-
-        //    var fakeFridgeService = new FridgeFakeService();
-
-            
-        //    var controller = new FridgeController
-        //    (
-        //        fakeFridgeService.Service
-
-        //    );
-
-        //    var productId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f");
-
-        //    // Act
-
-        //    var response = await controller.GetProductsInFridgeByFridgeId(productId);
-
-        //    var okRequestResult = response as OkObjectResult;
-
-        //    // Assert
-
-        //    Assert.Equal(200, okRequestResult?.StatusCode);
-        //}
-
-        //[Fact]
-        //public async Task AddProduct_ValidData_ShouldReturnCreated()
-        //{
-        //    // Arrange
-
-        //    var fakeFridgeService = new FridgeFakeService();
-
-            
-        //    var controller = new FridgeController
-        //    (
-        //        fakeFridgeService.Service
-
-        //    );
-
-        //    var addProductModel = new AddProductModel()
-        //    {
-        //        FridgeId = new Guid("385e96d7-37e4-47a1-83eb-1ef70d072c8f"),
-        //        ProductId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"),
-        //        Count = 1,
-        //    };
-
-        //    var productWithCurrentCountAndNameModel = new ProductWithCurrentCountAndNameModel()
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        Name = "Apple",
-        //        Count = 1,
-        //    };
-
-        //    // Act
-
-        //    fakeFridgeProductService.Mock.Setup(s => s.AddProductAsync(addProductModel))
-        //        .Returns(Task.FromResult(productWithCurrentCountAndNameModel));
-
-        //    var response = await controller.AddProduct(addProductModel);
-
-        //    var okRequestResult = response as CreatedResult;
-
-        //    // Assert
-
-        //    Assert.Equal(201, okRequestResult?.StatusCode);
-        //}
-
-        //[Fact]
-        //public async Task DeleteProductAsync_ValidData_ShouldReturnOk()
-        //{
-        //    // Arrange
-
-        //    var fakeFridgeService = new FridgeFakeService();
-
-            
-        //    var controller = new FridgeController
-        //    (
-        //        fakeFridgeService.Service
-                
-
-
-        //    );
-
-        //    var fridgeId = new Guid("385e96d7-37e4-47a1-83eb-1ef70d072c8f");
-        //    var productId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f");
-
-        //    // Act
-
-        //    var response = await controller.DeleteProductFromFridge(fridgeId, productId);
-
-        //    var okResult = response as OkResult;
-
-        //    // Assert
-
-        //    Assert.Equal(200, okResult?.StatusCode);
-        //}
-
-
-        //[Fact]
-        //public async Task GetOwnersFridgesAsync_HaveFridges_ShouldReturnOk()
-        //{
-        //    // Arrange
-
-        //    var fakeFridgeService = new FridgeFakeService();
-
-            
-        //    var controller = new FridgeController
-        //    (
-        //        fakeFridgeService.Service
-
-        //    );
-
-        //    IEnumerable<OwnerFridgeModel> actualFridges = new List<OwnerFridgeModel>()
-        //    {
-        //        new OwnerFridgeModel
-        //        {
-        //            Id = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"),
-        //            Model = "Toshiba GR-RF610WE-PMS",
-        //            Owner = "veronika",
-        //            Producer = "Toshiba",
-        //            Capacity =  20,
-        //        },
-        //        new OwnerFridgeModel
-        //        {
-        //            Id = new Guid("332ddb8c-57d6-4bbb-a3ea-4d33f5f30fc7"),
-        //            Model = "Toshiba GR-RF610WE-PMS",
-        //            Owner = "veronika",
-        //            Producer = "Toshiba",
-        //            Capacity = 20,
-        //        }
-        //    };
-
-        //    // Act
-
-        //    fakeFridgeService.Mock.Setup(s => s.GetOwnersFridges())
-        //        .Returns(Task.FromResult(actualFridges));
-
-        //    var response = await controller.GetOwnersFridges();
-
-        //    var okResult = response as OkObjectResult;
-
-        //    var fridges = okResult?.Value as List<OwnerFridgeModel>;
-
-        //    // Assert
-
-        //    Assert.Equal(200, okResult?.StatusCode);
-        //    Assert.NotEmpty(fridges);
-        //}
-
-        //[Fact]
-        //public async Task AddFridge_ValidData_ShouldReturnOk()
-        //{
-        //    // Arrange
-
-        //    var fakeFridgeService = new FridgeFakeService();
-
-            
-        //    var controller = new FridgeController
-        //    (
-        //        fakeFridgeService.Service
-
-        //    );
-
-        //    var addFridgeOwnerModel = new AddFridgeOwnerModel()
-        //    {
-        //        ModelId = Guid.NewGuid(),
-        //        ProducerId = Guid.NewGuid(),
-        //        Capacity = 20,
-        //    };
-
-        //    var addFridgeModel = new AddFridgeModel()
-        //    {
-        //        FridgeId = Guid.NewGuid(),
-        //        ModelId = addFridgeOwnerModel.ModelId,
-        //        ProducerId = addFridgeOwnerModel.ProducerId,
-        //        OwnerId = Guid.NewGuid(),
-        //        Capacity = 20,
-        //    };
-
-        //    // Act
-
-        //    fakeFridgeService.Mock.Setup(s => s.AddFridge(addFridgeOwnerModel))
-        //        .Returns(Task.FromResult(addFridgeModel));
-
-        //    var response = await controller.AddFridge(addFridgeOwnerModel);
-
-        //    var createdResult = response as CreatedResult;
-
-        //    // Assert
-
-        //    Assert.Equal(201, createdResult?.StatusCode);
-        //}
-
-        //[Fact]
-        //public async Task DeleteFridge_ValidId_ShouldReturnOk()
-        //{
-        //    // Arrange
-
-        //    var fakeFridgeService = new FridgeFakeService();
-
-            
-        //    var controller = new FridgeController
-        //    (
-        //        fakeFridgeService.Service
-
-        //    );
-
-        //    var fridgeId = Guid.NewGuid();
-
-        //    // Act
-
-        //    var response = await controller.DeleteFridge(fridgeId);
-
-        //    var okResult = response as OkResult;
-
-        //    // Assert
-
-        //    Assert.Equal(200, okResult?.StatusCode);
-        //}
-
-
-        //[Fact]
-        //public async Task GetRentersFridgesAsync_HaveFridges_ShouldReturnOk()
-        //{
-        //    // Arrange
-
-        //    var fakeFridgeService = new FridgeFakeService();
-
-            
-        //    var controller = new FridgeController
-        //    (
-        //        fakeFridgeService.Service
-
-        //    );
-
-        //    IEnumerable<FridgeRenterModel> actualFridges = new List<FridgeRenterModel>()
-        //    {
-        //        new FridgeRenterModel()
-        //        {
-        //            Id = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"),
-        //            Model = "Toshiba GR-RF610WE-PMS",
-        //            Owner = "veronika",
-        //            Producer = "Toshiba",
-        //            Capacity =  20,
-        //            CurrentCount =  0,
-        //        },
-        //        new FridgeRenterModel()
-        //        {
-        //            Id = new Guid("332ddb8c-57d6-4bbb-a3ea-4d33f5f30fc7"),
-        //            Model = "Toshiba GR-RF610WE-PMS",
-        //            Owner = "veronika",
-        //            Producer = "Toshiba",
-        //            Capacity = 20,
-        //            CurrentCount = 0,
-        //        }
-        //    };
-
-        //    // Act
-
-        //    fakeFridgeService.Mock.Setup(s => s.GetRentersFridges())
-        //        .Returns(Task.FromResult(actualFridges));
-
-        //    var response = await controller.GetRentersFridges();
-
-        //    var okResult = response as OkObjectResult;
-
-        //    var fridges = okResult?.Value as List<FridgeRenterModel>;
-
-        //    // Assert
-
-        //    Assert.Equal(200, okResult?.StatusCode);
-        //    Assert.NotEmpty(fridges);
-        //}
 
         [Fact]
         public async Task RentFridge_ValidData_ShouldReturnOk()
         {
-            // Arrange
-
             var fakeFridgeService = new FridgeFakeService();
-
+            var controller = new FridgeController(fakeFridgeService.Service);
             
-            var controller = new FridgeController
-            (
-                fakeFridgeService.Service
-
-            );
-
             var fridgeId = Guid.NewGuid();
 
             var addFridgeModel = new AddFridgeModel()
@@ -585,17 +226,17 @@ namespace Fridge.Tests.Tests
                 Capacity = 20,
             };
 
-            // Act
-
             fakeFridgeService.Mock.Setup(s => s.RentFridge(fridgeId))
                 .Returns(Task.FromResult(addFridgeModel));
 
             var response = await controller.RentFridge(fridgeId);
 
+            Assert.NotNull(response);
+            Assert.IsType<OkResult>(response);
+
             var createdResult = response as OkResult;
 
-            // Assert
-
+            Assert.NotNull(createdResult);
             Assert.Equal(200, createdResult?.StatusCode);
         }
 
@@ -605,13 +246,7 @@ namespace Fridge.Tests.Tests
             // Arrange
 
             var fakeFridgeService = new FridgeFakeService();
-
-            
-            var controller = new FridgeController
-            (
-                fakeFridgeService.Service
-
-            );
+            var controller = new FridgeController(fakeFridgeService.Service);
 
             var fridgeId = Guid.NewGuid();
 
@@ -619,11 +254,198 @@ namespace Fridge.Tests.Tests
 
             var response = await controller.Remove(fridgeId);
 
+            Assert.NotNull(response);
+            Assert.IsType<OkResult>(response);
+
             var okResult = response as OkResult;
 
             // Assert
 
+            Assert.NotNull(okResult);
             Assert.Equal(200, okResult?.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddFridge_ValidData_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+
+            var controller = new FridgeController(fakeFridgeService.Service);
+
+            var addFridgeOwnerModel = new AddFridgeOwnerModel()
+            {
+                ModelId = Guid.NewGuid().ToString(),
+                ProducerId = Guid.NewGuid().ToString(),
+                Capacity = 20,
+            };
+
+            var addFridgeModel = new AddFridgeModel()
+            {
+                FridgeId = Guid.NewGuid(),
+                ModelId = new Guid(addFridgeOwnerModel.ModelId),
+                ProducerId = new Guid(addFridgeOwnerModel.ProducerId),
+                OwnerId = Guid.NewGuid(),
+                Capacity = 20,
+            };
+
+            // Act
+
+            fakeFridgeService.Mock.Setup(s => s.AddFridge(addFridgeOwnerModel))
+                .Returns(Task.FromResult(addFridgeModel));
+
+            var response = await controller.AddFridge(addFridgeOwnerModel);
+
+            Assert.NotNull(response);
+            Assert.IsType<CreatedResult>(response);
+
+            var createdResult = response as CreatedResult;
+
+            // Assert
+
+            Assert.NotNull(createdResult);
+            Assert.Equal(201, createdResult?.StatusCode);
+        }
+
+        [Fact]
+        public async Task DeleteFridge_ValidId_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var controller = new FridgeController(fakeFridgeService.Service);
+
+            var fridgeId = Guid.NewGuid();
+
+            // Act
+
+            var response = await controller.DeleteFridge(fridgeId);
+
+            Assert.NotNull(response);
+            Assert.IsType<OkResult>(response);
+
+            var okResult = response as OkResult;
+
+            // Assert
+
+            Assert.NotNull(okResult);
+            Assert.Equal(200, okResult?.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetOwnersFridgesAsync_HaveFridges_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+            var controller = new FridgeController(fakeFridgeService.Service);
+
+            IEnumerable<IUserFridgeModel> actualFridges = new List<OwnerFridgeModel>()
+            {
+                new OwnerFridgeModel
+                {
+                    Id = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"),
+                    Model = "Toshiba GR-RF610WE-PMS",
+                    Owner = "veronika",
+                    Producer = "Toshiba",
+                    Capacity =  20,
+                },
+                new OwnerFridgeModel
+                {
+                    Id = new Guid("332ddb8c-57d6-4bbb-a3ea-4d33f5f30fc7"),
+                    Model = "Toshiba GR-RF610WE-PMS",
+                    Owner = "veronika",
+                    Producer = "Toshiba",
+                    Capacity = 20,
+                }
+            };
+
+            // Act
+
+            fakeFridgeService.Mock.Setup(s => s.GetUserFridges())
+                .Returns(Task.FromResult(actualFridges));
+
+            var response = await controller.GetUserFridges();
+
+            Assert.NotNull(response);
+            Assert.IsType<OkObjectResult>(response);
+
+            var okResult = response as OkObjectResult;
+
+            Assert.NotNull(okResult);
+            Assert.Equal(200, okResult?.StatusCode);
+
+            var fridges = okResult?.Value as List<OwnerFridgeModel>;
+
+            // Assert
+
+            Assert.IsType<List<OwnerFridgeModel>>(fridges);
+            Assert.NotEmpty(fridges);
+            Assert.Equal(new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"), fridges[0].Id);
+            Assert.Equal("Toshiba GR-RF610WE-PMS", fridges[0].Model);
+            Assert.Equal("veronika", fridges[0].Owner);
+            Assert.Equal("Toshiba", fridges[0].Producer);
+            Assert.Equal(20, fridges[0].Capacity);
+        }
+
+        [Fact]
+        public async Task GetRentersFridgesAsync_HaveFridges_ShouldReturnOk()
+        {
+            // Arrange
+
+            var fakeFridgeService = new FridgeFakeService();
+
+            var controller = new FridgeController(fakeFridgeService.Service);
+
+            IEnumerable<IUserFridgeModel> actualFridges = new List<FridgeRenterModel>()
+            {
+                new FridgeRenterModel()
+                {
+                    Id = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"),
+                    Model = "Toshiba GR-RF610WE-PMS",
+                    Owner = "veronika",
+                    Producer = "Toshiba",
+                    Capacity =  20,
+                    CurrentCount =  0,
+                },
+                new FridgeRenterModel()
+                {
+                    Id = new Guid("332ddb8c-57d6-4bbb-a3ea-4d33f5f30fc7"),
+                    Model = "Toshiba GR-RF610WE-PMS",
+                    Owner = "veronika",
+                    Producer = "Toshiba",
+                    Capacity = 20,
+                    CurrentCount = 0,
+                }
+            };
+
+            // Act
+
+            fakeFridgeService.Mock.Setup(s => s.GetUserFridges())
+                .Returns(Task.FromResult(actualFridges));
+
+            var response = await controller.GetUserFridges();
+
+            Assert.NotNull(response);
+            Assert.IsType<OkObjectResult>(response);
+
+            var okResult = response as OkObjectResult;
+
+            Assert.NotNull(okResult);
+            Assert.Equal(200, okResult?.StatusCode);
+
+            var fridges = okResult?.Value as List<FridgeRenterModel>;
+
+            // Assert
+
+            Assert.IsType<List<FridgeRenterModel>>(fridges);
+            Assert.NotEmpty(fridges);
+            Assert.Equal(new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"), fridges[0].Id);
+            Assert.Equal("Toshiba GR-RF610WE-PMS", fridges[0].Model);
+            Assert.Equal("veronika", fridges[0].Owner);
+            Assert.Equal("Toshiba", fridges[0].Producer);
+            Assert.Equal(20, fridges[0].Capacity);
         }
     }
 }

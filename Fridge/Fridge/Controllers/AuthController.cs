@@ -18,36 +18,6 @@ namespace Fridge.Controllers
             this.authorizationService = service;
         }
 
-        ///// <summary>
-        ///// Add new renter to the system.
-        ///// </summary>
-        ///// <param name="addRenterModel">Email and Password for registration.</param>
-        //[ApiConventionMethod(typeof(DefaultApiConventions),
-        //    nameof(DefaultApiConventions.Post))]
-        //[HttpPost("renter/sign-up")]
-        //public async Task<IActionResult> RegisterRenter([FromBody] AddUserModel addUserModel)
-        //{
-        //    try
-        //    {
-        //        if (!ModelState.IsValid)
-        //        {
-        //            return UnprocessableEntity(ModelState);
-        //        }
-
-        //        var token = await authorizationService.RegisterUser(addUserModel, UserRoles.Renter);
-
-        //        return Created("api/authorization/renter/register", token);
-        //    }
-        //    catch (ArgumentException ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return StatusCode(500);
-        //    }
-        //}
-
         /// <summary>
         /// Add new owner to the system.
         /// </summary>
@@ -79,36 +49,6 @@ namespace Fridge.Controllers
                 return StatusCode(500);
             }
         }
-
-        ///// <summary>
-        ///// Login to the system as a renter.
-        ///// </summary>
-        ///// <param name="loginModel">Email and Password for Logging In.</param>
-        //[ApiConventionMethod(typeof(DefaultApiConventions),
-        //    nameof(DefaultApiConventions.Post))]
-        //[HttpPost("sign-in")]
-        //public IActionResult LoginRenter([FromBody] LoginModel loginModel)
-        //{
-        //    try
-        //    {
-        //        if (!ModelState.IsValid)
-        //        {
-        //            return UnprocessableEntity(ModelState);
-        //        }
-
-        //        var token = authorizationService.LoginUser(loginModel, UserRoles.Renter);
-
-        //        return Created("api/authorization/renter/login", token);
-        //    }
-        //    catch (ArgumentException ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return StatusCode(500);
-        //    }
-        //}
 
         /// <summary>
         /// Login to the system as an owner.

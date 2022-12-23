@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+
 namespace Fridge.Models.Requests
 {
     public class AddUserModel

@@ -35,24 +35,6 @@ namespace Fridge.Services
             return null;
         }
 
-        //public async Task<Owner?> GetOwner()
-        //{
-        //    var guid = await GetInfo();
-        //    if (guid is not null)
-        //    {
-        //        var owner = repository.Owner.GetOwnerByConditionAsync(u => u.Id == Guid.Parse(guid)).Result;
-
-        //        if (owner is null)
-        //        {
-        //            throw new ArgumentException("Owner is not found...");
-        //        }
-
-        //        return owner;
-        //    }
-
-        //    return null;
-        //}
-
         private async static Task<string?> GetInfo()
         {
             var guid = await GetUserGuid();
