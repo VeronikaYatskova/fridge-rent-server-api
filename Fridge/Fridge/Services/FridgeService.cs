@@ -18,13 +18,13 @@ namespace Fridge.Services
         private readonly TokenInfo tokenInfo;
         private User? user;
 
-        public FridgeService(IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<FridgeService> logger)
+        public FridgeService(IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<FridgeService> logger, IConfiguration configuration)
         {
             this.repository = repository;
             this.logger = logger;
             this.mapper = mapper;
 
-            tokenInfo = new TokenInfo(repository, httpContextAccessor);
+            tokenInfo = new TokenInfo(repository, httpContextAccessor, configuration);
         }
 
         public async Task<IEnumerable<FridgeModel>> GetFridges()

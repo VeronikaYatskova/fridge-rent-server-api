@@ -1,7 +1,10 @@
 ﻿using Fridge.Models;
 using Fridge.Models.Requests;
+using Fridge.Services;
 using Fridge.Services.Abstracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 
 namespace Fridge.Controllers
@@ -11,9 +14,9 @@ namespace Fridge.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthorizationService authorizationService;
+        private readonly IAuthService authorizationService;
 
-        public AuthController(IAuthorizationService service)
+        public AuthController(IAuthService service)
         {
             this.authorizationService = service;
         }
@@ -37,7 +40,7 @@ namespace Fridge.Controllers
                 var userRole = addUserModel.IsOwner ? UserRoles.Owner : UserRoles.Renter;
 
                 var token = await authorizationService.RegisterUser(addUserModel, userRole);
-
+                
                 return Created("api/authorization/owner/register", token);
             }
             catch (ArgumentException ex)
@@ -57,7 +60,7 @@ namespace Fridge.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [HttpPost("sign-in")]
-        public IActionResult LoginUser([FromBody] LoginModel loginModel)
+        public async Task<IActionResult> LoginUser([FromBody] LoginModel loginModel)
         {
             try
             {
@@ -66,13 +69,31 @@ namespace Fridge.Controllers
                     return UnprocessableEntity(ModelState);
                 }
 
-                var token = authorizationService.LoginUser(loginModel);
+                var token = await authorizationService.LoginUser(loginModel);
 
                 return Created("api/auth/owner/sign-in", token);
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost("refresh-token")]
+        [Authorize(Roles = $"{UserRoles.Owner}, {UserRoles.Renter}")]
+        public async Task<ActionResult<string>> RefreshToken()
+        {
+            try
+            {
+                return await authorizationService.GetRefreshToken();
+            }
+            catch (ArgumentException ex)
+            {
+                return Unauthorized(ex.Message);
             }
             catch (Exception)
             {

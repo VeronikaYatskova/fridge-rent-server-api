@@ -19,10 +19,15 @@ namespace Fridge.Data.Models
 
         public string Role { get; set; }
 
+        public string? RefreshToken { get; set; }
+
+        public DateTime? TokenCreated { get; set; }
+
+        public DateTime? TokenExpires { get; set; }
+
 
         public virtual ICollection<Fridge> RenterFridges { get; set; }
         public virtual ICollection<Fridge> OwnerFridges { get; set; }
-
         public virtual ICollection<ProductPicture> ProductPictures { get; set; } 
     }
 }

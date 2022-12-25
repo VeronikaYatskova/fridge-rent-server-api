@@ -5,12 +5,12 @@ namespace Fridge.Tests.Mocks
 {
     public class AuthorizationFakeService
     {
-        public Mock<IAuthorizationService> Mock;
-        public IAuthorizationService Service;
+        public Mock<IAuthService> Mock;
+        public IAuthService Service;
 
         public AuthorizationFakeService()
         {
-            Mock = new Mock<IAuthorizationService>();
+            Mock = new Mock<IAuthService>();
             Service = Mock.Object;
         }
     }

@@ -149,7 +149,7 @@ namespace Fridge.Tests.Tests
         }
 
         [Fact]
-        public void LoginRenter_ValidData_ShouldReturnCreated()
+        public async Task LoginRenter_ValidData_ShouldReturnCreated()
         {
             var fakeService = new AuthorizationFakeService();
 
@@ -164,13 +164,13 @@ namespace Fridge.Tests.Tests
             var token = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ2ZXJvbmlrYUByZW50ZXIuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUmVudGVyIiwiZXhwIjoxNjY4MTAxNDcxfQ.2CEqWrcJYYWBUixjxBEKx42L8jkceKU6230sFYWkutUjnoM_0X_8uSLniSXb-fxZYYutEn_x0x_XUdZixTVuuQ";
 
             fakeService.Mock.Setup(s => s.LoginUser(loginModel))
-                .Returns(token);
+                .Returns(Task.FromResult(token));
 
             var response = controller.LoginUser(loginModel);
 
             Assert.NotNull(response);
 
-            var createdResult = response as CreatedResult;
+            var createdResult = await response as CreatedResult;
 
             Assert.NotNull(createdResult);
             Assert.IsType<CreatedResult>(createdResult);
@@ -182,7 +182,7 @@ namespace Fridge.Tests.Tests
         }
 
         [Fact]
-        public void LoginOwner_ValidData_ShouldReturnCreated()
+        public async Task LoginOwner_ValidData_ShouldReturnCreated()
         {
             var fakeService = new AuthorizationFakeService();
 
@@ -197,13 +197,13 @@ namespace Fridge.Tests.Tests
             var token = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ2ZXJvbmlrYUByZW50ZXIuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUmVudGVyIiwiZXhwIjoxNjY4MTAxNDcxfQ.2CEqWrcJYYWBUixjxBEKx42L8jkceKU6230sFYWkutUjnoM_0X_8uSLniSXb-fxZYYutEn_x0x_XUdZixTVuuQ";
 
             fakeService.Mock.Setup(s => s.LoginUser(loginModel))
-                .Returns(token);
+                .Returns(Task.FromResult(token));
 
             var response = controller.LoginUser(loginModel);
 
             Assert.NotNull(response);
 
-            var createdResult = response as CreatedResult;
+            var createdResult = await response as CreatedResult;
 
             Assert.NotNull(createdResult);
             Assert.IsType<CreatedResult>(createdResult);

@@ -18,14 +18,14 @@ namespace Fridge.Services
         private TokenInfo tokenInfo;
         private User? renter;
 
-        public ProductsService(IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<ProductsService> logger, IWebHostEnvironment environment)
+        public ProductsService(IConfiguration configuration, IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<ProductsService> logger, IWebHostEnvironment environment)
         {
             this.repository = repository;
             this.logger = logger;
             this.environment = environment;
             this.mapper = mapper;
 
-            tokenInfo = new TokenInfo(repository, httpContextAccessor);
+            tokenInfo = new TokenInfo(repository, httpContextAccessor, configuration);
         }
 
         public async Task<IEnumerable<ProductModel>> GetProducts()

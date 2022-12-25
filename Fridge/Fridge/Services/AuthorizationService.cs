@@ -10,24 +10,22 @@ using System.Security.Cryptography;
 
 namespace Fridge.Services
 {
-    public class AuthorizationService : IAuthorizationService
+    public class AuthorizationService : IAuthService
     {
         private readonly IRepositoryManager repository;
-        private readonly ILogger<AuthorizationService> logger;
-        private readonly IConfiguration configuration;
+        private TokenInfo? tokenInfo;
 
-        public AuthorizationService(IConfiguration configuration, IRepositoryManager repository, ILogger<AuthorizationService> logger)
+        public AuthorizationService(IConfiguration config, IHttpContextAccessor httpContextAccessor, IRepositoryManager repository)
         {
             this.repository = repository;
-            this.logger = logger;
-            this.configuration = configuration;
-        }
 
+            tokenInfo = new TokenInfo(repository, httpContextAccessor, config);
+        }
+        
         public async Task<string> RegisterUser(AddUserModel addUserModel, string role)
         {
             if (repository.User.FindBy(u => u.Email == addUserModel.Email && u.Role == role) is not null)
             {
-                logger.LogInformation($"{role} with the same email is already in the database.");
                 throw new ArgumentException($"{role} with the same email has been registered.");
             }
 
@@ -42,15 +40,23 @@ namespace Fridge.Services
                 Role = role
             };
 
-            string token = CreateToken(renter);
+            var token = tokenInfo?.CreateToken(renter);
+           
+            repository.User.AddUser(renter);
 
-            repository.User.AddRenter(renter);
             await repository.SaveAsync();
 
-            return token;
+            var user = repository.User.FindBy(u => u.Email == addUserModel.Email);
+
+            tokenInfo?.SetRefreshToken(user);
+            repository.User.UpdateUser(user);
+
+            await repository.SaveAsync();
+
+            return token!;
         }
 
-        public string LoginUser(LoginModel loginModel)
+        public async Task<string> LoginUser(LoginModel loginModel)
         {
             var user = repository.User.FindBy(u => u.Email == loginModel.Email);
 
@@ -61,9 +67,19 @@ namespace Fridge.Services
 
             VerifyData(user, loginModel);
 
-            string token = CreateToken(user);
+            var token = tokenInfo?.CreateToken(user);
+            tokenInfo?.SetRefreshToken(user);
+
+            repository.User.UpdateUser(user);
+            await repository.SaveAsync();
 
             return token;
+        }
+
+        public async Task<string> GetRefreshToken()
+        {
+            var user = await tokenInfo.GetUser();
+            return await tokenInfo.UpdateRefreshToken(user);
         }
 
         private void VerifyData(User user, LoginModel loginModel)
@@ -77,30 +93,6 @@ namespace Fridge.Services
             {
                 throw new ArgumentException("Wrong password");
             }
-        }
-
-        private string CreateToken(User user)
-        {
-            var userId = user.Id;
-            var claims = new[]
-            {
-                new Claim("UserId", userId.ToString()),
-                new Claim(ClaimTypes.Role, user.Role),
-            };
-
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
-                configuration.GetSection("AppSettings:Token").Value));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: creds);
-
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return jwt;
         }
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

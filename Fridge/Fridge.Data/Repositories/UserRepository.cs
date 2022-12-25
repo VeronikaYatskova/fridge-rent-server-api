@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Fridge.Data.Context;
 using Fridge.Data.Repositories.Interfaces;
 using Fridge.Data.Models;
+
 
 namespace Fridge.Data.Repositories
 {
@@ -11,13 +11,14 @@ namespace Fridge.Data.Repositories
         public UserRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {
         }
-        public void AddRenter(User user) =>
+
+        public void AddUser(User user) =>
             Create(user);
 
         public User? FindBy(Expression<Func<User, bool>> condition) =>
             FindByCondition(condition)?.FirstOrDefault();
 
-        public void AddOwner(User owner) =>
-            Create(owner);
+        public void UpdateUser(User user) =>
+            Update(user);
     }
 }

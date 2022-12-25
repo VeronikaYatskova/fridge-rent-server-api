@@ -18,7 +18,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
-builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
+builder.Services.AddScoped<IAuthService, AuthorizationService>();
 builder.Services.AddScoped<IFridgeService, FridgeService>();
 builder.Services.AddScoped<IFridgeProductService, FridgeProductService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
@@ -36,6 +36,9 @@ builder.Services.AddLogging();
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -105,5 +108,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseSession();
 
 app.Run();

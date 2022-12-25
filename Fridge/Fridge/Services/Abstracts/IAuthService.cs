@@ -2,10 +2,12 @@
 
 namespace Fridge.Services.Abstracts
 {
-    public interface IAuthorizationService
+    public interface IAuthService
     {
         Task<string> RegisterUser(AddUserModel addUserModel, string role);
 
-        string LoginUser(LoginModel loginModel);
+        Task<string> LoginUser(LoginModel loginModel);
+
+        Task<string> GetRefreshToken();
     }
 }

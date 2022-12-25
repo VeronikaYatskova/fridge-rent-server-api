@@ -3,6 +3,7 @@ using Fridge.Data.Repositories.Interfaces;
 using Fridge.Models.Requests;
 using Fridge.Models.Responses;
 using Fridge.Services.Abstracts;
+using Microsoft.AspNetCore.Http;
 
 
 namespace Fridge.Services
@@ -12,15 +13,15 @@ namespace Fridge.Services
         private readonly ILogger<FridgeProductService> logger;
         private readonly IRepositoryManager repository;
 
-        private TokenInfo tokenInfo;
+        private readonly TokenInfo tokenInfo;
         private User? renter;
 
-        public FridgeProductService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<FridgeProductService> logger)
+        public FridgeProductService(IRepositoryManager repository, IHttpContextAccessor httpContextAccessor, ILogger<FridgeProductService> logger, IConfiguration configuration)
         {
             this.repository = repository;
             this.logger = logger;
 
-            tokenInfo = new TokenInfo(repository, httpContextAccessor);
+            tokenInfo = new TokenInfo(repository, httpContextAccessor, configuration);
         }
 
         public async Task<IEnumerable<ProductWithCurrentCountAndNameModel>> GetProductsByFridgeIdAsync(Guid fridgeId)

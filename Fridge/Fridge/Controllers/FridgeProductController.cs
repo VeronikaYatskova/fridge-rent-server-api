@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Fridge.Controllers
 {
+    [Produces("application/json")]
+    [Route("api")]
     [ApiController]
     public class FridgeProductController : ControllerBase
     {

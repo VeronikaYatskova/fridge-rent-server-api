@@ -5,10 +5,10 @@ namespace Fridge.Data.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        void AddRenter(User user);
+        void AddUser(User user);
 
         User? FindBy(Expression<Func<User, bool>> condition);
 
-        void AddOwner(User owner);
+        void UpdateUser(User user);
     }
 }
