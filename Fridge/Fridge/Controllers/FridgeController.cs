@@ -29,20 +29,9 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetFridges()
         {
-            try
-            {
-                var fridges = await fridgeService.GetFridges();
+            var fridges = await fridgeService.GetFridges();
 
-                return Ok(fridges);
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return Ok(fridges);
         }
 
         /// <summary>
@@ -55,15 +44,9 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetModels()
         {
-            try
-            {
-                var models = await fridgeService.GetModels();
-                return Ok(models);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            var models = await fridgeService.GetModels();
+         
+            return Ok(models);
         }
 
         /// <summary>
@@ -76,19 +59,13 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetProducers()
         {
-            try
-            {
-                var producers = await fridgeService.GetProducers();
-                return Ok(producers);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            var producers = await fridgeService.GetProducers();
+        
+            return Ok(producers);
         }
 
         /// <summary>
-        /// Returns a list of fridges that the owner has.
+        /// Returns a list of fridges that the user has.
         /// </summary>
         /// <returns>A list of fridges that the owner has.</returns>
         /// <response code="200">Returns a list of fridges that the owner has.</response>
@@ -98,20 +75,9 @@ namespace Fridge.Controllers
         [Authorize(Roles = $"{UserRoles.Owner}, {UserRoles.Renter}")]
         public async Task<IActionResult> GetUserFridges()
         {
-            try
-            {
-                var fridgesDto = await fridgeService.GetUserFridges();
+            var fridgesDto = await fridgeService.GetUserFridges();
 
-                return Ok(fridgesDto);
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return Ok(fridgesDto);
         }
 
         /// <summary>
@@ -124,51 +90,45 @@ namespace Fridge.Controllers
         [Authorize(Roles = UserRoles.Owner)]
         public async Task<IActionResult> AddFridge([FromBody] AddFridgeOwnerModel addFridgeOwnerModel)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return UnprocessableEntity(ModelState);
-                }
+                return UnprocessableEntity(ModelState);
+            }
 
-                await fridgeService.AddFridge(addFridgeOwnerModel);
+            await fridgeService.AddFridge(addFridgeOwnerModel);
 
-                return Created("api/owner/fridge", "Fridge is added.");
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return Created("api/owner/fridge", "Fridge is added.");
         }
-   
+
         /// <summary>
         /// Method to rent a fridge.
         /// </summary>
         /// <returns>Rented fridge</returns>
         [HttpPut("{fridgeId}/rent")]
         [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Post))]
+            nameof(DefaultApiConventions.Put))]
         [Authorize(Roles = UserRoles.Renter)]
         public async Task<IActionResult> RentFridge(Guid fridgeId)
         {
-            try
-            {
-                await fridgeService.RentFridge(fridgeId);
+            await fridgeService.RentFridge(fridgeId);
 
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return Ok();
+        }
+
+        /// <summary>
+        /// Method to return a fridge to its owner.
+        /// </summary>
+        /// <param name="fridgeId">Guid of a fridge to delete.</param>
+        /// <returns>Status Code</returns>
+        [HttpPut("{fridgeId}/free")]
+        [ApiConventionMethod(typeof(DefaultApiConventions),
+            nameof(DefaultApiConventions.Put))]
+        [Authorize(Roles = UserRoles.Renter)]
+        public async Task<IActionResult> Remove(Guid fridgeId)
+        {
+            await fridgeService.ReturnFridge(fridgeId);
+
+            return Ok();
         }
 
         /// <summary>
@@ -182,47 +142,9 @@ namespace Fridge.Controllers
         [Authorize(Roles = UserRoles.Owner)]
         public async Task<IActionResult> DeleteFridge(Guid fridgeId)
         {
-            try
-            {
-                await fridgeService.DeleteFridge(fridgeId);
+            await fridgeService.DeleteFridge(fridgeId);
 
-                return Ok();
-            }
-            catch (ArgumentException ex) 
-            { 
-                return NotFound(ex.Message); 
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
-        /// <summary>
-        /// Method to return a fridge to its owner.
-        /// </summary>
-        /// <param name="fridgeId">Guid of a fridge to delete.</param>
-        /// <returns>Status Code</returns>
-        [HttpPut("{fridgeId}/free")]
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-            nameof(DefaultApiConventions.Delete))]
-        [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> Remove(Guid fridgeId)
-        {
-            try
-            {
-                await fridgeService.ReturnFridge(fridgeId);
-
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return Ok();
         }
     }
 }

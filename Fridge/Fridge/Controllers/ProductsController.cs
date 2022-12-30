@@ -1,5 +1,4 @@
-﻿using Fridge.Data.Models;
-using Fridge.Models;
+﻿using Fridge.Models;
 using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
 using Microsoft.AspNetCore.Authorization;
@@ -29,20 +28,9 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Get))]
         public async Task<IActionResult> GetProducts()
         {
-            try
-            {
-                var products = await productsService.GetProducts();
+            var products = await productsService.GetProducts();
 
-                return Ok(products);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return Ok(products);
         }
 
         /// <summary>
@@ -52,23 +40,16 @@ namespace Fridge.Controllers
         [HttpPost]
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
-        public async Task<IActionResult> AddPicture([FromForm]AddProductPictureModel productPictureDto)
+        public async Task<IActionResult> AddPicture([FromForm] AddProductPictureModel productPictureDto)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return UnprocessableEntity(ModelState);
-                }
-
-                await productsService.AddPictureAsync(productPictureDto);
-
-                return Created("api", productPictureDto.ImageName);
+                return UnprocessableEntity(ModelState);
             }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+
+            await productsService.AddPictureAsync(productPictureDto);
+
+            return Created("api", productPictureDto.ImageName);
         }
     }
 }

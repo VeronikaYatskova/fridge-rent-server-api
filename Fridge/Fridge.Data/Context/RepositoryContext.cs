@@ -2,6 +2,7 @@
 using Fridge.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace Fridge.Data.Context
 {
     public class RepositoryContext : DbContext

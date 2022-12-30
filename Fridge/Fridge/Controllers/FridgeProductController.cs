@@ -30,20 +30,9 @@ namespace Fridge.Controllers
         [Authorize(Roles = UserRoles.Renter)]
         public async Task<IActionResult> GetProductsInFridgeByFridgeId(Guid fridgeId)
         {
-            try
-            {
-                var products = await fridgeProductService.GetProductsByFridgeIdAsync(fridgeId);
+            var products = await fridgeProductService.GetProductsByFridgeIdAsync(fridgeId);
 
-                return Ok(products);
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return Ok(products);
         }
 
         /// <summary>
@@ -56,20 +45,9 @@ namespace Fridge.Controllers
         [Authorize(Roles = UserRoles.Renter)]
         public async Task<IActionResult> FillTheFridgeWithProduct(Guid productId)
         {
-            try
-            {
-                await fridgeProductService.FillTheFridgeWithProductAsync(productId);
+            await fridgeProductService.FillTheFridgeWithProductAsync(productId);
 
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return Ok();
         }
 
         /// <summary>
@@ -84,30 +62,19 @@ namespace Fridge.Controllers
         [Authorize(Roles = UserRoles.Renter)]
         public async Task<IActionResult> AddProduct(Guid fridgeId, Guid productId, [FromBody] int count)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return UnprocessableEntity(ModelState);
-                }
+                return UnprocessableEntity(ModelState);
+            }
 
-                await fridgeProductService.AddProductAsync(new AddProductModel
-                {
-                    FridgeId = fridgeId,
-                    ProductId = productId,
-                    Count = count,
-                });
+            await fridgeProductService.AddProductAsync(new AddProductModel
+            {
+                FridgeId = fridgeId,
+                ProductId = productId,
+                Count = count,
+            });
 
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return Ok();
         }
 
         /// <summary>
@@ -121,20 +88,9 @@ namespace Fridge.Controllers
         [Authorize(Roles = UserRoles.Renter)]
         public async Task<IActionResult> DeleteProductFromFridge(Guid fridgeId, Guid productId)
         {
-            try
-            {
-                await fridgeProductService.DeleteProductFromFridgeAsync(fridgeId, productId);
+            await fridgeProductService.DeleteProductFromFridgeAsync(fridgeId, productId);
 
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return Ok();
         }
 
         /// <summary>
@@ -150,30 +106,19 @@ namespace Fridge.Controllers
         [Authorize(Roles = UserRoles.Renter)]
         public async Task<IActionResult> UpdateProductAsync(Guid fridgeId, Guid productId, [FromBody] int count)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    throw new ArgumentException("Invalid data");
-                }
+                return UnprocessableEntity(ModelState);
+            }
 
-                await fridgeProductService.UpdateProductAsync(new UpdateProductModel
-                {
-                    FridgeId = fridgeId,
-                    ProductId = productId,
-                    Count = count,
-                });
+            await fridgeProductService.UpdateProductAsync(new UpdateProductModel
+            {
+                FridgeId = fridgeId,
+                ProductId = productId,
+                Count = count,
+            });
 
-                return NoContent();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return NoContent();
         }
     }
 }

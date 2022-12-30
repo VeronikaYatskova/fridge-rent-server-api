@@ -10,7 +10,7 @@ using Fridge.Data.Repositories.Interfaces;
 using Fridge.Data.Context;
 using Fridge.Services.Abstracts;
 using Fridge.Services;
-
+using Fridge.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,6 +99,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.ConfigureCustomExceptionMiddleware();
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
