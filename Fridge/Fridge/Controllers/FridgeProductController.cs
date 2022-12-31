@@ -62,11 +62,6 @@ namespace Fridge.Controllers
         [Authorize(Roles = UserRoles.Renter)]
         public async Task<IActionResult> AddProduct(Guid fridgeId, Guid productId, [FromBody] int count)
         {
-            if (!ModelState.IsValid)
-            {
-                return UnprocessableEntity(ModelState);
-            }
-
             await fridgeProductService.AddProductAsync(new AddProductModel
             {
                 FridgeId = fridgeId,
@@ -106,11 +101,6 @@ namespace Fridge.Controllers
         [Authorize(Roles = UserRoles.Renter)]
         public async Task<IActionResult> UpdateProductAsync(Guid fridgeId, Guid productId, [FromBody] int count)
         {
-            if (!ModelState.IsValid)
-            {
-                return UnprocessableEntity(ModelState);
-            }
-
             await fridgeProductService.UpdateProductAsync(new UpdateProductModel
             {
                 FridgeId = fridgeId,

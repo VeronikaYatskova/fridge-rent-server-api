@@ -42,11 +42,6 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Post))]
         public async Task<IActionResult> AddPicture([FromForm] AddProductPictureModel productPictureDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return UnprocessableEntity(ModelState);
-            }
-
             await productsService.AddPictureAsync(productPictureDto);
 
             return Created("api", productPictureDto.ImageName);

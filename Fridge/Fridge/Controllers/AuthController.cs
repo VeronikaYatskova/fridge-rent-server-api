@@ -1,6 +1,7 @@
 ﻿using Fridge.Models;
 using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
+using Fridge.Utils.ActionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,13 +27,9 @@ namespace Fridge.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [HttpPost("sign-up")]
+        [ServiceFilter(typeof(ValidationFilter))]
         public async Task<IActionResult> RegisterUser([FromBody] AddUserModel addUserModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return UnprocessableEntity(ModelState);
-            }
-
             var userRole = addUserModel.IsOwner ? UserRoles.Owner : UserRoles.Renter;
 
             var token = await authorizationService.RegisterUser(addUserModel, userRole);
@@ -49,11 +46,6 @@ namespace Fridge.Controllers
         [HttpPost("sign-in")]
         public async Task<IActionResult> LoginUser([FromBody] LoginModel loginModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return UnprocessableEntity(ModelState);
-            }
-
             var token = await authorizationService.LoginUser(loginModel);
 
             return Created("", token);

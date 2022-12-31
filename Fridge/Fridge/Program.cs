@@ -11,6 +11,7 @@ using Fridge.Data.Context;
 using Fridge.Services.Abstracts;
 using Fridge.Services;
 using Fridge.Utils;
+using Fridge.Utils.ActionFilters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ builder.Services.AddScoped<IAuthService, AuthorizationService>();
 builder.Services.AddScoped<IFridgeService, FridgeService>();
 builder.Services.AddScoped<IFridgeProductService, FridgeProductService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
+
+builder.Services.AddScoped<ValidationFilter>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {

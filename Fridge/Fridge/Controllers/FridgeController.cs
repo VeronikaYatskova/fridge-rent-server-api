@@ -90,11 +90,6 @@ namespace Fridge.Controllers
         [Authorize(Roles = UserRoles.Owner)]
         public async Task<IActionResult> AddFridge([FromBody] AddFridgeOwnerModel addFridgeOwnerModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return UnprocessableEntity(ModelState);
-            }
-
             await fridgeService.AddFridge(addFridgeOwnerModel);
 
             return Created("api/owner/fridge", "Fridge is added.");
