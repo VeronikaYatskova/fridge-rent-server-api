@@ -10,8 +10,8 @@ using Fridge.Data.Repositories.Interfaces;
 using Fridge.Data.Context;
 using Fridge.Services.Abstracts;
 using Fridge.Services;
+using Fridge.Utils.Filters;
 using Fridge.Utils;
-using Fridge.Utils.ActionFilters;
 
 var builder = WebApplication.CreateBuilder(args);
 

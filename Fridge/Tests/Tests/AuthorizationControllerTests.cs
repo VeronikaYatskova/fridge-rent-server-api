@@ -42,57 +42,6 @@ namespace Fridge.Tests.Tests
         }
 
         [Fact]
-        public async Task RegisterRenterAsync_InvalidData_ShouldReturnUnprocessableEntityResult()
-        {
-            var fakeService = new AuthorizationFakeService();
-
-            var controller = new AuthController(fakeService.Service);
-
-            var addUserModel = new AddUserModel()
-            {
-                Email = "sasharenter.com",
-                Password = "",
-                IsOwner = false,
-            };
-
-            var response = await controller.RegisterUser(addUserModel);
-
-            Assert.NotNull(response);
-
-            var unprocessableEntityObjectResult = response as UnprocessableEntityObjectResult;
-
-            Assert.NotNull(unprocessableEntityObjectResult);
-            Assert.Equal(422, unprocessableEntityObjectResult?.StatusCode);
-        }
-
-        [Fact]
-        public async Task RegisterRenterAsync_RenterExists_ShouldReturnBadRequestResult()
-        {
-            var fakeService = new AuthorizationFakeService();
-
-            var controller = new AuthController(fakeService.Service);
-
-            var addUserModel = new AddUserModel()
-            {
-                Email = "veronika@renter.com",
-                Password = "1",
-            };
-
-            fakeService.Mock.Setup(s => s.RegisterUser(addUserModel, UserRoles.Renter))
-                .Throws(new ArgumentException("Renter with the same email has been registered."));
-
-            var response = await controller.RegisterUser(addUserModel);
-
-            Assert.NotNull(response);
-
-            var badRequestResult = response as BadRequestObjectResult;
-
-            Assert.NotNull(badRequestResult);
-            Assert.IsType<BadRequestObjectResult>(badRequestResult);
-            Assert.Equal(400, badRequestResult?.StatusCode);
-        }
-
-        [Fact]
         public async Task RegisterOwnerAsync_ValidData_ShouldReturnCreated()
         {
             var fakeService = new AuthorizationFakeService();
@@ -119,33 +68,6 @@ namespace Fridge.Tests.Tests
             Assert.NotNull(createdResult);
             Assert.IsType<CreatedResult>(createdResult);
             Assert.Equal(201, createdResult?.StatusCode);
-        }
-
-        [Fact]
-        public async Task RegisterOwnerAsync_OwnerExists_ShouldReturnBadRequestResult()
-        {
-            var fakeService = new AuthorizationFakeService();
-            var controller = new AuthController(fakeService.Service);
-
-            var addOwnerModel = new AddUserModel()
-            {
-                Email = "sasha@owner.com",
-                Password = "1",
-                IsOwner= true,
-            };
-
-            fakeService.Mock.Setup(s => s.RegisterUser(addOwnerModel, UserRoles.Owner))
-                .Throws(new ArgumentException("Owner with the same email has been registered."));
-
-            var response = await controller.RegisterUser(addOwnerModel);
-
-            Assert.NotNull(response);
-
-            var badRequestResult = response as BadRequestObjectResult;
-
-            Assert.NotNull(badRequestResult);
-            Assert.IsType<BadRequestObjectResult>(badRequestResult);
-            Assert.Equal(400, badRequestResult.StatusCode);
         }
 
         [Fact]

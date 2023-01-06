@@ -1,6 +1,7 @@
 ﻿using Fridge.Models;
 using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
+using Fridge.Utils.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace Fridge.Controllers
 {
     [Produces("application/json")]
     [Route("api")]
+    [ValidationFilter]
     [ApiController]
     public class FridgeProductController : ControllerBase
     {

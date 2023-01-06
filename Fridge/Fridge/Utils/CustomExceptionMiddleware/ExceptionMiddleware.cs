@@ -20,21 +20,31 @@ namespace Fridge.Utils.CustomExceptionMiddleware
             }
             catch (Exception ex)
             {
-                string exceptionMessage = ex.Message;
-                await HandleExceptionAsync(context, exceptionMessage);
+                int statusCode = 505;
+                string exceptionMessage = "Internal Server Error";
+                
+                if (ex is ArgumentException)
+                {
+                    statusCode = (int)HttpStatusCode.BadRequest;
+                    exceptionMessage = ex.Message;
+                }
+
+                var errorDetails = new ErrorDetails
+                {
+                    StatusCode = statusCode,
+                    Message = exceptionMessage,
+                };
+
+                await HandleExceptionAsync(context, errorDetails);
             }
         }
 
-        private Task HandleExceptionAsync(HttpContext context, string exceptionMessage)
+        private Task HandleExceptionAsync(HttpContext context, ErrorDetails errorDetails)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.StatusCode = errorDetails.StatusCode;
 
-            return context.Response.WriteAsync(new ErrorDetails
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = exceptionMessage,
-            }.ToString());
+            return context.Response.WriteAsync(errorDetails.ToString());
         }
     }
 }

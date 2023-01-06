@@ -6,22 +6,19 @@ using Fridge.Models.Requests;
 using AutoMapper;
 using Fridge.Models;
 
-
 namespace Fridge.Services
 {
     public class FridgeService : IFridgeService
     {
         private readonly IRepositoryManager repository;
-        private readonly ILogger<FridgeService> logger;
         private readonly IMapper mapper;
 
         private readonly TokenInfo tokenInfo;
         private User? user;
 
-        public FridgeService(IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<FridgeService> logger, IConfiguration configuration)
+        public FridgeService(IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             this.repository = repository;
-            this.logger = logger;
             this.mapper = mapper;
 
             tokenInfo = new TokenInfo(repository, httpContextAccessor, configuration);
@@ -33,7 +30,7 @@ namespace Fridge.Services
 
             if (!fridges.Any() || fridges is null)
             {
-                throw new ArgumentException("Fridges are not found.");
+                return new List<FridgeModel>() { };
             }
 
             var fridgesDto = fridges.Select(fridge => new FridgeModel
@@ -98,7 +95,6 @@ namespace Fridge.Services
 
             if (fridge is null)
             {
-                logger.LogInformation($"Fridge with id {fridgeId} is not found.");
                 throw new ArgumentException($"Fridge with id {fridgeId} is not found.");
             }
 
@@ -117,7 +113,6 @@ namespace Fridge.Services
 
             if (fridges is null || fridges.Count() == 0)
             {
-                logger.LogInformation($"Owner with id {user!.Id} doesn't have a fridge with id {fridgeId}");
                 throw new ArgumentException($"Owner with id {user!.Id} doesn't have a fridge with id {fridgeId}");
             }
 
@@ -125,7 +120,6 @@ namespace Fridge.Services
 
             if (fridge!.RenterId != null)
             {
-                logger.LogInformation("Unable to delete a rented fridge.");
                 throw new ArgumentException("Unable to delete a rented fridge.");
             }
 
@@ -141,7 +135,6 @@ namespace Fridge.Services
 
             if (fridge is null)
             {
-                logger.LogInformation($"Fridge with id {fridgeId} is not found.");
                 throw new ArgumentException($"Fridge with id {fridgeId} is not found.");
             }
 
@@ -164,7 +157,6 @@ namespace Fridge.Services
 
             if (fridges?.Count() == 0 || fridges is null)
             {
-                logger.LogInformation($"Owner with id {user!.Id} doesn't have any fridges.");
                 throw new ArgumentException("Owner doesn't have any fridges.");
             }
 
@@ -189,7 +181,6 @@ namespace Fridge.Services
 
             if (!renterFridges.Any())
             {
-                logger.LogInformation("No fridges");
                 throw new ArgumentException("No fridges");
             }
 

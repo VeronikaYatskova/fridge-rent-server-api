@@ -1,6 +1,7 @@
 ﻿using Fridge.Models;
 using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
+using Fridge.Utils.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace Fridge.Controllers
 {
     [Produces("application/json")]
     [Route("api/fridges")]
+    [ValidationFilter]
     [ApiController]
     public class FridgeController : ControllerBase
     {
@@ -119,7 +121,7 @@ namespace Fridge.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Put))]
         [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> Remove(Guid fridgeId)
+        public async Task<IActionResult> Return(Guid fridgeId)
         {
             await fridgeService.ReturnFridge(fridgeId);
 

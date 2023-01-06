@@ -66,38 +66,27 @@ namespace Fridge.Tests.Tests
             var fakeFridgeService = new FridgeFakeService();
             var controller = new FridgeController(fakeFridgeService.Service);
 
+            IEnumerable<FridgeModel> expectedFridges = new List<FridgeModel>() { }; 
             // Act
 
             fakeFridgeService.Mock.Setup(s => s.GetFridges())
-                .Throws(new ArgumentException("Fridges are not found."));
+                .Returns(Task.FromResult(expectedFridges));
 
             var response = await controller.GetFridges();
 
-            // Assert
-
             Assert.NotNull(response);
-            Assert.IsType<NotFoundObjectResult>(response);
-        }
-
-        [Fact]
-        public async Task GetFridgesAsync_FridgesListIsNull_ShouldReturnNotFound()
-        {
-            // Arrange
-
-            var fakeFridgeService = new FridgeFakeService();
-            var controller = new FridgeController(fakeFridgeService.Service);
-
-            // Act
-
-            fakeFridgeService.Mock.Setup(s => s.GetFridges())
-                .Throws(new ArgumentException("Fridges are not found."));
-
-            var response = await controller.GetFridges();
 
             // Assert
 
-            Assert.NotNull(response);
-            Assert.IsType<NotFoundObjectResult>(response);
+            var okResult = response as OkObjectResult;
+
+            Assert.IsType<OkObjectResult>(okResult);
+            Assert.Equal(200, okResult?.StatusCode);
+
+            var fridges = okResult?.Value as List<FridgeModel>;
+
+            Assert.NotNull(fridges);
+            Assert.Empty(fridges);
         }
 
         [Fact]
@@ -150,8 +139,8 @@ namespace Fridge.Tests.Tests
 
             var models = okResult.Value as List<FridgeModelModel>;
 
-            Assert.IsType<List<FridgeModelModel>>(models);
             Assert.NotNull(models);
+            Assert.IsType<List<FridgeModelModel>>(models);
             Assert.NotEmpty(models);
         }
 
@@ -252,7 +241,7 @@ namespace Fridge.Tests.Tests
 
             // Act
 
-            var response = await controller.Remove(fridgeId);
+            var response = await controller.Return(fridgeId);
 
             Assert.NotNull(response);
             Assert.IsType<OkResult>(response);

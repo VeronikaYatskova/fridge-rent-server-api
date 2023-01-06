@@ -2,9 +2,6 @@
 using Fridge.Data.Repositories.Interfaces;
 using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Security.Cryptography;
 
 
@@ -79,6 +76,7 @@ namespace Fridge.Services
         public async Task<string> GetRefreshToken()
         {
             var user = await tokenInfo.GetUser();
+
             return await tokenInfo.UpdateRefreshToken(user);
         }
 

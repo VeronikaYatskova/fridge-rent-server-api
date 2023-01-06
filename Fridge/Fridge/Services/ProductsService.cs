@@ -10,7 +10,6 @@ namespace Fridge.Services
 {
     public class ProductsService : IProductsService
     {
-        private readonly ILogger<ProductsService> logger;
         private readonly IRepositoryManager repository;
         private IWebHostEnvironment environment;
         private IMapper mapper;
@@ -18,10 +17,9 @@ namespace Fridge.Services
         private TokenInfo tokenInfo;
         private User? renter;
 
-        public ProductsService(IConfiguration configuration, IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<ProductsService> logger, IWebHostEnvironment environment)
+        public ProductsService(IConfiguration configuration, IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment environment)
         {
             this.repository = repository;
-            this.logger = logger;
             this.environment = environment;
             this.mapper = mapper;
 
@@ -34,7 +32,6 @@ namespace Fridge.Services
 
             if (products is null || !products.Any())
             {
-                logger.LogInformation("No products.");
                 throw new ArgumentException("No products.");
             }
 

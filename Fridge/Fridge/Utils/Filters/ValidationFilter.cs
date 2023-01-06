@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Fridge.Utils.ActionFilters
+namespace Fridge.Utils.Filters
 {
-    public class ValidationFilter : IActionFilter
+    public class ValidationFilter : Attribute, IActionFilter
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
@@ -13,10 +13,9 @@ namespace Fridge.Utils.ActionFilters
                 context.Result = new BadRequestObjectResult(context.ModelState);
             }
         }
-
+        
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            throw new NotImplementedException();
         }
     }
 }

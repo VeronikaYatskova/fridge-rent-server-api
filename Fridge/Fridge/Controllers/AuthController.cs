@@ -1,7 +1,7 @@
 ﻿using Fridge.Models;
 using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
-using Fridge.Utils.ActionFilters;
+using Fridge.Utils.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +10,7 @@ namespace Fridge.Controllers
 {
     [Produces("application/json")]
     [Route("api/auth")]
+    [ValidationFilter]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -27,7 +28,6 @@ namespace Fridge.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions),
             nameof(DefaultApiConventions.Post))]
         [HttpPost("sign-up")]
-        [ServiceFilter(typeof(ValidationFilter))]
         public async Task<IActionResult> RegisterUser([FromBody] AddUserModel addUserModel)
         {
             var userRole = addUserModel.IsOwner ? UserRoles.Owner : UserRoles.Renter;

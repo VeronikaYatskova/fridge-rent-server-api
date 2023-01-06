@@ -1,6 +1,7 @@
 ﻿using Fridge.Models;
 using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
+using Fridge.Utils.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,8 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Fridge.Controllers
 {
     [Route("api/products")]
-    [ApiController]
+    [ValidationFilter]
     [Authorize(Roles = UserRoles.Renter)]
+    [ApiController]
     public class ProductsController : ControllerBase
     {
         private readonly IProductsService productsService;
