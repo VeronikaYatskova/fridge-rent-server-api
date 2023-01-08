@@ -100,6 +100,7 @@ namespace Fridge.Tests.Tests
 
             var actualToken = createdResult.Value;
 
+            Assert.NotNull(actualToken);
             Assert.Equal(actualToken, token);
         }
 

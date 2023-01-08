@@ -138,9 +138,6 @@ namespace Fridge.Tests.Tests
             var okResult = response as OkResult;
 
             Assert.NotNull(okResult);
-
-            // Assert
-
             Assert.Equal(200, okResult?.StatusCode);
         }
 

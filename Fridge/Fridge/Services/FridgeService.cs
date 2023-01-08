@@ -30,7 +30,7 @@ namespace Fridge.Services
 
             if (!fridges.Any() || fridges is null)
             {
-                return new List<FridgeModel>() { };
+                throw new ArgumentNullException("No fridges");
             }
 
             var fridgesDto = fridges.Select(fridge => new FridgeModel
@@ -157,7 +157,7 @@ namespace Fridge.Services
 
             if (fridges?.Count() == 0 || fridges is null)
             {
-                throw new ArgumentException("Owner doesn't have any fridges.");
+                throw new ArgumentNullException("Owner doesn't have any fridges.");
             }
 
             var fridgesDto = fridges.Select(fridge => new OwnerFridgeModel
@@ -181,7 +181,7 @@ namespace Fridge.Services
 
             if (!renterFridges.Any())
             {
-                throw new ArgumentException("No fridges");
+                throw new ArgumentNullException("Renter doesn't have any fridges.");
             }
 
             var fridges = renterFridges.Select(fridge => new FridgeRenterModel

@@ -51,42 +51,40 @@ namespace Fridge.Tests.Tests
 
             Assert.IsType<List<FridgeModel>>(fridges);
             Assert.NotEmpty(fridges);
-            Assert.Equal(new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"), fridges[0].Id);
-            Assert.Equal("Toshiba GR-RF610WE-PMS", fridges[0].Model);
-            Assert.Equal("veronika", fridges[0].Owner);
-            Assert.Equal("Toshiba", fridges[0].Producer);
-            Assert.Equal(20, fridges[0].Capacity);
+
+            var firstFridge = fridges[0];
+
+            Assert.NotNull(firstFridge);
+            Assert.Equal(new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f"), firstFridge.Id);
+            Assert.Equal("Toshiba GR-RF610WE-PMS", firstFridge.Model);
+            Assert.Equal("veronika", firstFridge.Owner);
+            Assert.Equal("Toshiba", firstFridge.Producer);
+            Assert.Equal(20, firstFridge.Capacity);
         }
 
         [Fact]
-        public async Task GetFridgesAsync_NoFridges_ShouldNotFoundResult()
+        public async Task GetFridgesAsync_NoFridges_ShouldReturnNotFoundResult()
         {
             // Arrange
 
             var fakeFridgeService = new FridgeFakeService();
             var controller = new FridgeController(fakeFridgeService.Service);
 
-            IEnumerable<FridgeModel> expectedFridges = new List<FridgeModel>() { }; 
             // Act
 
             fakeFridgeService.Mock.Setup(s => s.GetFridges())
-                .Returns(Task.FromResult(expectedFridges));
-
+                .Throws(new ArgumentNullException("No fridges"));
+            
             var response = await controller.GetFridges();
 
             Assert.NotNull(response);
 
             // Assert
 
-            var okResult = response as OkObjectResult;
+            var notFoundResul = response as NotFoundObjectResult;
 
-            Assert.IsType<OkObjectResult>(okResult);
-            Assert.Equal(200, okResult?.StatusCode);
-
-            var fridges = okResult?.Value as List<FridgeModel>;
-
-            Assert.NotNull(fridges);
-            Assert.Empty(fridges);
+            Assert.IsType<NotFoundObjectResult>(notFoundResul);
+            Assert.Equal(404, notFoundResul?.StatusCode);
         }
 
         [Fact]
