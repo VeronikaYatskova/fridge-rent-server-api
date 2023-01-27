@@ -5,12 +5,12 @@ using Fridge.Utils.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace Fridge.Controllers
 {
     [Produces("application/json")]
     [Route("api/fridges")]
     [ValidationFilter]
+    [CustomExceptionFilter]
     [ApiController]
     public class FridgeController : ControllerBase
     {

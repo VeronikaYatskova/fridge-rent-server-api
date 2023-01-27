@@ -25,6 +25,7 @@ builder.Services.AddScoped<IFridgeProductService, FridgeProductService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
 
 builder.Services.AddScoped<ValidationFilter>();
+builder.Services.AddScoped<CustomExceptionFilter>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -103,7 +104,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.ConfigureCustomExceptionMiddleware();
+// app.ConfigureCustomExceptionMiddleware();
 
 app.UseHttpsRedirection();
 

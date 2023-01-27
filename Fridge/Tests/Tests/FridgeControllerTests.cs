@@ -9,10 +9,11 @@ namespace Fridge.Tests.Tests
 {
     public class FridgeControllerTests
     {
+        private readonly FridgeFakeService fakeFridgeService = new();
+
         [Fact]
         public async Task GetFridgesAsync_HaveFridges_ShouldReturnOk()
         {
-            var fakeFridgeService = new FridgeFakeService();
             var controller = new FridgeController(fakeFridgeService.Service);
             
             IEnumerable<FridgeModel> expectedFridges = new List<FridgeModel>()
@@ -67,7 +68,6 @@ namespace Fridge.Tests.Tests
         {
             // Arrange
 
-            var fakeFridgeService = new FridgeFakeService();
             var controller = new FridgeController(fakeFridgeService.Service);
 
             // Act
@@ -90,7 +90,6 @@ namespace Fridge.Tests.Tests
         [Fact]
         public async Task GetModelsAsync_HaveModels_ShouldReturnOk()
         {
-            var fakeFridgeService = new FridgeFakeService();
             var controller = new FridgeController(fakeFridgeService.Service);
 
             IEnumerable<FridgeModelModel> actualModels = new List<FridgeModelModel>()
@@ -145,7 +144,6 @@ namespace Fridge.Tests.Tests
         [Fact]
         public async Task GetProducersAsync_HaveProducers_ShouldReturnOk()
         {
-            var fakeFridgeService = new FridgeFakeService();
             var controller = new FridgeController(fakeFridgeService.Service);
             
             IEnumerable<FridgeProducerModel> expectedProducers = new List<FridgeProducerModel>()
@@ -199,7 +197,6 @@ namespace Fridge.Tests.Tests
         [Fact]
         public async Task RentFridge_ValidData_ShouldReturnOk()
         {
-            var fakeFridgeService = new FridgeFakeService();
             var controller = new FridgeController(fakeFridgeService.Service);
             
             var fridgeId = Guid.NewGuid();
@@ -232,7 +229,6 @@ namespace Fridge.Tests.Tests
         {
             // Arrange
 
-            var fakeFridgeService = new FridgeFakeService();
             var controller = new FridgeController(fakeFridgeService.Service);
 
             var fridgeId = Guid.NewGuid();
@@ -256,8 +252,6 @@ namespace Fridge.Tests.Tests
         public async Task AddFridge_ValidData_ShouldReturnOk()
         {
             // Arrange
-
-            var fakeFridgeService = new FridgeFakeService();
 
             var controller = new FridgeController(fakeFridgeService.Service);
 
@@ -300,7 +294,6 @@ namespace Fridge.Tests.Tests
         {
             // Arrange
 
-            var fakeFridgeService = new FridgeFakeService();
             var controller = new FridgeController(fakeFridgeService.Service);
 
             var fridgeId = Guid.NewGuid();
@@ -325,7 +318,6 @@ namespace Fridge.Tests.Tests
         {
             // Arrange
 
-            var fakeFridgeService = new FridgeFakeService();
             var controller = new FridgeController(fakeFridgeService.Service);
 
             IEnumerable<IUserFridgeModel> actualFridges = new List<OwnerFridgeModel>()
@@ -380,8 +372,6 @@ namespace Fridge.Tests.Tests
         public async Task GetRentersFridgesAsync_HaveFridges_ShouldReturnOk()
         {
             // Arrange
-
-            var fakeFridgeService = new FridgeFakeService();
 
             var controller = new FridgeController(fakeFridgeService.Service);
 

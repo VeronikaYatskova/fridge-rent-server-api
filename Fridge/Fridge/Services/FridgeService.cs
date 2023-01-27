@@ -28,9 +28,9 @@ namespace Fridge.Services
         {
             var fridges = await repository.Fridge.GetAvailableFridgesAsync();
 
-            if (!fridges.Any() || fridges is null)
+            if (!fridges.Any())
             {
-                throw new ArgumentNullException("No fridges");
+                throw new ArgumentNullException(nameof(fridges), "No fridges");
             }
 
             var fridgesDto = fridges.Select(fridge => new FridgeModel
@@ -155,7 +155,7 @@ namespace Fridge.Services
 
             var fridges = user?.OwnerFridges;
 
-            if (fridges?.Count() == 0 || fridges is null)
+            if (fridges is null || fridges?.Count() == 0)
             {
                 throw new ArgumentNullException("Owner doesn't have any fridges.");
             }

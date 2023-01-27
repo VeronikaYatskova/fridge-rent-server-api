@@ -9,10 +9,11 @@ namespace Fridge.Tests.Tests
 {
     public class FridgeProductControllerTests
     {
+        private readonly FridgeProductFakeService fakeFridgeProductService = new();
+
         [Fact]
         public async Task GetProductsInFridgeByFridgeId_ValidId_ShouldReturnOk()
         {
-            var fakeFridgeProductService = new FridgeProductFakeService();
             var controller = new FridgeProductController(fakeFridgeProductService.Service);
 
             IEnumerable<ProductWithCurrentCountAndNameModel> expectedProducts = new List<ProductWithCurrentCountAndNameModel>()
@@ -56,8 +57,6 @@ namespace Fridge.Tests.Tests
         {
             // Arrange
 
-            var fakeFridgeProductService = new FridgeProductFakeService();
-
             var controller = new FridgeProductController(fakeFridgeProductService.Service);
 
             var productId = new Guid("203e97d9-37e4-47a1-83eb-1ef70d072c6f");
@@ -81,8 +80,6 @@ namespace Fridge.Tests.Tests
         public async Task AddProduct_ValidData_ShouldReturnOkResult()
         {
             // Arrange
-
-            var fakeFridgeProductService = new FridgeProductFakeService();
 
             var controller = new FridgeProductController(fakeFridgeProductService.Service);
 
@@ -121,8 +118,6 @@ namespace Fridge.Tests.Tests
         {
             // Arrange
 
-            var fakeFridgeProductService = new FridgeProductFakeService();
-
             var controller = new FridgeProductController(fakeFridgeProductService.Service);
 
             var fridgeId = new Guid("385e96d7-37e4-47a1-83eb-1ef70d072c8f");
@@ -145,8 +140,6 @@ namespace Fridge.Tests.Tests
         public async Task UpdateProductAsync_ValidData_ShouldReturnNoContent()
         {
             // Arrange
-
-            var fakeFridgeProductService = new FridgeProductFakeService();
 
             var controller = new FridgeProductController(fakeFridgeProductService.Service);
 

@@ -13,6 +13,7 @@ namespace Fridge.Services
         private readonly IHttpContextAccessor? httpContextAccessor;
         private readonly IRepositoryManager repository;
         private static IConfiguration configuration;
+
         public TokenInfo(IRepositoryManager repository, IHttpContextAccessor contextAccessor, IConfiguration config)
         {
             this.repository = repository;

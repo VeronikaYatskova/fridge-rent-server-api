@@ -9,11 +9,11 @@ namespace Fridge.Tests.Tests
 {
     public class AuthorizationControllerTests
     {
+        private readonly AuthorizationFakeService fakeService = new();
+
         [Fact]
         public async Task RegisterRenterAsync_ValidData_ShouldReturnCreated()
         {
-            var fakeService = new AuthorizationFakeService();
-
             var controller = new AuthController(fakeService.Service);
 
             var addUserModel = new AddUserModel()
@@ -44,8 +44,6 @@ namespace Fridge.Tests.Tests
         [Fact]
         public async Task RegisterOwnerAsync_ValidData_ShouldReturnCreated()
         {
-            var fakeService = new AuthorizationFakeService();
-
             var controller = new AuthController(fakeService.Service);
 
             var addUserModel = new AddUserModel()
@@ -73,8 +71,6 @@ namespace Fridge.Tests.Tests
         [Fact]
         public async Task LoginRenter_ValidData_ShouldReturnCreated()
         {
-            var fakeService = new AuthorizationFakeService();
-
             var controller = new AuthController(fakeService.Service);
 
             var loginModel = new LoginModel()
@@ -107,8 +103,6 @@ namespace Fridge.Tests.Tests
         [Fact]
         public async Task LoginOwner_ValidData_ShouldReturnCreated()
         {
-            var fakeService = new AuthorizationFakeService();
-
             var controller = new AuthController(fakeService.Service);
 
             var loginModel = new LoginModel()

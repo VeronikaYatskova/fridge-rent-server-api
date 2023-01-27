@@ -8,12 +8,13 @@ namespace Fridge.Tests.Tests
 {
     public class ProductsControllerTests
     {
+        private readonly ProductsFakeService fakeProductsService = new();
+
         [Fact]
         public async Task GetProductsAsync_Products_ShouldReturnOk()
         {
             // Arrange
 
-            var fakeProductsService = new ProductsFakeService();
             var controller = new ProductsController(fakeProductsService.Service);
 
             IEnumerable<ProductModel> products = new List<ProductModel>()
