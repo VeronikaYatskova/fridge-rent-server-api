@@ -1,5 +1,6 @@
 ﻿using Fridge.Data.Models;
 using System.Net;
+using System.Text.Json;
 
 namespace Fridge.Utils.CustomExceptionMiddleware
 {
@@ -18,23 +19,22 @@ namespace Fridge.Utils.CustomExceptionMiddleware
             {
                 await next(context);
             }
-            catch (ArgumentNullException ex)
-            {
-                var errorDetails = SetStatusCodeAndMessage((int)HttpStatusCode.NotFound, ex.Message);
-
-                await HandleExceptionAsync(context, errorDetails);
-            }
-            catch (ArgumentException ex)
-            {
-                var errorDetails = SetStatusCodeAndMessage((int)HttpStatusCode.BadRequest, ex.Message);
-
-                await HandleExceptionAsync(context, errorDetails);
-            }
             catch (Exception ex)
             {
-                var errorDetails = SetStatusCodeAndMessage((int)HttpStatusCode.InternalServerError, ex.Message);
+                ErrorDetails? errorDetails = null;
 
-                await HandleExceptionAsync(context, errorDetails); 
+                if (ex is ArgumentNullException)
+                {
+                    errorDetails = SetStatusCodeAndMessage((int)HttpStatusCode.NotFound, ex.Message);
+                }
+                else if (ex is ArgumentException)
+                {
+                    errorDetails = SetStatusCodeAndMessage((int)HttpStatusCode.BadRequest, ex.Message);
+                }
+
+                if (errorDetails is null) throw;
+
+                await HandleExceptionAsync(context, errorDetails);
             }
         }
 
@@ -43,7 +43,7 @@ namespace Fridge.Utils.CustomExceptionMiddleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = errorDetails.StatusCode;
 
-            return context.Response.WriteAsync(errorDetails.ToString());
+            return context.Response.WriteAsync(JsonSerializer.Serialize(errorDetails));
         }
 
         private ErrorDetails SetStatusCodeAndMessage(int statusCode, string message) =>

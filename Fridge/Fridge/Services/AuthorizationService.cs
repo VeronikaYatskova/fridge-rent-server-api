@@ -1,5 +1,6 @@
 ﻿using Fridge.Data.Models;
 using Fridge.Data.Repositories.Interfaces;
+using Fridge.Models;
 using Fridge.Models.Requests;
 using Fridge.Services.Abstracts;
 using System.Security.Cryptography;
@@ -19,8 +20,10 @@ namespace Fridge.Services
             tokenInfo = new TokenInfo(repository, httpContextAccessor, config);
         }
         
-        public async Task<string> RegisterUser(AddUserModel addUserModel, string role)
+        public async Task<string> RegisterUser(AddUserModel addUserModel)
         {
+            var role = addUserModel.IsOwner ? UserRoles.Owner : UserRoles.Renter;
+
             if (repository.User.FindBy(u => u.Email == addUserModel.Email && u.Role == role) is not null)
             {
                 throw new ArgumentException($"{role} with the same email has been registered.");
@@ -53,24 +56,55 @@ namespace Fridge.Services
             return token!;
         }
 
+        public async Task<string> RegisterThroughSocialMedia(AddUserSocialAuth addUserSocialAuthModel)
+        {
+            var user = new User()
+            {
+                Role = addUserSocialAuthModel.IsOwner ? UserRoles.Owner : UserRoles.Renter,
+                SocialId = addUserSocialAuthModel.SocialId,
+                AuthVia = addUserSocialAuthModel.AuthVia,
+            };
+
+            if (repository.User.FindBy(u => u.SocialId == addUserSocialAuthModel.SocialId &&
+                u.Role == user.Role) is not null)
+            {
+                return tokenInfo.CreateToken(user);
+            }
+            else
+            {
+                user.Id = Guid.NewGuid();
+                repository.User.AddUser(user);
+                await repository.SaveAsync();
+
+                return tokenInfo.CreateToken(user);
+            }
+        }
+
         public async Task<string> LoginUser(LoginModel loginModel)
         {
             var user = repository.User.FindBy(u => u.Email == loginModel.Email);
 
             if (user is null)
             {
-                throw new ArgumentException($"User is not found");
+                return await RegisterUser(new AddUserModel
+                {
+                    Email = loginModel.Email,
+                    Password = loginModel.Password,
+                    IsOwner = false,
+                });
             }
+            else
+            {
+                VerifyData(user, loginModel);
 
-            VerifyData(user, loginModel);
+                var token = tokenInfo?.CreateToken(user);
+                tokenInfo?.SetRefreshToken(user);
 
-            var token = tokenInfo?.CreateToken(user);
-            tokenInfo?.SetRefreshToken(user);
+                repository.User.UpdateUser(user);
+                await repository.SaveAsync();
 
-            repository.User.UpdateUser(user);
-            await repository.SaveAsync();
-
-            return token;
+                return token;
+            }
         }
 
         public async Task<string> GetRefreshToken()

@@ -11,9 +11,20 @@ using Fridge.Data.Context;
 using Fridge.Services.Abstracts;
 using Fridge.Services;
 using Fridge.Utils.Filters;
+using Serilog;
+using Serilog.Events;
+using Fridge.Utils.CustomExceptionMiddleware;
 using Fridge.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
+var logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File("logs/logs.txt")
+                .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
+                .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -97,14 +108,12 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 app.UseCors(MyAllowSpecificOrigins);
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-// app.ConfigureCustomExceptionMiddleware();
 
 app.UseHttpsRedirection();
 

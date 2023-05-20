@@ -62,13 +62,13 @@ namespace Fridge.Controllers
             nameof(DefaultApiConventions.Post))]
         [HttpPost("fridges/{fridgeId}/products/{productId}")]
         [Authorize(Roles = UserRoles.Renter)]
-        public async Task<IActionResult> AddProduct(Guid fridgeId, Guid productId, [FromBody] int count)
+        public async Task<IActionResult> AddProduct(Guid fridgeId, Guid productId, [FromBody] ProductCount count)
         {
             await fridgeProductService.AddProductAsync(new AddProductModel
             {
                 FridgeId = fridgeId,
                 ProductId = productId,
-                Count = count,
+                Count = count.Count,
             });
 
             return Ok();

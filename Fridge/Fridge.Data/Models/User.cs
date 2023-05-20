@@ -10,12 +10,11 @@ namespace Fridge.Data.Models
         public Guid Id { get; set; }
 
         [EmailAddress]
-        [Required(ErrorMessage = "Email field is required.")]
-        public string Email { get; set; } = string.Empty;
+        public string? Email { get; set; }
 
-        public byte[] PasswordHash { get; set; }
+        public byte[]? PasswordHash { get; set; }
 
-        public byte[] PasswordSalt { get; set; }
+        public byte[]? PasswordSalt { get; set; }
 
         public string Role { get; set; }
 
@@ -24,6 +23,10 @@ namespace Fridge.Data.Models
         public DateTime? TokenCreated { get; set; }
 
         public DateTime? TokenExpires { get; set; }
+
+        public string? SocialId { get; set; }
+
+        public string? AuthVia { get; set; }
 
 
         public virtual ICollection<Fridge> RenterFridges { get; set; }

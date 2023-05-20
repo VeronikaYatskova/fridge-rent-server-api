@@ -94,7 +94,7 @@ namespace Fridge.Controllers
         {
             await fridgeService.AddFridge(addFridgeOwnerModel);
 
-            return Created("api/owner/fridge", "Fridge is added.");
+            return Created("", "Fridge is added.");
         }
 
         /// <summary>

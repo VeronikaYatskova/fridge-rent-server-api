@@ -26,6 +26,7 @@ namespace Fridge.Data.Repositories
         public async Task<FridgeProduct> AddProductAsync(Guid fridgeId, Guid productId, int count)
         {
             var fridgeProduct = await GetProductByIdAsync(fridgeId, productId);
+            
             if (fridgeProduct is not null)
             {
                 fridgeProduct.Count += count;
